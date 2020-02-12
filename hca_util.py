@@ -3,9 +3,12 @@
 import os
 import sys
 import boto3
+from botocore.exceptions import ClientError
 import json
-
+import subprocess
+from multiprocessing.dummy import Pool
 from common import *
+from upload_progress import *
 
 
 secret_name = 'tmp/upload/test/loc'
@@ -22,6 +25,7 @@ def get_bucket_name():
         return None
 
 
+# hca-wrangler
 def handle_create():
     # generate a uuid for directory name
     dir_name = gen_uuid()
@@ -34,6 +38,7 @@ def handle_create():
         print('Error creating directory ' + str(e))
 
 
+# hca-wrangler and hca-contributor
 def handle_list(argv):
     if len(argv) == 0 or len(argv) == 1:
         bucket_name = get_bucket_name()
@@ -72,12 +77,13 @@ def handle_select(argv):
         if is_valid_uuid(dir_name):
             bucket_name = get_bucket_name()
             s3 = boto3.client('s3')
-            resp = s3.list_objects_v2(Bucket=bucket_name, Prefix=dir_name)
 
-            if resp.get('Contents'):
+            try:
+                s3.head_object(Bucket=bucket_name, Key=dir_name + '/')
                 serialize(select_dir, dir_name)
                 print('Selected ' + dir_name)
-            else:
+
+            except ClientError:
                 print('Directory not found')
         else:
             print('Invalid directory name')
@@ -101,13 +107,19 @@ def dir():
 def handle_upload(argv):
 
     if len(argv) > 0:
-        if len(argv) == 1 and argv[0] == '.':
-            # upload files from current directory
-            fs = [f for f in os.listdir('.') if os.path.isfile(f)]
-        else:
-            # upload specified list of files
-            fs = [f for f in argv if os.path.exists(f)]
+        dir_name = dir()
 
+        if dir_name is None:
+            print('No directory selected')
+        else:
+            if len(argv) == 1 and argv[0] == '.':
+                # upload files from current directory
+                fs = [f for f in os.listdir('.') if os.path.isfile(f)]
+            else:
+                # upload specified list of files
+                fs = [f for f in argv if os.path.exists(f)]
+
+            upload(dir_name, fs)
     else:
         m = """usage:
         hca_util.py upload <f1> [<f2>..]   Upload specified file or files. Error if no directory selected
@@ -118,6 +130,21 @@ def handle_upload(argv):
 
 def handle_download():
     pass
+
+
+def upload(dir_name, fs):
+    print('Uploading...')
+    bucket = get_bucket_name()
+    s3 = boto3.client('s3')
+    with Pool(12) as p:
+        p.map(lambda f: u(s3, f, bucket, dir_name), fs)
+
+    print('Done')
+
+
+def u(s3, f, bucket, dir_name):
+    print(f)
+    s3.upload_file(f, bucket, dir_name + '/{}'.format(f), Callback=ProgressPercentage(f))
 
 
 def usage():
@@ -141,6 +168,8 @@ def main(argv):
         cmd = argv[0]
 
         if cmd == 'create':
+            if len(argv[1:]) > 0:
+                print('Ignoring params after `create` command')
             handle_create()
 
         elif cmd == 'list':
@@ -150,6 +179,8 @@ def main(argv):
             handle_select(argv[1:])
 
         elif cmd == 'dir':
+            if len(argv[1:]) > 0:
+                print('Ignoring params after `dir` command')
             print(dir())
 
         elif cmd == 'upload':
