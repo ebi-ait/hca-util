@@ -23,30 +23,34 @@ class HcaUtil:
     bucket_name = None
     selected_dir = None
 
+    profile_found = False
+    access_ok = False
+
     # default constructor
     def __init__(self):
         # set a new session
         self.set_session()
-        self.awsClient = Aws(session)
-        # verify user config/creds
 
-        # retrieve bucket name
-        self.bucket_name = get_bucket_name()
+        # only proceed if profile exists
+        if profile_found:
+            self.awsClient = Aws(session)
+            # verify user config/creds
+
+            # retrieve bucket name
+            self.bucket_name = get_bucket_name()
 
     # set up functions
     def set_session(self):
         try:
             self.session = boto3.Session(profile_name=profile_name)
+            profile_found = True
         except ProfileNotFound:
-            print(f'`{profile_name}` profile not found. Run `configure` command with your credentials')
+            print(f'`{profile_name}` profile not found. See `help config` for help to configure your credentials')
 
     def get_bucket_name(self):
         return self.awsClient.secret_mgr_get_bucket_name(secret_name)
 
     # command functions
-    def cmd_config(self, argv):
-        print('cmd config')
-
     def cmd_config(self, argv):
 
         if len(argv) == 2:
