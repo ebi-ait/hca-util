@@ -30,17 +30,6 @@ usage: download .
 \tDownload all files from remote directory"""
 
 
-class HcaUtil:
-    session = None
-
-    # default constructor
-    def __init__(self):
-        print('HcaUtil')
-
-    def cmd_config(self, argv):
-        print('cmd config')
-
-
 class HcaCmd(Cmd):
     prompt = 'hca> '
     intro = 'Type ? to list commands'

@@ -3,7 +3,7 @@ import sys
 import threading
 
 
-class ProgressPercentage(object):
+class UploadProgress(object):
 
     def __init__(self, filename):
         self._filename = filename
