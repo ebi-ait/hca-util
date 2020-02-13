@@ -30,12 +30,12 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     platforms=['MacOS X', 'Posix'],
-    packages=["hca_util"],
+    packages=["hca.util"],
     include_package_data=True,
     install_requires=INSTALL_REQS,
     entry_points={
         "console_scripts": [
-            "hca_util=hca_util.__main__:main",
+            "hca-util=hca.util.hca_cmd:__main__",
         ]
     },
 )
