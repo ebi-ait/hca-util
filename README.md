@@ -1,81 +1,54 @@
-# hca_util
+# hca-util
 
 This tool is intended to allow HCA wranglers and contributors to upload and download data to/from the HCA S3 bucket.
 
-The following are the main 3 steps users need to run through:
-- Set up AWS with security credentials
-- Install the tool
-- Use tool to upload and download data
+https://github.com/ebi-ait/hca-util
 
-The following assumes the user has basic command-line knowledge and has `python3.x` installed on their machine as the only prerequisite.
+## Prerequisites
+Users need to have
+1. Basic command-line knowledge
+2. Python3.x installed on their machine
+3. Credentials to access data in the S3 bucket (access and secret keys)
 
+## Install and configure
+1. Get the tool from PyPi
+2. Run the `hca-util` tool
+3. Run `config` command specifying your credentials
 
-## Set up AWS with security credentials
+    
+    #1   $ pip install hca-util
+    #2   $ hca-util
+         Type ? to list commands
+         hca>
+    #3   hca> config ACCESS_KEY SECRET_KEY
 
-Contributors will be provided with a pair of access and secret keys which they need to configure AWS.
+Step 2 opens an interactive prompt.
 
-Install and configure AWS CLI
-
-`pip install awscli`
-
-If first time using AWS, either run `aws configure` as follows:
-```
-aws configure
-Enter Access key <USER_ACCESS_KEY>
-Enter Secret <USER_SECRET_ACCESS_KEY>
-Enter us-east-1
-Enter json
-```
- 
-Or, create and edit `.aws/credentials` and add the credentials as follows:
-```
-[default]
-aws_access_key_id = <USER_ACCESS_KEY>
-aws_secret_access_key = <USER_SECRET_ACCESS_KEY>
-```
-
-If the user has an existing AWS profile, for e.g. if they have previously configured S3/AWS, 
-then add a new HCA profile to the `.aws/credentials` file.
-```
-[default]
-aws_access_key_id = ...
-aws_secret_access_key = ...
-[hca]
-aws_access_key_id = <USER_ACCESS_KEY>
-aws_secret_access_key = <USER_SECRET_ACCESS_KEY>
-```
-Set the environment variable `AWS_PROFILE` to `hca` to enable it before using the tool.
-```
-export AWS_PROFILE=hca
-```
+Step 3 adds a new _hca-util_ profile to your local AWS configuration which the tool uses.
 
 
- ## Install the tool
- 
-The tool is in the repository here: https://github.com/ebi-ait/hca_util
- 
-You can either clone the repository (`git clone https://github.com/ebi-ait/hca_util.git`) if you have git installed, or just copy the files `hca_util.py` and `requirements.txt` to a local folder.
- 
-Navigate where the files are and run `pip install` as follows to install the deps.
- 
- ```
-cd hca_util
-pip install -r requirements.txt
-```
+## Use the tool to upload and download data
+The following commands are currently possible.
 
- 
- ## Use tool to upload and download data
- 
- Run `./hca_util.py` to see the options/commands available. Note only wranglers with their elevated access can create directory and list all directories.
- 
- ```
-    hca_util.py create             Create an upload directory (wrangler only)
-    hca_util.py list               List contents of bucket (wrangler only)
-    hca_util.py select <dir_name>  Select directory
-    hca_util.py list <dir_name>    List contents of directory
-    hca_util.py dir                Show selected directory
-    hca_util.py upload <f1> [<f2>..]   Upload specified file or files. Error if no directory selected
-    hca_util.py upload .           Upload all files in current directory. Error if no directory selected
-    hca_util.py download           Download all files from selected directory
-    hca_util.py download <f1>[<f2>..] Download specified files from selected directory
-```
+    command                         description
+    =======                         ===========
+    config ACCESS_KEY SECRET_KEY    Configure your machine with credentials
+    create <project_name>           Create an upload directory for project (wrangler only)
+                                    Project name is optional
+                                    If specified, needs to be between 1-12 alphanumeric characters with no space
+    list                            List contents of bucket (wrangler only)
+    list DIR_NAME                   List contents of directory
+    select DIR_NAME                 Select active directory for upload and download
+    dir                             Show selected directory
+    upload F1 <f2> <f3> ...         Multi-files upload to selected directory
+    upload .                        Upload all files from current user directory
+    download F1 <f2> <f3> ...       Download specified files from remote to current user directory
+    download .                      Download all files from remote directory
+
+
+
+Type ? or `help` to list commands. 
+
+Type `help <command>` to display help info about a command.
+
+Note only wranglers with their elevated access can create directory and list all directories.
