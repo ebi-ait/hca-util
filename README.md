@@ -42,6 +42,9 @@ The following commands are currently possible.
     dir                             Show selected directory
     upload F1 <f2> <f3> ...         Multi-files upload to selected directory
     upload .                        Upload all files from current user directory
+    delete F1 <f2> <f3> ...         Delete file(s) within selected directory
+    delete DIR_NAME                 Delete specified directory
+    -- NOT IMPLEMENTED --
     download F1 <f2> <f3> ...       Download specified files from remote to current user directory
     download .                      Download all files from remote directory
 
