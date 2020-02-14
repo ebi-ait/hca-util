@@ -16,10 +16,23 @@ def is_valid_uuid(val):
         return False
 
 
+def is_valid_project_name(name):
+    """Project name has to be between 1 and 12 chars and contains only alphanum chars"""
+    if name.isalnum() and 0 < len(name) < 13:
+        return True
+    else:
+        return False
+
+
 def is_valid_dir_name(dir_name):
+    """Directory name format: <UUID> | <UUID>-<project_name>
+    where project_name is between 1 and 12 and contains alphanum
+    characters only."""
+    # TODO use regex with pattern below to valid project_name
+    pattern = '^[A-Za-z0-9]{1,12}$'
     if len(dir_name) < 36:
         return False
-    elif len(dir_name) == 36: # without project name suffix
+    elif len(dir_name) == 36:  # without project name suffix
         return is_valid_uuid(dir_name)
     else:
         uuid_part = dir_name[0:36]
