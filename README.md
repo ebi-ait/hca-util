@@ -13,21 +13,21 @@ Users need to have
 ## Install and configure
 1. Get the tool from PyPi
 
-
+```
     $ pip install hca-util
-
+```
 2. Run the `hca-util` tool
 
-
+```
     $ hca-util
     Type ? to list commands
     hca>
-
+```
 3. Run `config` command specifying your credentials
 
-    
+```
     hca> config ACCESS_KEY SECRET_KEY
-    
+``` 
 
 Step 2 opens an interactive prompt.
 
