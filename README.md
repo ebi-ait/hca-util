@@ -40,19 +40,19 @@ The following commands are currently possible.
     command                         description
     =======                         ===========
     config ACCESS_KEY SECRET_KEY    Configure your machine with credentials
-    create <project_name>           Create an upload directory for project (wrangler only)
+    create [project_name] [-udx]    Create an upload directory for project (authorised user only)
                                     Project name is optional
                                     If specified, needs to be between 1-12 alphanumeric characters with no space
-    list                            List contents of bucket (wrangler only)
+    list                            List contents of bucket (authorised user only)
     list DIR_NAME                   List contents of directory
     select DIR_NAME                 Select active directory for upload and download
     dir                             Show selected directory
-    upload F1 <f2> <f3> ...         Multi-files upload to selected directory
+    upload F1 [f2] [f3] ...         Multi-files upload to selected directory
     upload .                        Upload all files from current user directory
-    delete F1 <f2> <f3> ...         Delete file(s) within selected directory
-    delete DIR_NAME                 Delete specified directory
+    delete F1 [f2] [f3] ...         Delete file(s) within selected directory
+    delete DIR_NAME                 Delete specified directory (authorised user only)
     -- NOT IMPLEMENTED --
-    download F1 <f2> <f3> ...       Download specified files from remote to current user directory
+    download F1 [f2] [f3] ...       Download specified files from remote to current user directory
     download .                      Download all files from remote directory
 
 
@@ -61,4 +61,4 @@ Type ? or `help` to list commands.
 
 Type `help <command>` to display help info about a command.
 
-Note only wranglers with their elevated access can create directory and list all directories.
+Note only authorised users (for e.g. wranglers, devs) with their elevated access can create directory and list all directories.
