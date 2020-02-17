@@ -43,10 +43,8 @@ class HcaUtil:
             self.bucket_name = self.aws.secret_mgr_get_bucket_name(self.secret_name)
             if self.bucket_name:
                 self.setup_ok = True
-        except ProfileNotFound as e:
-            print(f'Setup failed: \n`{self.profile_name}` profile not found. ' + str(e))
         except Exception as e:
-            print(f'Setup failed: \n' + str(e))
+            print(f'An exception of type {e.__class__.__name__} occurred in setup.\nDetail: ' + str(e))
 
         if not self.setup_ok:
             print('See `help config` for help to configure your credentials')
@@ -64,7 +62,7 @@ class HcaUtil:
                 self.aws.configure(access_key, secret_key)
                 print('Done.')
             except Exception as e:
-                print('Error occurred running `config` command: ' + str(e))
+                print(f'An exception of type {e.__class__.__name__} occurred in cmd config.\nDetail: ' + str(e))
         else:
             print('Invalid args. See `help config`')
 
@@ -134,7 +132,7 @@ class HcaUtil:
             self.session.client('s3').put_bucket_policy(Bucket=self.bucket_name, Policy=policy)
 
         except Exception as e:
-            print('Error occurred creating directory: ' + str(e))
+            print(f'An exception of type {e.__class__.__name__} occurred in cmd create.\nDetail: ' + str(e))
 
     def cmd_list(self, argv):
         if not self.setup_ok:
@@ -155,7 +153,7 @@ class HcaUtil:
                     else:
                         print('Invalid directory name')
             except Exception as e:
-                print('Error occurred listing directory: ' + str(e))
+                print(f'An exception of type {e.__class__.__name__} occurred in cmd list.\nDetail: ' + str(e))
 
         else:
             print('Invalid args. See `help list`')
@@ -177,10 +175,9 @@ class HcaUtil:
                     self.selected_dir = dir_name
                     print('Selected ' + dir_name)
 
-                except ClientError:
-                    print('Directory not found')
                 except Exception as e:
-                    print('Error occurred while selecting: ' + str(e))
+                    print(f'An exception of type {e.__class__.__name__} occurred in cmd select.\nDetail: ' + str(e))
+
             else:
                 print('Invalid directory name')
 
@@ -215,10 +212,8 @@ class HcaUtil:
                         p.map(lambda f: self.upload(f), fs)
                         print('Done.')
 
-                except ClientError as e:
-                    print('Error occurred during upload: ' + str(e))
                 except Exception as e:
-                    print('Error occurred during upload: ' + str(e))
+                    print(f'An exception of type {e.__class__.__name__} occurred in cmd upload.\nDetail: ' + str(e))
 
         else:
             print('Invalid args. See `help upload`')
@@ -265,8 +260,9 @@ class HcaUtil:
                     print('Deleting ' + prefix + f)
                     obj = bucket.Object(prefix + f)
                     obj.delete()
+
         except Exception as e:
-            print('Error deleting ' + prefix + f + ': ' + str(e))
+            print(f'An exception of type {e.__class__.__name__} occurred in cmd delete.\nDetail: ' + str(e))
 
     def cmd_download(self, argv):
         if not self.setup_ok:
@@ -303,8 +299,9 @@ class HcaUtil:
                     if not os.path.exists(os.path.dirname(obj.key)):
                         os.makedirs(os.path.dirname(obj.key))
                     obj.download_file(obj.key)
+
         except Exception as e:
-            print('Error downloading ' + prefix + f + ': ' + str(e))
+            print(f'An exception of type {e.__class__.__name__} occurred in cmd config.\nDetail: ' + str(e))
 
 
 def list_objs(resp):
