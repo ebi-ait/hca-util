@@ -11,6 +11,7 @@ from multiprocessing.dummy import Pool
 from hca_util.common import *
 from hca_util.upload_progress import UploadProgress
 from hca_util.aws import *
+from hca_util.bucket_policies import *
 
 
 class HcaUtil:
@@ -72,27 +73,66 @@ class HcaUtil:
             print(f'Setup failed: \nSee `help config` for help to configure your credentials')
             return
 
-        if len(argv) > 1:
+        if len(argv) > 2:
             print('Invalid args. See `help create`')
             return
 
-        # generate randon uuid prefix for directory name
+        # generate random uuid prefix for directory name
         dir_name = gen_uuid()
 
+        # valid input
+        # 1. create
+        # 2. create [-udx]
+        # 3. create [project_name]
+        # 4. create [project_name] [-udx]
+
+        def verify_perms(permissions):
+            is_valid_perms = permissions in allowed_perms_combinations
+            if not is_valid_perms:
+                permissions = default_perms
+                print('Invalid perms, using default')
+            print(f'Perms <{permissions}>')
+            return permissions
+
+        def verify_projname(proj_name):
+            is_valid_projname = is_valid_project_name(proj_name)
+            if not is_valid_projname:
+                proj_name = ''
+                print('Invalid project name, ignoring')
+            print(f'Project name <{proj_name}>')
+            return proj_name
+
+        perms = default_perms
         if len(argv) == 0:
-            print('Project name: <none specified>')
-        elif len(argv) == 1:
-            project_name = argv[0]
-            print('Project name: ' + project_name)
-            if is_valid_project_name(project_name):
-                print('(Valid)')
+            print(f'Project name <>')
+            print(f'Default perms <{perms}>')
+        elif len(argv) == 1 and argv[0].startswith('-'):
+            print(f'Project name <>')
+            perms = verify_perms(argv[0][1:])
+        elif len(argv) == 1 and not argv[0].startswith('-'):
+            project_name = verify_projname(argv[0])
+            if project_name:
                 dir_name += f'-{project_name}'
-            else:
-                print('(Invalid) Ignoring')
+            print(f'Default perms <{perms}>')
+        elif len(argv) == 2 and argv[1].startswith('-'):
+            project_name = verify_projname(argv[0])
+            if project_name:
+                dir_name += f'-{project_name}'
+            perms = verify_perms(argv[1][1:])
+        else:
+            print('Invalid args. See `help create`')
+            return
 
         try:
             self.aws.s3.put_object(Bucket=self.bucket_name, Key=(dir_name + '/'))
             print('Created ' + dir_name)
+
+            # set new bucket/dir policy - default 'ux'
+            bucket_policy = get_bucket_policy(self.bucket_name, dir_name, perms)
+            policy = json.dumps(bucket_policy)
+
+            self.session.client('s3').put_bucket_policy(Bucket=self.bucket_name, Policy=policy)
+
         except Exception as e:
             print('Error occurred creating directory: ' + str(e))
 
@@ -139,6 +179,8 @@ class HcaUtil:
 
                 except ClientError:
                     print('Directory not found')
+                except Exception as e:
+                    print('Error occurred while selecting: ' + str(e))
             else:
                 print('Invalid directory name')
 
@@ -175,6 +217,8 @@ class HcaUtil:
 
                 except ClientError as e:
                     print('Error occurred during upload: ' + str(e))
+                except Exception as e:
+                    print('Error occurred during upload: ' + str(e))
 
         else:
             print('Invalid args. See `help upload`')
@@ -203,26 +247,26 @@ class HcaUtil:
             print('Invalid args. See `help delete`')
             return
 
-        prefix = self.selected_dir+'/'
-        s3_resource = self.aws.session.resource('s3')
-        bucket = s3_resource.Bucket(self.bucket_name)
-        if len(argv) == 1 and argv[0] == '.':
-            # delete all files in selected directory
-            for obj in bucket.objects.filter(Prefix=prefix):
-                # do not delete folder object
-                if obj.key == prefix:
-                    continue
-                print('Deleting ' + obj.key)
-                obj.delete()
-        else:
-            # delete specified file(s) in selected directory
-            for f in argv:
-                try:
+        try:
+            prefix = self.selected_dir+'/'
+            s3_resource = self.aws.session.resource('s3')
+            bucket = s3_resource.Bucket(self.bucket_name)
+            if len(argv) == 1 and argv[0] == '.':
+                # delete all files in selected directory
+                for obj in bucket.objects.filter(Prefix=prefix):
+                    # do not delete folder object
+                    if obj.key == prefix:
+                        continue
+                    print('Deleting ' + obj.key)
+                    obj.delete()
+            else:
+                # delete specified file(s) in selected directory
+                for f in argv:
                     print('Deleting ' + prefix + f)
                     obj = bucket.Object(prefix + f)
                     obj.delete()
-                except Exception as e:
-                    print('Error deleting ' + prefix + f + ': ' + str(e))
+        except Exception as e:
+            print('Error deleting ' + prefix + f + ': ' + str(e))
 
     def cmd_download(self, argv):
         if not self.setup_ok:
@@ -237,30 +281,30 @@ class HcaUtil:
             print('Invalid args. See `help download`')
             return
 
-        prefix = self.selected_dir+'/'
-        s3_resource = self.aws.session.resource('s3')
-        bucket = s3_resource.Bucket(self.bucket_name)
-        if len(argv) == 1 and argv[0] == '.':
-            # download all files from selected directory
-            for obj in bucket.objects.filter(Prefix=prefix):
-                # do not download folder object
-                if obj.key == prefix:
-                    continue
-                print('Downloading ' + obj.key)
-                if not os.path.exists(os.path.dirname(obj.key)):
-                    os.makedirs(os.path.dirname(obj.key))
-                bucket.download_file(obj.key, obj.key)
-        else:
-            # download specified file(s) from selected directory
-            for f in argv:
-                try:
+        try:
+            prefix = self.selected_dir+'/'
+            s3_resource = self.aws.session.resource('s3')
+            bucket = s3_resource.Bucket(self.bucket_name)
+            if len(argv) == 1 and argv[0] == '.':
+                # download all files from selected directory
+                for obj in bucket.objects.filter(Prefix=prefix):
+                    # do not download folder object
+                    if obj.key == prefix:
+                        continue
+                    print('Downloading ' + obj.key)
+                    if not os.path.exists(os.path.dirname(obj.key)):
+                        os.makedirs(os.path.dirname(obj.key))
+                    bucket.download_file(obj.key, obj.key)
+            else:
+                # download specified file(s) from selected directory
+                for f in argv:
                     print('Downloading ' + prefix + f)
                     obj = bucket.Object(prefix + f)
                     if not os.path.exists(os.path.dirname(obj.key)):
                         os.makedirs(os.path.dirname(obj.key))
                     obj.download_file(obj.key)
-                except Exception as e:
-                    print('Error downloading ' + prefix + f + ': ' + str(e))
+        except Exception as e:
+            print('Error downloading ' + prefix + f + ': ' + str(e))
 
 
 def list_objs(resp):
