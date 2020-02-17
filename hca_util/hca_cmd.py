@@ -1,5 +1,5 @@
 from cmd import Cmd
-from hca.util.hca_util import *
+from hca_util.hca_util import *
 
 h_config="""usage: config ACCESS_KEY SECRET_KEY
 \tConfigure your machine with credentials"""

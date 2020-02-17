@@ -1,6 +1,6 @@
 # __main__.py
 
-from hca.util.hca_cmd import HcaCmd
+from hca_util.hca_cmd import HcaCmd
 
 
 def main():

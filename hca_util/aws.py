@@ -39,7 +39,7 @@ class Aws:
         aws_credentials_file = home + '/.aws/credentials'
 
         """.aws/config
-        [profile hca-util]
+        [profile hca-hca_util]
         region = us-east-1
         """
 
@@ -47,15 +47,15 @@ class Aws:
         config = configparser.ConfigParser(comment_prefixes='/', allow_no_value=True)
         config.read(aws_config_file)
 
-        if not config.has_section('profile hca-util'):
-            config.add_section('profile hca-util')
-        config.set('profile hca-util', 'region', 'us-east-1')
+        if not config.has_section('profile hca-hca_util'):
+            config.add_section('profile hca-hca_util')
+        config.set('profile hca-hca_util', 'region', 'us-east-1')
 
         with open(aws_config_file, 'w') as out:
             config.write(out)
 
         """.aws/credentials
-        [hca-util]
+        [hca-hca_util]
         aws_access_key_id = {0}
         aws_secret_access_key = {1}
         """
@@ -63,10 +63,10 @@ class Aws:
         credentials = configparser.ConfigParser(comment_prefixes='/', allow_no_value=True)
         credentials.read(aws_credentials_file)
 
-        if not credentials.has_section('hca-util'):
-            credentials.add_section('hca-util')
-        credentials.set('hca-util', 'aws_access_key_id', access_key)
-        credentials.set('hca-util', 'aws_secret_access_key', secret_key)
+        if not credentials.has_section('hca-hca_util'):
+            credentials.add_section('hca-hca_util')
+        credentials.set('hca-hca_util', 'aws_access_key_id', access_key)
+        credentials.set('hca-hca_util', 'aws_secret_access_key', secret_key)
 
         with open(aws_credentials_file, 'w') as out:
             credentials.write(out)

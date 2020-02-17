@@ -8,16 +8,16 @@ import json
 import subprocess
 from multiprocessing.dummy import Pool
 
-from hca.util.common import *
-from hca.util.upload_progress import UploadProgress
-from hca.util.aws import *
+from hca_util.common import *
+from hca_util.upload_progress import UploadProgress
+from hca_util.aws import *
 
 
 class HcaUtil:
-    # use creds from [hca-util] section of ~/.aws/credentials
-    # and config from [profile hca-util] section of ~/.aws/config
-    profile_name = 'hca-util'
-    secret_name = 'hca/util/secret'
+    # use creds from [hca-hca_util] section of ~/.aws/credentials
+    # and config from [profile hca-hca_util] section of ~/.aws/config
+    profile_name = 'hca-hca_util'
+    secret_name = 'hca/hca_util/secret'
 
     session = None
     aws = None
