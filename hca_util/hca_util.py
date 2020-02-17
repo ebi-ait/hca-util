@@ -42,7 +42,7 @@ class HcaUtil:
             self.bucket_name = self.aws.secret_mgr_get_bucket_name(self.secret_name)
             if self.bucket_name:
                 self.setup_ok = True
-        except ProfileNotFound:
+        except ProfileNotFound as e:
             print(f'Setup failed: \n`{self.profile_name}` profile not found. ' + str(e))
         except Exception as e:
             print(f'Setup failed: \n' + str(e))
