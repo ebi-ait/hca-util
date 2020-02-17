@@ -1,3 +1,4 @@
+import os
 import pathlib
 from setuptools import setup
 
@@ -12,20 +13,21 @@ INSTALL_REQS = [line.rstrip() for line in open(os.path.join(os.path.dirname(__fi
 
 # This call to setup() does all the work
 setup(
+    # dashes are ok in repo and PyPI dist names but not in package (i.e. directory) and
+    # module (.py file) names. can't do import xyz-abc
     name="hca-util",
-    version="0.0.1",
-    description="This tool is intended to allow HCA wranglers and contributors to upload and download data to/from "
-                "the HCA S3 bucket.",
+    version="0.0.3",
+    description="CLI tool to allow submitters to upload to and download from the EBI S3 buckets.",
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/ebi-ait/hca_util",
+    url="https://github.com/ebi-ait/hca-util",
     author="hca-ingest-dev",
     author_email="prabhat@ebi.ac.uk",
     license="Apache License",
     classifiers=[
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: MacOS :: MacOS X",
-        "Opera  ting System :: POSIX",
+        "Operating System :: POSIX",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
     ],
@@ -35,7 +37,7 @@ setup(
     install_requires=INSTALL_REQS,
     entry_points={
         "console_scripts": [
-            "hca-util=hca.util.hca_cmd:__main__",
+            "hca-util=hca.util:__main__",
         ]
     },
 )
