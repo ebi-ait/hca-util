@@ -39,6 +39,8 @@ The following commands are currently possible.
     create [project_name] [-udx]    Create an upload directory for project (authorised user only)
                                     Project name is optional
                                     If specified, needs to be between 1-12 alphanumeric characters with no space
+                                    Allowed permission combinations 'u', 'ud', 'ux' (default) and 'udx'
+                                    u - upload, d - download, x - delete
     list                            List contents of bucket (authorised user only)
     list DIR_NAME                   List contents of directory
     select DIR_NAME                 Select active directory for upload and download

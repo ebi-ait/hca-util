@@ -7,7 +7,9 @@ h_config="""usage: config ACCESS_KEY SECRET_KEY
 h_create="""usage: create [project_name] [-udx]
 \tCreate an upload directory for project (wrangler only)
 \tProject name is optional
-\tIf specified, needs to be between 1-12 alphanumeric characters with no space"""
+\tIf specified, needs to be between 1-12 alphanumeric characters with no space
+\tAllowed permission combinations 'u', 'ud', 'ux' (default) and 'udx'
+\t u - upload, d - download, x - delete"""
 
 h_list="""usage: list
 \tList contents of bucket (wrangler only)
