@@ -16,8 +16,8 @@ from hca_util.aws import *
 class HcaUtil:
     # use creds from [hca-hca_util] section of ~/.aws/credentials
     # and config from [profile hca-hca_util] section of ~/.aws/config
-    profile_name = 'hca-hca_util'
-    secret_name = 'hca/hca_util/secret'
+    profile_name = 'hca-util'
+    secret_name = 'hca/util/secret'
 
     session = None
     aws = None
