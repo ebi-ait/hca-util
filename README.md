@@ -13,25 +13,21 @@ Users need to have
 ## Install and configure
 1. Get the tool from PyPi
 
-```
-  $ pip install hca-util
-```
+        $ pip install hca-util
+
 2. Run the `hca-util` tool
 
-```
-  $ hca-util
-  Type ? to list commands
-  hca>
-```
+        $ hca-util
+        Type ? to list commands
+        hca>
+
 3. Run `config` command specifying your credentials
 
-```
-  hca> config ACCESS_KEY SECRET_KEY
-``` 
+        hca> config ACCESS_KEY SECRET_KEY
 
 Step 2 opens an interactive prompt.
 
-Step 3 adds a new _hca-util_ profile to your local AWS configuration which the tool uses.
+Step 3 adds a new *hca-util* profile to your local AWS configuration which the tool uses.
 
 
 ## Use the tool to upload and download data
@@ -49,13 +45,10 @@ The following commands are currently possible.
     dir                             Show selected directory
     upload F1 [f2] [f3] ...         Multi-files upload to selected directory
     upload .                        Upload all files from current user directory
-    delete F1 [f2] [f3] ...         Delete file(s) within selected directory
-    delete DIR_NAME                 Delete specified directory (authorised user only)
-    -- NOT IMPLEMENTED --
-    download F1 [f2] [f3] ...       Download specified files from remote to current user directory
-    download .                      Download all files from remote directory
-
-
+    delete F1 [f2] [f3] ...         Delete specified file(s) from selected directory
+    delete .                        Delete all files from selected directory
+    download F1 [f2] [f3] ...       Download specified file(s) from selected directory to local machine
+    download .                      Download all files from selected directory to local machine
 
 Type ? or `help` to list commands. 
 
