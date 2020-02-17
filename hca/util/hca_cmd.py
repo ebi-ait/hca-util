@@ -1,10 +1,10 @@
 from cmd import Cmd
-from hca_util import *
+from hca.util.hca_util import *
 
 h_config="""usage: config ACCESS_KEY SECRET_KEY
 \tConfigure your machine with credentials"""
 
-h_create="""usage: create <project_name>
+h_create="""usage: create [project_name] [-udx]
 \tCreate an upload directory for project (wrangler only)
 \tProject name is optional
 \tIf specified, needs to be between 1-12 alphanumeric characters with no space"""
@@ -20,20 +20,20 @@ h_select="""usage: select DIR_NAME
 h_dir="""usage: dir
 \tShow selected directory"""
 
-h_upload="""usage: upload F1 <f2> <f3> ...
+h_upload="""usage: upload F1 [f2] [f3] ...
 \tMulti-files upload to selected directory
 usage: upload .
 \tUpload all files from current user directory"""
 
-h_delete="""usage: delete F1 <f2> <f3> ...
-\tDelete file(s) within selected directory
-usage: delete DIR_NAME
-\tDelete specified directory"""
+h_delete="""usage: delete F1 [f2] [f3] ...
+\tDelete specified file(s) from selected directory
+usage: delete .
+\tDelete all files from selected directory"""
 
-h_download="""usage: download F1 <f2> <f3> ...
-\tDownload specified files from remote to current user directory
+h_download="""usage: download F1 [f2] [f3] ...
+\tDownload specified file(s) from selected directory to local machine
 usage: download .
-\tDownload all files from remote directory"""
+\tDownload all files from selected directory to local machine"""
 
 
 class HcaCmd(Cmd):
@@ -109,5 +109,3 @@ class HcaCmd(Cmd):
     do_EOF = do_exit
     help_EOF = help_exit
 
-if __name__ == '__main__':
-    HcaCmd().cmdloop()
