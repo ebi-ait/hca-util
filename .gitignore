@@ -1,6 +1,6 @@
 __pycache__/
 .idea/
 build/
+dist/
 hca_util.egg-info/
 testpypi-env/
-
