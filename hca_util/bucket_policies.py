@@ -12,29 +12,26 @@ s3_permissions = {'u': 's3:PutObject',
                   'x': 's3:DeleteObject'}
 
 
-def get_policy_template():
+def get_policy_statement_template():
     return {
-        'Version': '2012-10-17',
-        'Statement': {
-            'Action': [],
-            'Effect': 'Allow',
-            'Resource': 'arn:aws:s3:::BUCKET_NAME/DIR_NAME/*',
-            'Principal': {
-                'AWS': [
-                    'arn:aws:iam::871979166454:user/HCAContributor'
-                ]
-            }
+        'Action': [],
+        'Effect': 'Allow',
+        'Resource': 'arn:aws:s3:::BUCKET_NAME/DIR_NAME/*',
+        'Principal': {
+            'AWS': [
+                'arn:aws:iam::871979166454:user/HCAContributor'
+            ]
         }
     }.copy()
 
 
-def get_bucket_policy(bucket, dir, perms=None):
-    bucket_policy = get_policy_template()
+def new_policy_statement(bucket, dir, perms=None):
+    statement = get_policy_statement_template()
     # add permissions/actions
     if perms is None or perms not in allowed_perms_combinations:
         perms = default_perms
     for p in perms:
-        bucket_policy['Statement']['Action'].append(s3_permissions.get(p))
-        res = bucket_policy['Statement']['Resource']
-        bucket_policy['Statement']['Resource'] = res.replace('BUCKET_NAME', bucket).replace('DIR_NAME', dir)
-    return bucket_policy
+        statement['Action'].append(s3_permissions.get(p))
+        res = statement['Resource']
+        statement['Resource'] = res.replace('BUCKET_NAME', bucket).replace('DIR_NAME', dir)
+    return statement

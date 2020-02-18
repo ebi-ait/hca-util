@@ -125,11 +125,26 @@ class HcaUtil:
             self.aws.s3.put_object(Bucket=self.bucket_name, Key=(dir_name + '/'))
             print('Created ' + dir_name)
 
-            # set new bucket/dir policy - default 'ux'
-            bucket_policy = get_bucket_policy(self.bucket_name, dir_name, perms)
-            policy = json.dumps(bucket_policy)
+            # get bucket policy
+            s3_resource = self.session.resource('s3')
+            try:
+                bucket_policy = s3_resource.BucketPolicy(self.bucket_name)
+                policy_str = bucket_policy.policy
+            except ClientError:
+                policy_str = ''
 
-            self.session.client('s3').put_bucket_policy(Bucket=self.bucket_name, Policy=policy)
+            if policy_str:
+                policy_json = json.loads(policy_str)
+            else:  # no bucket policy
+                policy_json = json.loads('{ "Version": "2012-10-17", "Statement": [] }')
+
+            # set new statement for dir to existing bucket policy
+            new_statement = new_policy_statement(self.bucket_name, dir_name, perms)
+            policy_json['Statement'].append(new_statement)
+
+            updated_policy = json.dumps(policy_json)
+
+            bucket_policy.put(Policy=updated_policy)
 
         except Exception as e:
             print(f'An exception of type {e.__class__.__name__} occurred in cmd create.\nDetail: ' + str(e))
