@@ -5,19 +5,18 @@ h_config="""usage: config ACCESS_KEY SECRET_KEY
 \tConfigure your machine with credentials"""
 
 h_create="""usage: create [project_name] [-udx]
-\tCreate an upload directory for project (wrangler only)
-\tProject name is optional
-\tIf specified, needs to be between 1-12 alphanumeric characters with no space
-\tAllowed permission combinations 'u', 'ud', 'ux' (default) and 'udx'
-\t u - upload, d - download, x - delete"""
+\tCreate an upload directory for project (authorised user only)
+\tIf specified, project name needs to be between 1-12 alphanumeric characters with no space
+\tIf specified, allowed permissions include 'u', 'ud', 'ux' and 'udx'; otherwise default 'ux'
+\tu - upload, d - download, x - delete"""
 
 h_list="""usage: list
-\tList contents of bucket (wrangler only)
+\tList contents of bucket (authorised user only)
 usage: list DIR_NAME
 \tList contents of directory"""
 
 h_select="""usage: select DIR_NAME
-\tSelect active directory for upload and download"""
+\tSet active directory for upload and download"""
 
 h_dir="""usage: dir
 \tShow selected directory"""
@@ -36,6 +35,9 @@ h_download="""usage: download F1 [f2] [f3] ...
 \tDownload specified file(s) from selected directory to local machine
 usage: download .
 \tDownload all files from selected directory to local machine"""
+
+h_exit="""usage: exit (or quit)
+\tExit the tool. Shorthand: x, q, or Ctrl-D"""
 
 
 class HcaCmd(Cmd):
@@ -74,7 +76,7 @@ class HcaCmd(Cmd):
         return True
 
     def default(self, inp):
-        if inp == 'x' or inp == 'q':
+        if inp == 'x' or inp == 'q' or inp == 'quit':
             return self.do_exit(inp)
 
         print(f'No such command. Try `help`')
@@ -105,7 +107,7 @@ class HcaCmd(Cmd):
         print(h_download)
 
     def help_exit(self):
-        print('usage: exit\n\tExit the tool. Shorthand: x q Ctrl-D.')
+        print(h_exit)
 
 
     do_EOF = do_exit

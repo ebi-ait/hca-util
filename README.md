@@ -36,21 +36,28 @@ The following commands are currently possible.
     command                         description
     =======                         ===========
     config ACCESS_KEY SECRET_KEY    Configure your machine with credentials
+    
     create [project_name] [-udx]    Create an upload directory for project (authorised user only)
-                                    Project name is optional
-                                    If specified, needs to be between 1-12 alphanumeric characters with no space
-                                    Allowed permission combinations 'u', 'ud', 'ux' (default) and 'udx'
+                                    If specified, project name needs to be between 1-12 alphanumeric characters with no space
+                                    If specified, allowed permissions include 'u', 'ud', 'ux' and 'udx'; otherwise default 'ux'
                                     u - upload, d - download, x - delete
+                                    
     list                            List contents of bucket (authorised user only)
     list DIR_NAME                   List contents of directory
-    select DIR_NAME                 Select active directory for upload and download
+    
+    select DIR_NAME                 Set active directory for upload and download
     dir                             Show selected directory
+    
     upload F1 [f2] [f3] ...         Multi-files upload to selected directory
     upload .                        Upload all files from current user directory
+    
     delete F1 [f2] [f3] ...         Delete specified file(s) from selected directory
     delete .                        Delete all files from selected directory
+    
     download F1 [f2] [f3] ...       Download specified file(s) from selected directory to local machine
     download .                      Download all files from selected directory to local machine
+    
+    exit (or quit)                  Exit the tool. Shorthand: x, q, or Ctrl-D
 
 Type ? or `help` to list commands. 
 
