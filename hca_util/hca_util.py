@@ -17,7 +17,7 @@ from hca_util.bucket_policies import *
 class HcaUtil:
     # use creds from [hca-hca_util] section of ~/.aws/credentials
     # and config from [profile hca-hca_util] section of ~/.aws/config
-    profile_name = 'hca-util'
+    default_profile = 'hca-util'
     secret_name = 'hca/util/secret'
 
     session = None
@@ -35,7 +35,7 @@ class HcaUtil:
     def setup(self):
         try:
             # try to set a session using profile_name
-            self.session = boto3.Session(profile_name=self.profile_name)
+            self.session = boto3.Session(profile_name=self.default_profile)
             profile_found = True
             # use profile to create clients for aws services: s3, secret_mgr, sts
             self.aws = Aws(self.session)
@@ -59,8 +59,8 @@ class HcaUtil:
             access_key = argv[0]
             secret_key = argv[1]
             try:
-                self.aws.configure(access_key, secret_key)
-                print('Done.')
+                self.aws.configure(self.default_profile, access_key, secret_key)
+
             except Exception as e:
                 print(f'An exception of type {e.__class__.__name__} occurred in cmd config.\nDetail: ' + str(e))
         else:
@@ -138,7 +138,7 @@ class HcaUtil:
             else:  # no bucket policy
                 policy_json = json.loads('{ "Version": "2012-10-17", "Statement": [] }')
 
-            # set new statement for dir to existing bucket policy
+            # add new statement for dir to existing bucket policy
             new_statement = new_policy_statement(self.bucket_name, dir_name, perms)
             policy_json['Statement'].append(new_statement)
 
