@@ -47,7 +47,21 @@ class HcaCmd(Cmd):
     prompt = 'hca> '
     intro = 'Type ? to list commands'
 
-    util = HcaUtil()
+    def __init__(self, args):
+        super().__init__() # call parent class constructor
+
+        profile=Aws.DEFAULT_PROFILE
+        region=Aws.DEFAULT_REGION
+
+        if args.profile is not None:
+            profile = args.profile
+            print('Using profile: ' + profile)
+
+        if args.region is not None:
+            region = args.region
+            print('Using region: ' + region)
+
+        self.util = HcaUtil(profile, region)
 
     # commands
     def do_config(self, inp):

@@ -15,11 +15,6 @@ from hca_util.bucket_policies import *
 
 
 class HcaUtil:
-    # use creds from [hca-hca_util] section of ~/.aws/credentials
-    # and config from [profile hca-hca_util] section of ~/.aws/config
-    default_profile = 'hca-util'
-    secret_name = 'hca/util/secret'
-
     session = None
     aws = None
     bucket_name = None
@@ -28,7 +23,9 @@ class HcaUtil:
     selected_dir = None
 
     # default constructor
-    def __init__(self):
+    def __init__(self, profile, region):
+        self.profile = profile
+        self.region = region
         self.setup()
 
     # setup function

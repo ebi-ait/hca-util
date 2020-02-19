@@ -4,6 +4,15 @@ import json
 
 
 class Aws:
+    HOME = str(Path.home())
+    CONFIG_FILE = HOME + '/.aws/config'
+    CREDENTIALS_FILE = HOME + '/.aws/credentials'
+
+    # default profile use creds from [DEFAULT_PROFILE] section of ~/.aws/credentials
+    # and config from [profile DEFAULT_PROFILE] section of ~/.aws/config
+    DEFAULT_PROFILE = 'hca-util'
+    DEFAULT_REGION = 'us-east-1'
+    SECRET_NAME = 'hca/util/secret'
 
     def __init__(self, session):
         self.session = session
