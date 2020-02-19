@@ -1,17 +1,15 @@
 #!/usr/bin/python
 
 import os
-import sys
-import boto3
-from botocore.exceptions import ClientError, ProfileNotFound
-import json
-import subprocess
 from multiprocessing.dummy import Pool
 
-from hca_util.common import *
-from hca_util.upload_progress import UploadProgress
+import boto3
+from botocore.exceptions import ClientError
+
 from hca_util.aws import *
 from hca_util.bucket_policies import *
+from hca_util.common import *
+from hca_util.upload_progress import UploadProgress
 
 
 class HcaUtil:
@@ -32,14 +30,29 @@ class HcaUtil:
     def setup(self):
         try:
             # try to set a session using profile_name
-            self.session = boto3.Session(profile_name=self.default_profile)
-            profile_found = True
-            # use profile to create clients for aws services: s3, secret_mgr, sts
-            self.aws = Aws(self.session)
-            # get bucket name from aws secrets (also serve as a way to validate user config/creds)
-            self.bucket_name = self.aws.secret_mgr_get_bucket_name(self.secret_name)
-            if self.bucket_name:
-                self.setup_ok = True
+            if not Aws.profile_exists(self.profile):
+                print(f'Profile \'{self.profile}\' not found')
+            else:
+                profile_dict = Aws.get_profile(self.profile)
+                self.session = boto3.Session(region_name=profile_dict['region'],
+                                             aws_access_key_id=profile_dict['access_key'],
+                                             aws_secret_access_key=profile_dict['secret_key'])
+
+                # use profile to create clients/resources for aws services: s3, secret_mgr, sts
+                self.aws = Aws(self.session)
+
+                # get bucket name from aws secrets (also serve as a way to validate user config/creds)
+                try:
+                    # access policy can't be attached to a secret
+                    # GetSecretValue action should be allowed for user
+                    resp = self.aws.secret_mgr.get_secret_value(SecretId=Aws.SECRET_NAME)
+                    secret_str = resp['SecretString']
+                    self.bucket_name = json.loads(secret_str)['s3-bucket']
+                except:
+                    print(f'Invalid credentials')
+
+                if self.bucket_name:
+                    self.setup_ok = True
         except Exception as e:
             print(f'An exception of type {e.__class__.__name__} occurred in setup.\nDetail: ' + str(e))
 
@@ -51,12 +64,20 @@ class HcaUtil:
 
     # command functions
     def cmd_config(self, argv):
+        """
+        we may not have a session yet, if setup() wasn't successful.
+        or we may have.
+        In any case, we have to call setup() again after we have new config/creds.
+        :param argv:
+        :return:
+        """
 
         if len(argv) == 2:
             access_key = argv[0]
             secret_key = argv[1]
             try:
-                self.aws.configure(self.default_profile, access_key, secret_key)
+                Aws.set_profile(self.profile, self.region, access_key, secret_key)
+                self.setup()
 
             except Exception as e:
                 print(f'An exception of type {e.__class__.__name__} occurred in cmd config.\nDetail: ' + str(e))
@@ -160,7 +181,7 @@ class HcaUtil:
                 else:
                     dir_name = argv[0]
                     if is_valid_dir_name(dir_name):
-                        resp = self.aws.s3.list_objects_v2(Bucket=self.bucket_name, Prefix=dir_name+'/')
+                        resp = self.aws.s3.list_objects_v2(Bucket=self.bucket_name, Prefix=dir_name + '/')
                         list_objs(resp)
                     else:
                         print('Invalid directory name')
@@ -183,7 +204,7 @@ class HcaUtil:
                     s3_resource = self.aws.session.resource('s3')
                     bucket = s3_resource.Bucket(self.bucket_name)
                     bucket.Object(dir_name + '/')
-                    #serialize(select_dir, dir_name)
+                    # serialize(select_dir, dir_name)
                     self.selected_dir = dir_name
                     print('Selected ' + dir_name)
 
@@ -234,12 +255,13 @@ class HcaUtil:
     It is recommended to create a resource instance for each thread / process in a multithreaded or 
     multiprocess application rather than sharing a single instance among the threads / processes
     """
+
     def upload(self, f):
         # upload_file automatically handles multipart uploads via the S3 Transfer Manager
         # put_object maps to the low-level S3 API request, it does not handle multipart uploads
-        self.aws.session.resource('s3').Bucket(self.bucket_name)\
-                .upload_file(Filename=f, Key=self.selected_dir + '/' + os.path.basename(f),
-                             Callback=UploadProgress(f))
+        self.aws.session.resource('s3').Bucket(self.bucket_name) \
+            .upload_file(Filename=f, Key=self.selected_dir + '/' + os.path.basename(f),
+                         Callback=UploadProgress(f))
 
     def cmd_delete(self, argv):
         if not self.setup_ok:
@@ -306,7 +328,7 @@ class HcaUtil:
             return
 
         try:
-            prefix = self.selected_dir+'/'
+            prefix = self.selected_dir + '/'
             s3_resource = self.aws.session.resource('s3')
             bucket = s3_resource.Bucket(self.bucket_name)
             if len(argv) == 1 and argv[0] == '.':
