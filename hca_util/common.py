@@ -24,6 +24,9 @@ def is_valid_project_name(name):
         return False
 
 
+MAX_LEN_PROJECT_NAME = 36
+
+
 def is_valid_dir_name(dir_name):
     """Directory name format: <UUID> | <UUID>-<project_name>
     where project_name is between 1 and 12 and contains alphanum
@@ -44,7 +47,7 @@ def is_valid_dir_name(dir_name):
         if head != '-':
             return False
         else:
-            if tail.isalnum() and 0 < len(tail) < 13:
+            if tail.isalnum() and 0 < len(tail) <= MAX_LEN_PROJECT_NAME:
                 return True
             else:
                 return False

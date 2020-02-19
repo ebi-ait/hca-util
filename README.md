@@ -38,7 +38,7 @@ The following commands are currently possible.
     config ACCESS_KEY SECRET_KEY    Configure your machine with credentials
     
     create [project_name] [-udx]    Create an upload directory for project (authorised user only)
-                                    If specified, project name needs to be between 1-12 alphanumeric characters with no space
+                                    If specified, project name needs to be between 1-36 alphanumeric characters with no space
                                     If specified, allowed permissions include 'u', 'ud', 'ux' and 'udx'; otherwise default 'ux'
                                     u - upload, d - download, x - delete
                                     
@@ -53,6 +53,7 @@ The following commands are currently possible.
     
     delete F1 [f2] [f3] ...         Delete specified file(s) from selected directory
     delete .                        Delete all files from selected directory
+    delete                          Delete selected directory (authorised user only)
     
     download F1 [f2] [f3] ...       Download specified file(s) from selected directory to local machine
     download .                      Download all files from selected directory to local machine
@@ -64,3 +65,16 @@ Type ? or `help` to list commands.
 Type `help <command>` to display help info about a command.
 
 Note only authorised users (for e.g. wranglers, devs) with their elevated access can create directory and list all directories.
+
+
+## For Developers
+
+Run 
+```
+python -m hca_util.__main__
+```
+
+Run tests
+```
+python -m tests.test_hca_util
+```

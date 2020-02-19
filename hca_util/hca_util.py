@@ -253,14 +253,30 @@ class HcaUtil:
             print('No directory selected')
             return
 
-        if len(argv) < 1:
-            print('Invalid args. See `help delete`')
-            return
-
         try:
-            prefix = self.selected_dir+'/'
+            prefix = self.selected_dir + '/'
             s3_resource = self.aws.session.resource('s3')
             bucket = s3_resource.Bucket(self.bucket_name)
+
+            if len(argv) == 0:
+                # delete an entire directory
+                confirm = input(f'Confirm delete directory {self.selected_dir} and its content? Y/y to proceed: ')
+                if confirm == 'Y' or confirm == 'y':
+                    print('Deleting...')
+
+                    for obj in bucket.objects.filter(Prefix=prefix):
+                        print('Deleting ' + obj.key)
+                        obj.delete()
+
+                    # reset selected dir
+                    self.selected_dir = None
+                    print('Selected dir: None')
+
+                else:
+                    print('Delete cancelled')
+
+                return
+
             if len(argv) == 1 and argv[0] == '.':
                 # delete all files in selected directory
                 for obj in bucket.objects.filter(Prefix=prefix):

@@ -1,12 +1,13 @@
 from cmd import Cmd
 from hca_util.hca_util import *
+from hca_util.aws import *
 
 h_config="""usage: config ACCESS_KEY SECRET_KEY
 \tConfigure your machine with credentials"""
 
 h_create="""usage: create [project_name] [-udx]
 \tCreate an upload directory for project (authorised user only)
-\tIf specified, project name needs to be between 1-12 alphanumeric characters with no space
+\tIf specified, project name needs to be between 1-36 alphanumeric characters with no space
 \tIf specified, allowed permissions include 'u', 'ud', 'ux' and 'udx'; otherwise default 'ux'
 \tu - upload, d - download, x - delete"""
 
@@ -29,7 +30,9 @@ usage: upload .
 h_delete="""usage: delete F1 [f2] [f3] ...
 \tDelete specified file(s) from selected directory
 usage: delete .
-\tDelete all files from selected directory"""
+\tDelete all files from selected directory
+usage: delete
+\tDelete selected directory (authorised user only)"""
 
 h_download="""usage: download F1 [f2] [f3] ...
 \tDownload specified file(s) from selected directory to local machine
