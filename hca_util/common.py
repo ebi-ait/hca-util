@@ -3,6 +3,8 @@
 import uuid
 import pickle
 
+MAX_LEN_PROJECT_NAME = 36
+
 
 def gen_uuid():
     return str(uuid.uuid4())
@@ -17,40 +19,24 @@ def is_valid_uuid(val):
 
 
 def is_valid_project_name(name):
-    """Project name has to be between 1 and 12 chars and contains only alphanum chars"""
-    if name.isalnum() and 0 < len(name) < 13:
+    """Project name has to be between 1 and MAX_LEN chars and contains only alphanum chars"""
+    if name.isalnum() and 0 < len(name) <= MAX_LEN_PROJECT_NAME:
         return True
     else:
         return False
 
 
-MAX_LEN_PROJECT_NAME = 36
-
-
 def is_valid_dir_name(dir_name):
-    """Directory name format: <UUID> | <UUID>-<project_name>
-    where project_name is between 1 and 12 and contains alphanum
-    characters only."""
-    # TODO use regex with pattern below to valid project_name
-    pattern = '^[A-Za-z0-9]{1,12}$'
+    """Directory name format: uuid with or without /
+    """
     if len(dir_name) < 36:
         return False
-    elif len(dir_name) == 36:  # without project name suffix
+    elif len(dir_name) == 36:  # uuid without /
         return is_valid_uuid(dir_name)
-    else:
+    elif len(dir_name) == 37 and dir_name.endswith('/'):  # uuid with /
         uuid_part = dir_name[0:36]
-        if not is_valid_uuid(uuid_part):
-            return False
-        project_name = dir_name[36:] # format: -[alphanum]
-        head = project_name[0]
-        tail = project_name[1:]
-        if head != '-':
-            return False
-        else:
-            if tail.isalnum() and 0 < len(tail) <= MAX_LEN_PROJECT_NAME:
-                return True
-            else:
-                return False
+        return is_valid_uuid(uuid_part)
+    return False
 
 
 def serialize(name, obj):
