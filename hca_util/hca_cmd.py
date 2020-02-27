@@ -1,29 +1,11 @@
 from cmd import Cmd
+import shlex
 from hca_util.hca_util import *
 from hca_util.aws import *
 
-h_config="""usage: config ACCESS_KEY SECRET_KEY
-\tConfigure your machine with credentials"""
-
-h_create="""usage: create [project_name] [-udx]
-\tCreate an upload directory for project (authorised user only)
-\tIf specified, project name needs to be between 1-36 alphanumeric characters with no space
-\tIf specified, allowed permissions include 'u', 'ud', 'ux' and 'udx'; otherwise default 'ux'
-\tu - upload, d - download, x - delete"""
-
-h_list="""usage: list
-\tList contents of bucket (authorised user only)
-usage: list DIR_NAME
-\tList contents of directory"""
-
-h_select="""usage: select DIR_NAME
-\tSet active directory for upload and download"""
-
-h_dir="""usage: dir
-\tShow selected directory"""
 
 h_upload="""usage: upload F1 [f2] [f3] ...
-\tMulti-files upload to selected directory
+\tMulti-files upload to selected directory. File names with space need to be within quotes
 usage: upload .
 \tUpload all files from current user directory"""
 
@@ -65,28 +47,28 @@ class HcaCmd(Cmd):
 
     # commands
     def do_config(self, inp):
-        self.util.cmd_config(inp.split())
+        self.util.cmd_config(shlex.split(inp))
 
     def do_create(self, inp):
-        self.util.cmd_create(inp.split())
+        self.util.cmd_create(shlex.split(inp))
 
     def do_list(self, inp):
-        self.util.cmd_list(inp.split())
+        self.util.cmd_list(shlex.split(inp))
 
     def do_select(self, inp):
-        self.util.cmd_select(inp.split())
+        self.util.cmd_select(shlex.split(inp))
 
     def do_dir(self, inp):
-        self.util.cmd_dir(inp.split())
+        self.util.cmd_dir(shlex.split(inp))
 
     def do_upload(self, inp):
-        self.util.cmd_upload(inp.split())
+        self.util.cmd_upload(shlex.split(inp))
 
     def do_delete(self, inp):
-        self.util.cmd_delete(inp.split())
+        self.util.cmd_delete(shlex.split(inp))
 
     def do_download(self, inp):
-        self.util.cmd_download(inp.split())
+        self.util.cmd_download(shlex.split(inp))
 
     def do_exit(self, inp):
         print('Bye')
@@ -127,6 +109,6 @@ class HcaCmd(Cmd):
         print(h_exit)
 
 
-    do_EOF = do_exit
-    help_EOF = help_exit
+#    do_EOF = do_exit
+#    help_EOF = help_exit
 
