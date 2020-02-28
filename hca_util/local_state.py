@@ -11,33 +11,43 @@ class LocalState:
         self.tmp_secret_key = None
         self.token = None
 
-    def add_dir(self, dir):
-        if dir not in self.known_dirs:
-            self.known_dirs.append(dir)
+    def select_dir(self, dir_name):
+        self.selected_dir = dir_name
 
-    def del_dir(self, dir):
-        if dir in self.known_dirs:
-            self.known_dirs.remove(dir)
-
-    def reset_dirs(self):
-        self.known_dirs = []
-
-    def select_dir(self, dir):
-        self.selected_dir = dir
-        self.addDir(dir)
+        if dir_name not in self.known_dirs:
+            self.known_dirs.append(dir_name)
 
     def unselect_dir(self):
         self.selected_dir = None
 
     def __str__(self):
-        print('Selected ' + self.selected_dir)
+        s = 'Selected ' + str(self.selected_dir) + '\nKnown dirs:\n'
+        other_dirs = [d for d in self.known_dirs if d != self.selected_dir]
+        if not other_dirs:  # empty list
+            s += 'None'
+        else:
+            s += '\n'.join(map(str, other_dirs))
+
+        return s
 
 
 def set_selected_dir(dir_name):
     obj = deserialize(LOCAL_STATE_FILE)
     if obj is None or not isinstance(obj, LocalState):
         obj = LocalState()
-    obj.selected_dir = dir_name
+    obj.select_dir(dir_name)
+    serialize(LOCAL_STATE_FILE, obj)
+
+
+def get_local_state():
+
+    obj = deserialize(LOCAL_STATE_FILE)
+    if obj and isinstance(obj, LocalState):
+        return obj
+    return LocalState()
+
+
+def set_local_state(obj):
     serialize(LOCAL_STATE_FILE, obj)
 
 

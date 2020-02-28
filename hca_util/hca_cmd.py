@@ -4,6 +4,7 @@ from hca_util.command.config import CmdConfig
 from hca_util.command.create import CmdCreate
 from hca_util.command.select import CmdSelect
 from hca_util.command.list import CmdList
+from hca_util.command.dir import CmdDir
 
 
 class HcaCmd():
@@ -22,6 +23,12 @@ class HcaCmd():
 
         if args.command == 'config':
             CmdConfig(args).run()
+
+        elif args.command == 'dir':
+            CmdDir.run()
+
+        elif args.command == 'clear':
+            CmdDir.clear()
 
         else:
 
@@ -51,14 +58,9 @@ class HcaCmd():
         elif args.command == 'select':
             CmdSelect(self.aws, args).run()
 
-        elif args.command == 'clear':
-            print('cmd_clear')
-
         elif args.command == 'list':
             CmdList(self.aws, args).run()
 
-        elif args.command == 'dir':
-            print('cmd_dir')
         elif args.command == 'upload':
             # choice 1
             all_files = args.a # optional bool
