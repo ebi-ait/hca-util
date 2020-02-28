@@ -1,7 +1,6 @@
 import boto3
 import json
-
-SECRET_NAME = 'hca/util/secret'
+from hca_util.settings import AWS_SECRET_NAME, IAM_USER_CONTRIBUTOR
 
 
 class Aws:
@@ -27,7 +26,7 @@ class Aws:
         try:
             resp = sts.get_caller_identity()
             arn = resp.get('Arn')
-            if arn.endswith('user/HCAContributor'):
+            if arn.endswith(f'user/{IAM_USER_CONTRIBUTOR}'):
                 self.is_contributor = True
             return True
         except:
@@ -42,7 +41,7 @@ class Aws:
         # GetSecretValue action should be allowed for user
         secret_mgr = self.common_session.client('secretsmanager')
 
-        resp = secret_mgr.get_secret_value(SecretId=SECRET_NAME)
+        resp = secret_mgr.get_secret_value(SecretId=AWS_SECRET_NAME)
         secret_str = resp['SecretString']
         self.bucket_name = json.loads(secret_str)['s3-bucket']
         return self.bucket_name

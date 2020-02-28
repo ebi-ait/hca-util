@@ -1,6 +1,8 @@
 import json
+from botocore.exceptions import ClientError
 from hca_util.bucket_policy import new_policy_statement
 from hca_util.common import gen_uuid
+from hca_util.common import print_err
 
 
 class CmdCreate:
@@ -53,4 +55,4 @@ class CmdCreate:
             bucket_policy.put(Policy=updated_policy)
 
         except Exception as e:
-            print(f'An exception of type {e.__class__.__name__} occurred in cmd create.\nDetail: ' + str(e))
+            print_err(e, 'create')

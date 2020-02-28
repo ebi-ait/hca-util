@@ -1,17 +1,18 @@
-from hca_util.user_profile import set_profile, profile_exists, get_profile, DEFAULT_PROFILE, DEFAULT_REGION
+from hca_util.user_profile import set_profile, profile_exists, get_profile
+from hca_util.settings import DEFAULT_PROFILE, DEFAULT_REGION
 from hca_util.aws_client import Aws
+from hca_util.common import print_err
 
 
 class CmdConfig:
 
-    def __init__(self, access_key, secret_key):
-        self.access_key = access_key
-        self.secret_key = secret_key
+    def __init__(self, args):
+        self.args = args
 
     def run(self):
 
         try:
-            set_profile(DEFAULT_PROFILE, DEFAULT_REGION, self.access_key, self.secret_key)
+            set_profile(DEFAULT_PROFILE, DEFAULT_REGION, self.args.ACCESS_KEY, self.args.SECRET_KEY)
 
             # check new profile
             if profile_exists(DEFAULT_PROFILE):
@@ -26,4 +27,4 @@ class CmdConfig:
                 print('Error setting profile')
 
         except Exception as e:
-            print(f'An exception of type {e.__class__.__name__} occurred in cmd config.\nDetail: ' + str(e))
+            print_err(e, 'config')

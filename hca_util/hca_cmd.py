@@ -2,6 +2,9 @@ from hca_util.user_profile import profile_exists, get_profile, UserProfile
 from hca_util.aws_client import Aws
 from hca_util.command.config import CmdConfig
 from hca_util.command.create import CmdCreate
+from hca_util.command.select import CmdSelect
+from hca_util.command.list import CmdList
+
 
 class HcaCmd():
     """
@@ -18,8 +21,7 @@ class HcaCmd():
     def __init__(self, args):
 
         if args.command == 'config':
-
-            CmdConfig(args.ACCESS_KEY, args.SECRET_KEY).run()
+            CmdConfig(args).run()
 
         else:
 
@@ -47,12 +49,14 @@ class HcaCmd():
             CmdCreate(self.aws, args).run()
 
         elif args.command == 'select':
-            print('cmd_select ' + args.DIR)
+            CmdSelect(self.aws, args).run()
+
         elif args.command == 'clear':
             print('cmd_clear')
+
         elif args.command == 'list':
-            list_bucket = args.b # optional bool, default False
-            print('cmd_list ' + str(list_bucket))
+            CmdList(self.aws, args).run()
+
         elif args.command == 'dir':
             print('cmd_dir')
         elif args.command == 'upload':

@@ -4,6 +4,8 @@ import os
 import uuid
 import pickle
 
+from hca_util.settings import DEBUG_MODE
+
 MAX_LEN_PROJECT_NAME = 36
 
 
@@ -71,3 +73,16 @@ def create_if_not_exists(file):
     """
     if not os.path.exists(file):
         open(file, 'w').close()
+
+
+def print_err(e, cmd):
+    """
+    Print user-friendly error message or exception details depending on DEBUG MODE
+    :param e:
+    :param cmd:
+    :return:
+    """
+    if DEBUG_MODE:
+        print(f'An exception of type {e.__class__.__name__} occurred in command {cmd}.\nDetail: ' + str(e))
+    else:
+        print(f'An error occurred in command: {cmd}')

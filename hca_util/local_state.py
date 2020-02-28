@@ -1,8 +1,12 @@
+from hca_util.common import serialize, deserialize
+from hca_util.settings import LOCAL_STATE_FILE
+
+
 class LocalState:
 
     def __init__(self):
-        self.known_dirs = []
         self.selected_dir = None
+        self.known_dirs = []
         self.tmp_access_key = None
         self.tmp_secret_key = None
         self.token = None
@@ -24,3 +28,21 @@ class LocalState:
 
     def unselect_dir(self):
         self.selected_dir = None
+
+    def __str__(self):
+        print('Selected ' + self.selected_dir)
+
+
+def set_selected_dir(dir_name):
+    obj = deserialize(LOCAL_STATE_FILE)
+    if obj is None or not isinstance(obj, LocalState):
+        obj = LocalState()
+    obj.selected_dir = dir_name
+    serialize(LOCAL_STATE_FILE, obj)
+
+
+def get_selected_dir():
+    obj = deserialize(LOCAL_STATE_FILE)
+    if obj and isinstance(obj, LocalState):
+        return obj.selected_dir
+    return None

@@ -1,7 +1,7 @@
 # __main__.py
 
 import argparse
-from hca_util.user_profile import DEFAULT_PROFILE, DEFAULT_REGION
+from hca_util.settings import DEFAULT_PROFILE, DEBUG_MODE
 from hca_util.common import is_valid_project_name, is_valid_dir_name
 from hca_util.hca_cmd import HcaCmd
 from hca_util.bucket_policy import ALLOWED_PERMS, DEFAULT_PERMS
@@ -69,11 +69,17 @@ def main():
     group_delete.add_argument('-f', metavar='file', nargs='+', help='delete specified file(s) only')
     group_delete.add_argument('-d', action='store_true', help='delete directory and contents (authorised user only)')
 
-    parser.add_argument(
-        '--profile',
-        help=f'use PROFILE instead of default \'{DEFAULT_PROFILE}\' profile',
-        default=DEFAULT_PROFILE
-    )
+    ps = [parser]
+    if DEBUG_MODE:
+        ps = [parser, parser_config, parser_list, parser_select]
+
+    for p in ps:
+        p.add_argument(
+            '--profile',
+            help=f'use PROFILE instead of default \'{DEFAULT_PROFILE}\' profile',
+            default=DEFAULT_PROFILE
+        )
+
     # parser.add_argument(
     #     '--region',
     #     help=f'use REGION instead of default \'{DEFAULT_REGION}\' region',

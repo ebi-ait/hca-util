@@ -1,41 +1,51 @@
-from .command import HcaCmd
+from hca_util.local_state import get_selected_dir
+
+from hca_util.common import print_err
 
 
-class CmdList(HcaCmd):
+class CmdList:
 
-    def cmd_list(self, argv):
-        if not self.setup_ok:
-            print(f'Setup failed: \nSee `help config` for help to configure your credentials')
-            return
+    def __init__(self, aws, args):
+        self.aws = aws
+        self.args = args
 
-        if len(argv) == 0 or len(argv) == 1:
+    def run(self):
+
+        if self.args.b:  # list all dirs in bucket
+            if self.aws.is_contributor:
+                print('You don\'t have permission to use this command')
+                return
+            try:
+                s3_resource = self.aws.common_session.resource('s3')
+                bucket = s3_resource.Bucket(self.aws.bucket_name)
+
+                for obj in bucket.objects.all():
+                    k = obj.key
+                    if k.endswith('/'):
+                        n = obj.Object().metadata.get('name')
+                        print(k + (f' {n}' if n else ''))
+
+            except Exception as e:
+                print_err(e, 'list')
+
+        else:  # list selected dir contents
+
+            selected_dir = get_selected_dir()
+
+            if not selected_dir:
+                print('No directory selected')
+                return
 
             try:
-                s3_resource = self.aws.session.resource('s3')
-                bucket = s3_resource.Bucket(self.bucket_name)
+                selected_dir += '' if selected_dir.endswith('/') else '/'
 
-                if len(argv) == 0:
+                s3_resource = self.aws.common_session.resource('s3')
+                bucket = s3_resource.Bucket(self.aws.bucket_name)
 
-                    for obj in bucket.objects.all():
-                        k = obj.key
-                        if k.endswith('/'):
-                            n = obj.Object().metadata.get('name')
-                            print(k + (f' {n}' if n else ''))
-                else:
-                    dir_name = argv[0]
-                    if is_valid_dir_name(dir_name):
+                for obj in bucket.objects.filter(Prefix=selected_dir):
+                    k = obj.key
+                    if not k.endswith('/'):
+                        print(k)
 
-                        dir_name += '' if dir_name.endswith('/') else '/'
-
-                        for obj in bucket.objects.filter(Prefix=dir_name):
-                            k = obj.key
-                            if not k.endswith('/'):
-                                print(k)
-
-                    else:
-                        print('Invalid directory name')
             except Exception as e:
-                print(f'An exception of type {e.__class__.__name__} occurred in cmd list.\nDetail: ' + str(e))
-
-        else:
-            print('Invalid args. See `help list`')
+                print_err(e, 'list')
