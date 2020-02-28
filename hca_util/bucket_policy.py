@@ -1,11 +1,14 @@
-# default = ux
+"""
+Permissions include
+u for upload
+d for download
+x for delete
+Possible combinations are 'u', 'ud', 'ux', 'udx'
+default permissions on new directory is 'ux'
 
-# u - upload
-# d - download
-# x - delete
-
-allowed_perms_combinations = ['u', 'ud', 'ux', 'udx']
-default_perms = 'ux'
+"""
+ALLOWED_PERMS = ['u', 'ud', 'ux', 'udx']
+DEFAULT_PERMS = 'ux'
 
 s3_permissions = {'u': 's3:PutObject',
                   'd': 's3:GetObject',
@@ -28,8 +31,8 @@ def get_policy_statement_template():
 def new_policy_statement(bucket, dir, perms=None):
     statement = get_policy_statement_template()
     # add permissions/actions
-    if perms is None or perms not in allowed_perms_combinations:
-        perms = default_perms
+    if perms is None or perms not in ALLOWED_PERMS:
+        perms = DEFAULT_PERMS
     for p in perms:
         statement['Action'].append(s3_permissions.get(p))
         res = statement['Resource']

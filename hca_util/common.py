@@ -1,5 +1,6 @@
 # common functions
 
+import os
 import uuid
 import pickle
 
@@ -60,3 +61,13 @@ def deserialize(name):
     except (OSError, IOError) as e:
         obj = None
     return obj
+
+
+def create_if_not_exists(file):
+    """
+    Create the file if it does not exist
+    :param file:
+    :return:
+    """
+    if not os.path.exists(file):
+        open(file, 'w').close()

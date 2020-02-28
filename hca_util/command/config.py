@@ -1,25 +1,29 @@
-from .command import HcaCmd
+from hca_util.user_profile import set_profile, profile_exists, get_profile, DEFAULT_PROFILE, DEFAULT_REGION
+from hca_util.aws_client import Aws
 
 
-class CmdConfig(HcaCmd):
+class CmdConfig:
 
-    def cmd_config(self, argv):
-        """
-        we may not have a session yet, if setup() wasn't successful.
-        or we may have.
-        In any case, we have to call setup() again after we have new config/creds.
-        :param argv:
-        :return:
-        """
+    def __init__(self, access_key, secret_key):
+        self.access_key = access_key
+        self.secret_key = secret_key
 
-        if len(argv) == 2:
-            access_key = argv[0]
-            secret_key = argv[1]
-            try:
-                Aws.set_profile(self.profile, self.region, access_key, secret_key)
-                self.setup()
+    def run(self):
 
-            except Exception as e:
-                print(f'An exception of type {e.__class__.__name__} occurred in cmd config.\nDetail: ' + str(e))
-        else:
-            print('Invalid args. See `help config`')
+        try:
+            set_profile(DEFAULT_PROFILE, DEFAULT_REGION, self.access_key, self.secret_key)
+
+            # check new profile
+            if profile_exists(DEFAULT_PROFILE):
+                user_profile = get_profile(DEFAULT_PROFILE)
+                aws = Aws(user_profile)
+
+                if aws.is_valid_credentials():
+                    print('Valid credentials')
+                else:
+                    print('Invalid credentials')
+            else:
+                print('Error setting profile')
+
+        except Exception as e:
+            print(f'An exception of type {e.__class__.__name__} occurred in cmd config.\nDetail: ' + str(e))

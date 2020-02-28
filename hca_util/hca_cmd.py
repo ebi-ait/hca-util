@@ -1,114 +1,88 @@
-from cmd import Cmd
-import shlex
-from hca_util.hca_util import *
-from hca_util.aws import *
+from hca_util.user_profile import profile_exists, get_profile, UserProfile
+from hca_util.aws_client import Aws
+from hca_util.command.config import CmdConfig
+from hca_util.command.create import CmdCreate
 
-
-h_upload="""usage: upload F1 [f2] [f3] ...
-\tMulti-files upload to selected directory. File names with space need to be within quotes
-usage: upload .
-\tUpload all files from current user directory"""
-
-h_delete="""usage: delete F1 [f2] [f3] ...
-\tDelete specified file(s) from selected directory
-usage: delete .
-\tDelete all files from selected directory
-usage: delete
-\tDelete selected directory (authorised user only)"""
-
-h_download="""usage: download F1 [f2] [f3] ...
-\tDownload specified file(s) from selected directory to local machine
-usage: download .
-\tDownload all files from selected directory to local machine"""
-
-h_exit="""usage: exit (or quit)
-\tExit the tool. Shorthand: x, q, or Ctrl-D"""
-
-
-class HcaCmd(Cmd):
-    prompt = 'hca> '
-    intro = 'Type ? to list commands'
+class HcaCmd():
+    """
+    steps to perform before executing command
+    if cmd is config, skip steps, run config
+    else
+        check user profile (default or specified via --profile)
+        instantiate an aws client
+        check valid credentials (via sts get caller identity)
+        flag is_contributor
+        get bucket name (from secret mgr)
+    """
 
     def __init__(self, args):
-        super().__init__() # call parent class constructor
 
-        profile=Aws.DEFAULT_PROFILE
-        region=Aws.DEFAULT_REGION
+        if args.command == 'config':
 
-        if args.profile is not None:
-            profile = args.profile
-            print('Using profile: ' + profile)
+            CmdConfig(args.ACCESS_KEY, args.SECRET_KEY).run()
 
-        if args.region is not None:
-            region = args.region
-            print('Using region: ' + region)
+        else:
 
-        self.util = HcaUtil(profile, region)
+            if profile_exists(args.profile):
+                self.user_profile = get_profile(args.profile)
+                self.aws = Aws(self.user_profile)
 
-    # commands
-    def do_config(self, inp):
-        self.util.cmd_config(shlex.split(inp))
+                if self.aws.is_valid_credentials():
+                    # print('Valid credentials')
+                    try:
+                        self.aws.get_bucket_name()
+                        self.execute(args)
 
-    def do_create(self, inp):
-        self.util.cmd_create(shlex.split(inp))
+                    except:
+                        print('Unable to get bucket')
 
-    def do_list(self, inp):
-        self.util.cmd_list(shlex.split(inp))
+                else:
+                    print('Invalid credentials')
 
-    def do_select(self, inp):
-        self.util.cmd_select(shlex.split(inp))
+            else:
+                print(f'Profile \'{args.profile}\' not found')
 
-    def do_dir(self, inp):
-        self.util.cmd_dir(shlex.split(inp))
+    def execute(self, args):
+        if args.command == 'create':
+            CmdCreate(self.aws, args).run()
 
-    def do_upload(self, inp):
-        self.util.cmd_upload(shlex.split(inp))
+        elif args.command == 'select':
+            print('cmd_select ' + args.DIR)
+        elif args.command == 'clear':
+            print('cmd_clear')
+        elif args.command == 'list':
+            list_bucket = args.b # optional bool, default False
+            print('cmd_list ' + str(list_bucket))
+        elif args.command == 'dir':
+            print('cmd_dir')
+        elif args.command == 'upload':
+            # choice 1
+            all_files = args.a # optional bool
+            # choice 2
+            files = args.f # optional list of <_io.TextIOWrapper name='f1' mode='r' encoding='UTF-8'>
+            print('cmd_upload ' + str(all_files) + ' ' + str(files))
+            if files:
+                for f in files:
+                    print(f.name)
 
-    def do_delete(self, inp):
-        self.util.cmd_delete(shlex.split(inp))
+        elif args.command == 'download':
+            # choice 1
+            all_files = args.a # optional bool
+            # choice 2
+            files = args.f # optional list of files
+            print('cmd_download ' + str(all_files) + ' ' + str(files))
+            if files:
+                for f in files:
+                    print(f)
 
-    def do_download(self, inp):
-        self.util.cmd_download(shlex.split(inp))
-
-    def do_exit(self, inp):
-        print('Bye')
-        return True
-
-    def default(self, inp):
-        if inp == 'x' or inp == 'q' or inp == 'quit':
-            return self.do_exit(inp)
-
-        print(f'No such command. Try `help`')
-
-    # help info
-    def help_config(self):
-        print(h_config)
-
-    def help_create(self):
-        print(h_create)
-
-    def help_list(self):
-        print(h_list)
-
-    def help_select(self):
-        print(h_select)
-
-    def help_dir(self):
-        print(h_dir)
-
-    def help_upload(self):
-        print(h_upload)
-
-    def help_delete(self):
-        print(h_delete)
-
-    def help_download(self):
-        print(h_download)
-
-    def help_exit(self):
-        print(h_exit)
-
-
-#    do_EOF = do_exit
-#    help_EOF = help_exit
-
+        elif args.command == 'delete':
+            # choice 1
+            all_files = args.a # optional bool
+            # choice 2
+            files = args.f # optional list of files
+            # choice 3
+            delete_dir = args.d # optional bool
+            print('cmd_delete ' + str(all_files) + ' ' + str(files) + ' ' + str(delete_dir))
+            if files:
+                for f in files:
+                    print(f)

@@ -1,6 +1,7 @@
 import os
 import configparser
 from pathlib import Path
+from hca_util.common import create_if_not_exists
 
 HOME = str(Path.home())
 CONFIG_FILE = HOME + '/.aws/config'
@@ -10,6 +11,19 @@ CREDENTIALS_FILE = HOME + '/.aws/credentials'
 # and config from [profile DEFAULT_PROFILE] section of ~/.aws/config
 DEFAULT_PROFILE = 'hca-util'
 DEFAULT_REGION = 'us-east-1'
+
+
+class UserProfile:
+    def __init__(self):
+        self.access_key = None
+        self.secret_key = None
+        self.region = None
+
+    def __repr__(self):
+        return "UserProfile()"
+
+    def __str__(self):
+        return f"UserProfile <access_key={self.access_key}, secret_key={self.secret_key}, region={self.region}>"
 
 
 def profile_exists(profile):
@@ -28,34 +42,22 @@ def get_profile(profile):
     credentials = configparser.ConfigParser()
     credentials.read(CREDENTIALS_FILE)
 
-    profile_dict = {'access_key': '',
-                    'secret_key': '',
-                    'region': ''}
+    user_profile = UserProfile()
 
     if credentials.has_section(profile):
-        profile_dict['access_key'] = credentials[profile].get('aws_access_key_id')
-        profile_dict['secret_key'] = credentials[profile].get('aws_secret_access_key')
+        user_profile.access_key = credentials[profile].get('aws_access_key_id')
+        user_profile.secret_key = credentials[profile].get('aws_secret_access_key')
 
     config = configparser.ConfigParser()
     config.read(CONFIG_FILE)
 
     if config.has_section(f'profile {profile}'):
-        profile_dict['region'] = config[f'profile {profile}'].get('region')
+        user_profile.region = config[f'profile {profile}'].get('region')
 
-    if not profile_dict['region']:
-        profile_dict['region'] = DEFAULT_REGION
+    if not user_profile.region:
+        user_profile.region = DEFAULT_REGION
 
-    return profile_dict
-
-
-def create_if_not_exists(file):
-    """
-    Create the file if it does not exist
-    :param file:
-    :return:
-    """
-    if not os.path.exists(file):
-        open(file, 'w').close()
+    return user_profile
 
 
 def set_profile(profile, region, access_key, secret_key):

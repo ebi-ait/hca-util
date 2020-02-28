@@ -7,22 +7,13 @@ import boto3
 from botocore.exceptions import ClientError
 
 from hca_util.aws import *
-from hca_util.bucket_policies import *
+from hca_util.bucket_policy import *
 from hca_util.common import *
 from hca_util.upload_progress import UploadProgress
 
 
 class HcaUtil:
 
-    # steps to perform before executing command
-    # 1. check user profile
-    user_profile = None
-    # 2. create an aws_client, get caller identity to check creds valid and if is_contributor
-    aws_client = None
-
-
-    session = None
-    aws = None
     bucket_name = None
     setup_ok = False
 
@@ -37,10 +28,6 @@ class HcaUtil:
     # setup function
     def setup(self):
         try:
-            # try to set a session using profile_name
-            if not Aws.profile_exists(self.profile):
-                print(f'Profile \'{self.profile}\' not found')
-            else:
                 profile_dict = Aws.get_profile(self.profile)
                 self.session = boto3.Session(region_name=profile_dict['region'],
                                              aws_access_key_id=profile_dict['access_key'],
