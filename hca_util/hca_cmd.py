@@ -28,7 +28,8 @@ class HcaCmd():
             CmdDir.run()
 
         elif args.command == 'clear':
-            CmdDir.clear()
+            all = args.a # clear all
+            CmdDir.clear(all)
 
         else:
 

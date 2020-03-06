@@ -44,6 +44,7 @@ def main():
     parser_select.add_argument('DIR', help='directory uuid', type=valid_dir)
 
     parser_clear = cmd_parser.add_parser('clear', help='clear current selection')
+    parser_clear.add_argument('-a', action='store_true', help='clear all - selection and known dirs')
 
     parser_list = cmd_parser.add_parser('list', help='list contents of selected directory')
     parser_list.add_argument('-b', action='store_true', help='list all directories in bucket (authorised user only)')

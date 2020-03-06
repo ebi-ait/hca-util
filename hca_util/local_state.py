@@ -7,6 +7,7 @@ class LocalState:
     def __init__(self):
         self.selected_dir = None
         self.known_dirs = []
+        # potential other local state vars
         self.tmp_access_key = None
         self.tmp_secret_key = None
         self.token = None
@@ -21,12 +22,18 @@ class LocalState:
         self.selected_dir = None
 
     def __str__(self):
-        s = 'Selected ' + str(self.selected_dir) + '\nKnown dirs:\n'
-        other_dirs = [d for d in self.known_dirs if d != self.selected_dir]
-        if not other_dirs:  # empty list
-            s += 'None'
+        if self.selected_dir:
+            s = f'Selected {self.selected_dir}'
         else:
-            s += '\n'.join(map(str, other_dirs))
+            s = 'No directory selected'
+
+        s += '\nKnown dirs:\n'
+        known_dirs_minus_selected = [d for d in self.known_dirs if d != self.selected_dir]
+
+        if known_dirs_minus_selected:
+            s += '\n'.join(map(str, known_dirs_minus_selected))
+        else:
+            s += 'None'
 
         return s
 
