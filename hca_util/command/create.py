@@ -32,6 +32,7 @@ class CmdCreate:
             metadata = {}
             if project_name:
                 metadata['name'] = project_name
+            metadata['perms'] = perms
 
             s3_client = self.aws.common_session.client('s3')
             s3_client.put_object(Bucket=self.aws.bucket_name, Key=(dir_name + '/'), Metadata=metadata)
