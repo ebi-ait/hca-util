@@ -5,6 +5,10 @@ from hca_util.common import print_err
 
 
 class CmdConfig:
+    """
+    user: both wrangler and contributor
+    aws resource or client used in command - sts (to check valid credentials).
+    """
 
     def __init__(self, args):
         self.args = args
