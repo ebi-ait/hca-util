@@ -22,8 +22,16 @@ class CmdList:
                 for obj in bucket.objects.all():
                     k = obj.key
                     if k.endswith('/'):
-                        n = obj.Object().metadata.get('name')
-                        print(k + (f' {n}' if n else ''))
+                        print(k, end=' ')
+                        obj_meta = obj.Object().metadata
+                        if obj_meta:
+                            if 'perms' in obj_meta:
+                                p = obj_meta.get('perms')
+                                print(p.ljust(3), end=' ')
+                            if 'name' in obj_meta:
+                                n = obj_meta.get('name')
+                                print(f'{n}' if n else '')
+                        print()
 
             except Exception as e:
                 print_err(e, 'list')
@@ -42,10 +50,15 @@ class CmdList:
                 s3_resource = self.aws.common_session.resource('s3')
                 bucket = s3_resource.Bucket(self.aws.bucket_name)
 
+                file_count = 0
                 for obj in bucket.objects.filter(Prefix=selected_dir):
                     k = obj.key
-                    if not k.endswith('/'):
-                        print(k)
+                    #if not k.endswith('/'):
+                    #    print(k)
+                    print(k)
+                    file_count += 1
+
+                print(f'{file_count-1} files')
 
             except Exception as e:
                 print_err(e, 'list')
