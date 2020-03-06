@@ -2,6 +2,10 @@ from .command import HcaCmd
 
 
 class CmdDelete(HcaCmd):
+    """
+    user: both wrangler and contributor, though contributor can't delete folder
+    aws resource or client used in command - s3 resource (bucket.objects/ obj.delete)
+    """
 
     def cmd_delete(self, argv):
         if not self.setup_ok:

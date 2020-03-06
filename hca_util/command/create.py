@@ -6,6 +6,10 @@ from hca_util.common import print_err
 
 
 class CmdCreate:
+    """
+    user: wrangler only
+    aws resource or client used in command - s3 client (put_object), s3 resource (BucketPolicy)
+    """
 
     def __init__(self, aws, args):
         self.aws = aws

@@ -10,9 +10,15 @@ default permissions on new directory is 'ux'
 ALLOWED_PERMS = ['u', 'ud', 'ux', 'udx']
 DEFAULT_PERMS = 'ux'
 
-s3_permissions = {'u': 's3:PutObject',
-                  'd': 's3:GetObject',
-                  'x': 's3:DeleteObject'}
+# user groups:
+# hca-wrangler     s3 full access
+# hca-contributor  hca-util bucket (ListBucket except top-level/root directory)
+
+# Permissions for Object operations
+#                       permissions        s3 operations
+s3_permissions = {'u': 's3:PutObject',     # PUT Object, POST Object, Initiate Multipart Upload, Upload Part, Complete Multipart Upload, PUT Object - Copy
+                  'd': 's3:GetObject',     # GET Object, HEAD Object, SELECT Object Content
+                  'x': 's3:DeleteObject'}  # DELETE Object
 
 
 def get_policy_statement_template():
