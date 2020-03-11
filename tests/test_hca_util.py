@@ -1,14 +1,48 @@
+import os
+import sys
 import unittest
+from hca_util.__main__ import parse_args
+from hca_util.hca_cmd import HcaCmd
+from hca_util.command.config import CmdConfig
+from hca_util.command.create import CmdCreate
+from hca_util.command.select import CmdSelect
+from hca_util.command.list import CmdList
+from hca_util.command.dir import CmdDir
 
-from hca_util.hca_util import *
+contributor_profile = 'HCAContributor'
+wrangler_profile = 'HCAWrangler'
 
+contributor_access = os.environ['HCA_UTIL_CONTRIBUTOR_ACCESS']
+contributor_secret = os.environ['HCA_UTIL_CONTRIBUTOR_SECRET']
 
-USER_CONTRIB = "HCAContributor"
-USER_WRANGLER = "HCAWrangler"
+wrangler_access = os.environ['HCA_UTIL_WRANGLER_ACCESS']
+wrangler_secret = os.environ['HCA_UTIL_WRANGLER_SECRET']
 
 
 class TestHcaUtil(unittest.TestCase):
 
+    # test: contributor can't delete folder
+    # test: don't repeat upload
+
+    def test_cmd_config_invalid_creds(self):
+        args = ['config', 'xyz', 'abc']
+        success, msg = CmdConfig(parse_args(args)).run()
+        self.assertFalse(success)
+        self.assertEqual(msg, 'Invalid credentials')
+
+    def test_cmd_config_valid_creds(self):
+        args = ['config', contributor_access, contributor_secret, '--profile', 'test1']
+        success, msg = CmdConfig(parse_args(args)).run()
+        self.assertTrue(success)
+        self.assertEqual(msg, 'Valid credentials')
+
+    def test_cmd_clear(self):
+        #args = ['clear']
+        #HcaCmd(parse_args(args))
+        #self.assertEqual(sys.stdout, 'Selection cleared\n')
+        pass
+
+    """
     # tests with wrangler profile
     def test_setup_wrangler_profile(self):
         util = HcaUtil(profile='HCAWrangler')
@@ -24,7 +58,7 @@ class TestHcaUtil(unittest.TestCase):
         util = HcaUtil()
         self.assertEqual(util.setup_ok, True)
         self.assertTrue(util.bucket_name)
-
+    """
     def test_cmd_select_noargs(self):
         pass
 
@@ -62,10 +96,10 @@ class TestHcaUtil(unittest.TestCase):
         pass
 
     def test_dirs_wrangler_access(self):
-        self.dirs_access(USER_WRANGLER)
+        self.dirs_access(wrangler_profile)
 
     def test_dirs_contributor_access(self):
-        self.dirs_access(USER_CONTRIB)
+        self.dirs_access(contributor_profile)
 
     def dirs_access(self, user):
         """
