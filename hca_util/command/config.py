@@ -24,11 +24,11 @@ class CmdConfig:
                 aws = Aws(user_profile)
 
                 if aws.is_valid_credentials():
-                    print('Valid credentials')
+                    return True, 'Valid credentials'
                 else:
-                    print('Invalid credentials')
+                    return False, 'Invalid credentials'
             else:
-                print('Error setting profile')
+                return False, 'Error setting profile'
 
         except Exception as e:
             print_err(e, 'config')
