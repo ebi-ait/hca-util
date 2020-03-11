@@ -18,8 +18,7 @@ class CmdCreate:
     def run(self):
 
         if self.aws.is_contributor:
-            print('You don\'t have permission to use this command')
-            return
+            return False, 'You don\'t have permission to use this command'
 
         project_name = self.args.n  # optional str, None
         perms = self.args.p  # optional str, default 'ux'
@@ -36,7 +35,6 @@ class CmdCreate:
 
             s3_client = self.aws.common_session.client('s3')
             s3_client.put_object(Bucket=self.aws.bucket_name, Key=(dir_name + '/'), Metadata=metadata)
-            print('Created ' + dir_name)
 
             # get bucket policy
             s3_resource = self.aws.common_session.resource('s3')
@@ -58,6 +56,7 @@ class CmdCreate:
             updated_policy = json.dumps(policy_json)
 
             bucket_policy.put(Policy=updated_policy)
+            return True, 'Created ' + dir_name
 
         except Exception as e:
             print_err(e, 'create')
