@@ -1,3 +1,4 @@
+import os
 import configparser
 from hca_util.common import create_if_not_exists
 from hca_util.settings import AWS_CONFIG_FILE, AWS_CREDENTIALS_FILE, DEFAULT_REGION
@@ -19,6 +20,9 @@ class UserProfile:
 def profile_exists(profile):
     # let's not bother checking CONFIG_FILE to see if region is set
     # we can always use default region
+    if not os.path.exists(AWS_CREDENTIALS_FILE):
+        return False
+
     credentials = configparser.ConfigParser(comment_prefixes='/', allow_no_value=True)
     credentials.read(AWS_CREDENTIALS_FILE)
 
