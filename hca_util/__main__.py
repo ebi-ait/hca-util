@@ -1,5 +1,6 @@
 # __main__.py
 
+import sys
 import argparse
 from hca_util.settings import DEFAULT_PROFILE, DEBUG_MODE
 from hca_util.common import is_valid_project_name, is_valid_dir_name
@@ -21,7 +22,7 @@ def valid_dir(string):
     return string
 
 
-def main():
+def parse_args(args):
     parser = argparse.ArgumentParser(description='hca-util')
 
     cmd_parser = parser.add_subparsers(title='command', dest='command')
@@ -56,6 +57,7 @@ def main():
 
     group_upload.add_argument('-a', action='store_true', help='upload all files from current user directory')
     group_upload.add_argument('-f', metavar='file', nargs='+', help='upload specified file(s)', type=argparse.FileType('r'))
+    parser_upload.add_argument('-o', action='store_true', help='overwrite files with same names')
 
     parser_download = cmd_parser.add_parser('download', help='download files from selected directory')
     group_download = parser_download.add_mutually_exclusive_group(required=True)
@@ -72,7 +74,7 @@ def main():
 
     ps = [parser]
     if DEBUG_MODE:
-        ps = [parser, parser_config, parser_list, parser_select]
+        ps = [parser, parser_config, parser_create, parser_list, parser_select]
 
     for p in ps:
         p.add_argument(
@@ -86,10 +88,10 @@ def main():
     #     help=f'use REGION instead of default \'{DEFAULT_REGION}\' region',
     #     default=DEFAULT_REGION
     # )
-    args = parser.parse_args()
 
-    HcaCmd(args)
+    return parser.parse_args(args)
 
 
 if __name__ == '__main__':
-    main()
+    parsed_args = parse_args(sys.argv[1:])
+    HcaCmd(parsed_args)

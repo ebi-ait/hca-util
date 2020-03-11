@@ -5,6 +5,8 @@ from hca_util.command.create import CmdCreate
 from hca_util.command.select import CmdSelect
 from hca_util.command.list import CmdList
 from hca_util.command.dir import CmdDir
+from hca_util.command.upload import CmdUpload
+from hca_util.command.download import CmdDownload
 
 
 class HcaCmd():
@@ -22,14 +24,15 @@ class HcaCmd():
     def __init__(self, args):
 
         if args.command == 'config':
-            CmdConfig(args).run()
+            success, msg = CmdConfig(args).run()
+            print(msg)
 
         elif args.command == 'dir':
             CmdDir.run()
 
         elif args.command == 'clear':
-            all = args.a # clear all
-            CmdDir.clear(all)
+            a = args.a  # clear all
+            CmdDir.clear(a)
 
         else:
 
@@ -54,7 +57,8 @@ class HcaCmd():
 
     def execute(self, args):
         if args.command == 'create':
-            CmdCreate(self.aws, args).run()
+            success, msg = CmdCreate(self.aws, args).run()
+            print(msg)
 
         elif args.command == 'select':
             CmdSelect(self.aws, args).run()
@@ -63,24 +67,10 @@ class HcaCmd():
             CmdList(self.aws, args).run()
 
         elif args.command == 'upload':
-            # choice 1
-            all_files = args.a # optional bool
-            # choice 2
-            files = args.f # optional list of <_io.TextIOWrapper name='f1' mode='r' encoding='UTF-8'>
-            print('cmd_upload ' + str(all_files) + ' ' + str(files))
-            if files:
-                for f in files:
-                    print(f.name)
+            CmdUpload(self.aws, args).run()
 
         elif args.command == 'download':
-            # choice 1
-            all_files = args.a # optional bool
-            # choice 2
-            files = args.f # optional list of files
-            print('cmd_download ' + str(all_files) + ' ' + str(files))
-            if files:
-                for f in files:
-                    print(f)
+            CmdDownload(self.aws, args).run()
 
         elif args.command == 'delete':
             # choice 1
