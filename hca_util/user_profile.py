@@ -11,10 +11,10 @@ class UserProfile:
         self.region = None
 
     def __repr__(self):
-        return "UserProfile()"
+        return 'UserProfile()'
 
     def __str__(self):
-        return f"UserProfile <access_key={self.access_key}, secret_key={self.secret_key}, region={self.region}>"
+        return f'UserProfile (access_key={self.access_key}, secret_key={self.secret_key}, region={self.region})'
 
 
 def profile_exists(profile):
