@@ -10,16 +10,16 @@ class CmdDir:
     @staticmethod
     def run():
         local_state = get_local_state()
-        print(str(local_state))
+        return True, str(local_state)
 
     @staticmethod
     def clear(a):
         if a:  # clear all
             local_state = LocalState()  # create a new empty local state obj
             set_local_state(local_state)
-            print('All cleared')
+            return True, 'All cleared'
         else:
             local_state = get_local_state()
             local_state.unselect_dir()
             set_local_state(local_state)
-            print('Selection cleared')
+            return True, 'Selection cleared'
