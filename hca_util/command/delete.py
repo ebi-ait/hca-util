@@ -42,6 +42,7 @@ class CmdDelete:
                         obj.delete()
 
                     # delete bucket policy for HCAContributer-folder permissions
+                    # only wrangler who has perms to set policy can do this
                     delete_dir_perms_from_bucket_policy(s3_resource, self.aws.bucket_name, selected_dir)
 
                     # clear selected dir
@@ -61,9 +62,16 @@ class CmdDelete:
             if self.args.f:  # delete list of file(s)
                 print('Deleting...')
                 for f in self.args.f:
-                    print('Deleting ' + selected_dir + f)
-                    obj = bucket.Object(selected_dir + f)
-                    obj.delete()
+                    # you may have perm x but not d (to load or even do a head object)
+                    # so use obj_exists
+
+                    if self.aws.obj_exists(selected_dir + f):
+
+                        obj = s3_resource.ObjectSummary(self.aws.bucket_name, selected_dir + f)
+                        obj.delete()
+                        print(selected_dir + f + '  Done.')
+                    else:
+                        print(selected_dir + f + '  File not found.')
                 return
 
         except Exception as e:
