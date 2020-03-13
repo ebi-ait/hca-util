@@ -44,13 +44,13 @@ def parse_args(args):
     parser_select = cmd_parser.add_parser('select', help='select active directory')
     parser_select.add_argument('DIR', help='directory uuid', type=valid_dir)
 
+    parser_dir = cmd_parser.add_parser('dir', help='display active (selected) directory')
+
     parser_clear = cmd_parser.add_parser('clear', help='clear current selection')
     parser_clear.add_argument('-a', action='store_true', help='clear all - selection and known dirs')
 
     parser_list = cmd_parser.add_parser('list', help='list contents of selected directory')
     parser_list.add_argument('-b', action='store_true', help='list all directories in bucket (authorised user only)')
-
-    parser_dir = cmd_parser.add_parser('dir', help='display active (selected) directory')
 
     parser_upload = cmd_parser.add_parser('upload', help='upload files to selected directory')
     group_upload = parser_upload.add_mutually_exclusive_group(required=True)
