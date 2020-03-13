@@ -16,8 +16,8 @@ setup(
     # dashes are ok in repo and PyPI dist names but not in package (i.e. directory) and
     # module (.py file) names. can't do import xyz-abc
     name="hca-util",
-    version="0.0.15",
-    description="CLI tool to allow submitters to upload to and download from the EBI S3 buckets.",
+    version="0.1.0",
+    description="CLI tool for file transfer (upload and download) to/from AWS S3.",
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/ebi-ait/hca-util",
