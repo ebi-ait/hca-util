@@ -1,8 +1,10 @@
 # hca-util
 
-This tool is intended to allow HCA wranglers and contributors to upload and download data to/from the HCA S3 bucket.
+CLI tool for file transfer (upload and download) to/from AWS S3.
 
 https://github.com/ebi-ait/hca-util
+
+# Users
 
 ## Prerequisites
 Users need to have
@@ -10,64 +12,157 @@ Users need to have
 2. Python3.x installed on their machine
 3. Credentials to access data in the S3 bucket (access and secret keys)
 
-## Install and configure
-1. Get the tool from PyPi
+## Install
+Get `hca-util` from PyPi.
 
-        $ pip install hca-util
+    $ pip install hca-util
 
-2. Run the `hca-util` tool
+                           
+## Usage
 
-        $ hca-util
-        Type ? to list commands
-        hca>
+You use the tool by specifying the command you want to run and any mandatory (positional) or optional arguments.
 
-3. Run `config` command specifying your credentials
+Using the `-h` option to display help information:
 
-        hca> config ACCESS_KEY SECRET_KEY
+    $ hca-util -h
+    usage: hca-util [-h] [--profile PROFILE]
+                       {config,create,select,dir,clear,list,upload,download,delete}
 
-Step 2 opens an interactive prompt.
+help for specific command:
 
-Step 3 adds a new *hca-util* profile to your local AWS configuration which the tool uses.
-
-
-## Use the tool to upload and download data
-The following commands are currently possible.
-
-    command                         description
-    =======                         ===========
-    config ACCESS_KEY SECRET_KEY    Configure your machine with credentials
+        hca-util <command> -h
     
-    create [project_name] [-udx]    Create an upload directory for project (authorised user only)
-                                    If specified, project name needs to be between 1-36 alphanumeric characters with no space
-                                    If specified, allowed permissions include 'u', 'ud', 'ux' and 'udx'; otherwise default 'ux'
-                                    u - upload, d - download, x - delete
-                                    
-    list                            List contents of bucket (authorised user only)
-    list DIR_NAME                   List contents of directory
     
-    select DIR_NAME                 Set active directory for upload and download
-    dir                             Show selected directory
-    
-    upload F1 [f2] [f3] ...         Multi-files upload to selected directory
-    upload .                        Upload all files from current user directory
-    
-    delete F1 [f2] [f3] ...         Delete specified file(s) from selected directory
-    delete .                        Delete all files from selected directory
-    delete                          Delete selected directory (authorised user only)
-    
-    download F1 [f2] [f3] ...       Download specified file(s) from selected directory to local machine
-    download .                      Download all files from selected directory to local machine
-    
-    exit (or quit)                  Exit the tool. Shorthand: x, q, or Ctrl-D
+## List of commands
 
-Type ? or `help` to list commands. 
+The following is a list of commands available to use. Note some commands or options/flags are available to authorised users (for e.g. wranglers, admin) only.
 
-Type `help <command>` to display help info about a command.
-
-Note only authorised users (for e.g. wranglers, devs) with their elevated access can create directory and list all directories.
+    config              configure AWS credentials
+    create              create an upload directory (authorised user only)
+    select              select active directory
+    dir                 display active (selected) directory
+    clear               clear current selection
+    list                list contents of selected directory
+    upload              upload files to selected directory
+    download            download files from selected directory
+    delete              delete files from selected directory
 
 
-## For Developers
+## `config` command
+
+To configure your AWS credentials
+
+    $ hca-util config -h
+    usage: hca-util config [-h] [--profile PROFILE] ACCESS_KEY SECRET_KEY
+    
+    positional arguments:
+      ACCESS_KEY         AWS Access Key ID
+      SECRET_KEY         AWS Secret Access Key
+    
+    optional arguments:
+      -h, --help         show this help message and exit
+      --profile PROFILE  use PROFILE instead of default 'hca-util' profile
+
+By default, this tool looks for and uses the profile name *hca-util*, if it exists, or it can be set by the `config` command.
+
+You can always specify a different profile each time you run a command using the optional argument `--profile PROFILE`.
+
+## `create` command
+
+    $ hca-util create -h
+    usage: hca-util create [-h] [-n name] [-p {u,ud,ux,udx}]
+                              [--profile PROFILE]
+    
+    optional arguments:
+      -h, --help         show this help message and exit
+      -n name            optional project name for new directory
+      -p {u,ud,ux,udx}   allowed actions (permissions) on new directory. u for
+                         upload, x for delete and d for download. Default is ux
+      --profile PROFILE  use PROFILE instead of default 'hca-util' profile
+
+## `select` command
+
+    $ hca-util select -h
+    usage: hca-util select [-h] [--profile PROFILE] DIR
+    
+    positional arguments:
+      DIR                directory uuid
+    
+    optional arguments:
+      -h, --help         show this help message and exit
+      --profile PROFILE  use PROFILE instead of default 'hca-util' profile
+
+
+## `dir` command
+
+    $ hca-util dir -h
+    usage: hca-util dir [-h]
+    
+    optional arguments:
+      -h, --help  show this help message and exit
+      
+
+## `clear` command
+
+    $ hca-util clear -h
+    usage: hca-util clear [-h] [-a]
+    
+    optional arguments:
+      -h, --help  show this help message and exit
+      -a          clear all - selection and known dirs
+
+
+## `list` command
+
+    $ hca-util list -h
+    usage: hca-util list [-h] [-b] [--profile PROFILE]
+    
+    optional arguments:
+      -h, --help         show this help message and exit
+      -b                 list all directories in bucket (authorised user only)
+      --profile PROFILE  use PROFILE instead of default 'hca-util' profile
+
+
+
+
+
+## `upload` command
+
+    $ hca-util upload -h
+    usage: hca-util upload [-h] (-a | -f file [file ...]) [-o]
+    
+    optional arguments:
+      -h, --help          show this help message and exit
+      -a                  upload all files from current user directory
+      -f file [file ...]  upload specified file(s)
+      -o                  overwrite files with same names
+
+
+## `download` command
+
+    $ hca-util download -h
+    usage: hca-util download [-h] (-a | -f file [file ...])
+    
+    optional arguments:
+      -h, --help          show this help message and exit
+      -a                  download all files from selected directory
+      -f file [file ...]  download specified file(s) only
+
+
+
+## `delete` command
+
+    $ hca-util delete -h
+    usage: hca-util delete [-h] (-a | -f file [file ...] | -d)
+    
+    optional arguments:
+      -h, --help          show this help message and exit
+      -a                  delete all files from selected directory
+      -f file [file ...]  delete specified file(s) only
+      -d                  delete directory and contents (authorised user only)
+
+
+# Developers
 
 Run 
 ```
