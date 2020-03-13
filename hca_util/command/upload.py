@@ -2,8 +2,6 @@ import os
 from hca_util.local_state import get_selected_dir
 from hca_util.common import print_err
 from hca_util.file_transfer import FileTransfer, TransferProgress, transfer
-from hca_util.command.select import key_exists
-from hca_util.settings import DEBUG_MODE
 
 
 """
@@ -63,9 +61,8 @@ class CmdUpload:
                     # thread-safe or not
 
                     sess = self.aws.new_session()
-                    client = sess.client('s3')
 
-                    if not self.args.o and key_exists(client, self.aws.bucket_name, key):
+                    if not self.args.o and self.aws.obj_exists(key):
                         fs[idx].status = 'File exists. Use -o to overwrite.'
                         fs[idx].complete = True
                     else:
@@ -77,8 +74,6 @@ class CmdUpload:
                 except Exception as thread_ex:
                     fs[idx].status = 'Upload failed.'
                     fs[idx].complete = True
-                    if DEBUG_MODE:
-                        print_err(thread_ex, 'upload')
 
             print('Uploading...')
 
