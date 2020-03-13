@@ -47,6 +47,8 @@ class CmdDownload:
                     # check if f exists
                     key = f'{selected_dir}{f}'
                     try:
+                        # if you're able to download (s3:GetObject) you can do HEAD Object which
+                        # is used by resource.ObjectSummary
                         obj_summary = s3_resource.ObjectSummary(self.aws.bucket_name, key)
                         obj_size = obj_summary.size
                     except botocore.exceptions.ClientError as e:
@@ -70,8 +72,6 @@ class CmdDownload:
                 except Exception as thread_ex:
                     fs[idx].status = 'Download failed.'
                     fs[idx].complete = True
-                    if DEBUG_MODE:
-                        print_err(thread_ex, 'download')
 
             print('Downloading...')
 
