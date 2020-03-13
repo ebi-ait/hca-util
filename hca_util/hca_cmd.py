@@ -7,6 +7,7 @@ from hca_util.command.list import CmdList
 from hca_util.command.dir import CmdDir
 from hca_util.command.upload import CmdUpload
 from hca_util.command.download import CmdDownload
+from hca_util.command.delete import CmdDelete
 
 
 class HcaCmd():
@@ -75,13 +76,4 @@ class HcaCmd():
             CmdDownload(self.aws, args).run()
 
         elif args.command == 'delete':
-            # choice 1
-            all_files = args.a # optional bool
-            # choice 2
-            files = args.f # optional list of files
-            # choice 3
-            delete_dir = args.d # optional bool
-            print('cmd_delete ' + str(all_files) + ' ' + str(files) + ' ' + str(delete_dir))
-            if files:
-                for f in files:
-                    print(f)
+            CmdDelete(self.aws, args).run()
