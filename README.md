@@ -21,9 +21,7 @@ $ pip install hca-util
                            
 ## Usage
 
-You use the tool by specifying the command you want to run and any mandatory (positional) or optional arguments.
-
-Using the `-h` option to display help information:
+Display help
 
 ```shell script
 $ hca-util -h
@@ -31,119 +29,104 @@ usage: hca-util [-h] [--profile PROFILE]
                    {config,create,select,dir,clear,list,upload,download,delete}
 ```
 
-help for specific command:
+In the above, optional arguments are between `[]` and choices between `{}`.
+
+The basic usage is as follows:
 
 ```shell script
-hca-util <command> -h
+$ hca-util cmd ARG1 ARG2 -o1 -o2
 ```
-    
+
+Use the tool by specifying a command (`cmd` - see list below) to run, any mandatory (positional) arguments (e.g. `ARG1` and `ARG2` - see positional args for each command), and any optional arguments (e.g. `-o1` and `o2` - see options for each command).
+
 ## List of commands
 
-The following is a list of commands available to use. Note some commands or options/flags are available to authorised users (for e.g. wranglers, admin) only.
+help for a specific command:
 
 ```shell script
-config              configure AWS credentials
-create              create an upload directory (authorised user only)
-select              select active directory
-dir                 display active (selected) directory
-clear               clear current selection
-list                list contents of selected directory
-upload              upload files to selected directory
-download            download files from selected directory
-delete              delete files from selected directory
+$ hca-util <command> -h
 ```
+
+Some commands or options/flags are restricted to authorised users (for e.g. wranglers, admin) only.
 
 ## `config` command
 
-To configure your AWS credentials
+Configure AWS credentials
 
 ```shell script
-$ hca-util config -h
-usage: hca-util config [-h] [--profile PROFILE] ACCESS_KEY SECRET_KEY
+$ hca-util config ACCESS_KEY SECRET_KEY
 
 positional arguments:
   ACCESS_KEY         AWS Access Key ID
   SECRET_KEY         AWS Secret Access Key
-
-optional arguments:
-  -h, --help         show this help message and exit
-  --profile PROFILE  use PROFILE instead of default 'hca-util' profile
 ```
 
 By default, this tool looks for and uses the profile name *hca-util*, if it exists, or it can be set by the `config` command.
 
-You can always specify a different profile each time you run a command using the optional argument `--profile PROFILE`.
+Running a command with the `--profile` argument uses the specified profile instead of the default `hca-util` profile.
 
 ## `create` command
 
+Create an upload directory **(authorised user only)**
+
 ```shell script
-$ hca-util create -h
-usage: hca-util create [-h] [-n name] [-p {u,ud,ux,udx}]
-                          [--profile PROFILE]
+$ hca-util create [-n name] [-p {u,ud,ux,udx}]
 
 optional arguments:
-  -h, --help         show this help message and exit
   -n name            optional project name for new directory
   -p {u,ud,ux,udx}   allowed actions (permissions) on new directory. u for
                      upload, x for delete and d for download. Default is ux
-  --profile PROFILE  use PROFILE instead of default 'hca-util' profile
 ```
 
 ## `select` command
 
+Select active directory
+
 ```shell script
-$ hca-util select -h
-usage: hca-util select [-h] [--profile PROFILE] DIR
+$ hca-util select DIR
 
 positional arguments:
   DIR                directory uuid
-
-optional arguments:
-  -h, --help         show this help message and exit
-  --profile PROFILE  use PROFILE instead of default 'hca-util' profile
 ```
 
 ## `dir` command
 
-```shell script
-$ hca-util dir -h
-usage: hca-util dir [-h]
+Display active (selected) directory
 
-optional arguments:
-  -h, --help  show this help message and exit
+```shell script
+$ hca-util dir
 ```
 
 ## `clear` command
 
+Clear current selection
+
 ```shell script
-$ hca-util clear -h
-usage: hca-util clear [-h] [-a]
+$ hca-util clear [-a]
 
 optional arguments:
-  -h, --help  show this help message and exit
   -a          clear all - selection and known dirs
 ```
 
 ## `list` command
 
+List contents of selected directory
+
 ```shell script
-$ hca-util list -h
-usage: hca-util list [-h] [-b] [--profile PROFILE]
+$ hca-util list [-b]
 
 optional arguments:
-  -h, --help         show this help message and exit
-  -b                 list all directories in bucket (authorised user only)
-  --profile PROFILE  use PROFILE instead of default 'hca-util' profile
+  -b                 list all directories in bucket **(authorised user only)**
 ```
 
 ## `upload` command
 
+Upload files to selected directory
+
 ```shell script
-$ hca-util upload -h
-usage: hca-util upload [-h] (-a | -f file [file ...]) [-o]
+$ hca-util upload (-a | -f file [file ...]) [-o]
 
 optional arguments:
-  -h, --help          show this help message and exit
   -a                  upload all files from current user directory
   -f file [file ...]  upload specified file(s)
   -o                  overwrite files with same names
@@ -151,27 +134,27 @@ optional arguments:
 
 ## `download` command
 
+Download files from selected directory
+
 ```shell script
-$ hca-util download -h
-usage: hca-util download [-h] (-a | -f file [file ...])
+$ hca-util download (-a | -f file [file ...])
 
 optional arguments:
-  -h, --help          show this help message and exit
   -a                  download all files from selected directory
   -f file [file ...]  download specified file(s) only
 ```
 
 ## `delete` command
 
+Delete files from selected directory
+
 ```shell script
-$ hca-util delete -h
-usage: hca-util delete [-h] (-a | -f file [file ...] | -d)
+$ hca-util delete (-a | -f file [file ...] | -d)
 
 optional arguments:
-  -h, --help          show this help message and exit
   -a                  delete all files from selected directory
   -f file [file ...]  delete specified file(s) only
-  -d                  delete directory and contents (authorised user only)
+  -d                  delete directory and contents **(authorised user only)**
 ```
 
 # Developers
