@@ -16,7 +16,7 @@ setup(
     # dashes are ok in repo and PyPI dist names but not in package (i.e. directory) and
     # module (.py file) names. can't do import xyz-abc
     name='hca-util',
-    version='0.1.1',
+    version='0.1.2',
     description='CLI tool for file transfer (upload and download) to/from AWS S3.',
     long_description=README,
     long_description_content_type='text/markdown',
@@ -33,7 +33,7 @@ setup(
         'Programming Language :: Python :: 3.7',
     ],
     platforms=['MacOS X', 'Posix'],
-    packages=['hca_util'],
+    packages=['hca_util', 'hca_util.command'],
     include_package_data=True,
     install_requires=INSTALL_REQS,
     entry_points={
