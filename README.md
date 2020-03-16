@@ -61,9 +61,9 @@ positional arguments:
   SECRET_KEY         AWS Secret Access Key
 ```
 
-By default, this tool looks for and uses the profile name *hca-util*, if it exists, or it can be set by the `config` command.
+By default, this tool looks for and uses the profile name _hca-util_, if it exists, or it can be set by the `config` command.
 
-Running a command with the `--profile` argument uses the specified profile instead of the default `hca-util` profile.
+Running a command with the `--profile` argument uses the specified profile instead of the default _hca-util_ profile.
 
 ## `create` command
 
