@@ -1,20 +1,21 @@
-.DEFAULT_GOAL := build_pkg
+.PHONY: build
 
-build_pkg: # use build_pkg as build is a folder name in dir
-	@echo "Build"
+build:
+	@echo "build"
 	python setup.py sdist bdist_wheel
 
 check:
 	twine check dist/*
 
 clean:
-	@echo "Clean"
+	@echo "clean"
 	rm -rf dist/*
+	rm -rf build/*
 
 test:
-	@echo "Test"
+	@echo "test"
 	python -m tests.test_hca_util
 
 publish:
-	@echo "Publish"
+	@echo "publish"
 	twine upload dist/*
