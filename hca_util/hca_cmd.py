@@ -34,10 +34,12 @@ class HcaCmd():
                 print(msg)
             """
 
-        elif args.command == 'clear':
-            a = args.a  # clear all
-            success, msg = CmdDir.clear(a)
-            print(msg)
+            """
+            elif args.command == 'clear':
+                a = args.a  # clear all
+                success, msg = CmdDir.clear(a)
+                print(msg)
+            """
 
         else:
 
