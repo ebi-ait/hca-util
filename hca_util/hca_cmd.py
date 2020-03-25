@@ -47,10 +47,10 @@ class HcaCmd():
                     # print('Valid credentials')
                     try:
                         self.aws.get_bucket_name()
-                        self.execute(args)
-
                     except:
                         print('Unable to get bucket')
+
+                    self.execute(args)
 
                 else:
                     print('Invalid credentials')

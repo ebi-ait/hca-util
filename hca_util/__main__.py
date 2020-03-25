@@ -1,7 +1,9 @@
 # __main__.py
 
-import sys
 import argparse
+import os
+import sys
+
 from hca_util.settings import DEFAULT_PROFILE, DEBUG_MODE
 from hca_util.common import is_valid_project_name, is_valid_dir_name
 from hca_util.hca_cmd import HcaCmd
@@ -93,5 +95,10 @@ def parse_args(args):
 
 
 if __name__ == '__main__':
-    parsed_args = parse_args(sys.argv[1:])
-    HcaCmd(parsed_args)
+    try:
+        parsed_args = parse_args(sys.argv[1:])
+        HcaCmd(parsed_args)
+    except KeyboardInterrupt:
+        # If SIGINT is triggered whilst threads are active (upload/download) we need to end the entire process to get
+        # a clean exit
+        os._exit(0)
