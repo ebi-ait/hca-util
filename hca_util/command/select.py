@@ -19,7 +19,7 @@ class CmdSelect:
 
                 if self.aws.obj_exists(key):
                     set_selected_area(key)
-                    print('Selected upload area ' + key)
+                    print('Selected upload area is ' + key)
                 else:
                     print("Upload area does not exist")
             else:
