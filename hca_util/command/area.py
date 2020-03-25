@@ -1,7 +1,7 @@
 from hca_util.local_state import get_local_state, set_local_state, LocalState
 
 
-class CmdDir:
+class CmdArea:
     """
     user: both wrangler and contributor
     aws resource or client used in command - none, all local operations.
@@ -20,6 +20,6 @@ class CmdDir:
             return True, 'All cleared'
         else:
             local_state = get_local_state()
-            local_state.unselect_dir()
+            local_state.unselect_area()
             set_local_state(local_state)
             return True, 'Selection cleared'

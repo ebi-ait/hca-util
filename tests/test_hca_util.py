@@ -7,7 +7,7 @@ from hca_util.command.config import CmdConfig
 from hca_util.command.create import CmdCreate
 from hca_util.command.select import CmdSelect
 from hca_util.command.list import CmdList
-from hca_util.command.dir import CmdDir
+from hca_util.command.area import CmdArea
 
 contributor_profile = 'HCAContributor'
 wrangler_profile = 'HCAWrangler'

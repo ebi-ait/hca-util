@@ -1,4 +1,4 @@
-from hca_util.local_state import get_selected_dir, set_selected_dir
+from hca_util.local_state import get_selected_area, set_selected_area
 from hca_util.common import print_err
 
 
@@ -14,16 +14,16 @@ class CmdSelect:
 
     def run(self):
         try:
-            if self.args.DIR:
-                key = self.args.DIR if self.args.DIR.endswith('/') else f'{self.args.DIR}/'
+            if self.args.AREA:
+                key = self.args.AREA if self.args.AREA.endswith('/') else f'{self.args.AREA}/'
 
                 if self.aws.obj_exists(key):
-                    set_selected_dir(key)
+                    set_selected_area(key)
                     print('Selected upload area ' + key)
                 else:
                     print("Upload area does not exist")
             else:
-                print('Currently selected upload area is ' + get_selected_dir())
+                print('Currently selected upload area is ' + get_selected_area())
 
         except Exception as e:
             print_err(e, 'select')

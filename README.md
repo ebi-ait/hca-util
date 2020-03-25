@@ -1,6 +1,6 @@
 # hca-util
 
-CLI tool for file transfer (upload and download) to/from AWS S3.
+CLI tool for uploading and downloading files from an HCA upload area.
 
 https://github.com/ebi-ait/hca-util
 
@@ -67,61 +67,42 @@ Running a command with the `--profile` argument uses the specified profile inste
 
 ## `create` command
 
-Create an upload directory **(authorised user only)**
+Create an upload area **(authorised user only)**
 
 ```shell script
 $ hca-util create [-n name] [-p {u,ud,ux,udx}]
 
 optional arguments:
-  -n name            optional project name for new directory
-  -p {u,ud,ux,udx}   allowed actions (permissions) on new directory. u for
+  -n name            optional project name for new area
+  -p {u,ud,ux,udx}   allowed actions (permissions) on new area. u for
                      upload, x for delete and d for download. Default is ux
 ```
 
 ## `select` command
 
-Select active directory
+Select or show active area
 
 ```shell script
-$ hca-util select DIR
+$ hca-util select AREA
 
 positional arguments:
-  DIR                directory uuid
-```
-
-## `dir` command
-
-Display active (selected) directory
-
-```shell script
-$ hca-util dir
-```
-
-## `clear` command
-
-Clear current selection
-
-```shell script
-$ hca-util clear [-a]
-
-optional arguments:
-  -a          clear all - selection and known dirs
+  AREA                area uuid. If not present then selected area is shown
 ```
 
 ## `list` command
 
-List contents of selected directory
+List contents of selected area
 
 ```shell script
 $ hca-util list [-b]
 
 optional arguments:
-  -b                 list all directories in bucket **(authorised user only)**
+  -b                 list all areas in bucket **(authorised users only)**
 ```
 
 ## `upload` command
 
-Upload files to selected directory
+Upload files to selected area
 
 ```shell script
 $ hca-util upload (-a | -f file [file ...]) [-o]
@@ -134,27 +115,27 @@ optional arguments:
 
 ## `download` command
 
-Download files from selected directory
+Download files from selected area
 
 ```shell script
 $ hca-util download (-a | -f file [file ...])
 
 optional arguments:
-  -a                  download all files from selected directory
+  -a                  download all files from selected area
   -f file [file ...]  download specified file(s) only
 ```
 
 ## `delete` command
 
-Delete files from selected directory
+Delete files from selected area
 
 ```shell script
 $ hca-util delete (-a | -f file [file ...] | -d)
 
 optional arguments:
-  -a                  delete all files from selected directory
+  -a                  delete all files from selected area
   -f file [file ...]  delete specified file(s) only
-  -d                  delete directory and contents **(authorised user only)**
+  -d                  delete area and contents **(authorised users only)**
 ```
 
 # Developers

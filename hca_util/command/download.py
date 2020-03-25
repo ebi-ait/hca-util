@@ -2,7 +2,7 @@ import os
 import botocore
 from hca_util.file_transfer import FileTransfer, TransferProgress, transfer
 from hca_util.settings import DEBUG_MODE
-from hca_util.local_state import get_selected_dir
+from hca_util.local_state import get_selected_area
 from hca_util.common import print_err
 
 
@@ -18,10 +18,10 @@ class CmdDownload:
 
     def run(self):
 
-        selected_dir = get_selected_dir()
+        selected_area = get_selected_area()
 
-        if not selected_dir:
-            print('No directory selected')
+        if not selected_area:
+            print('No area selected')
             return
 
         try:
@@ -33,10 +33,10 @@ class CmdDownload:
 
             fs = []
             if all_files:
-                # download all files from selected directory
-                for obj in bucket.objects.filter(Prefix=selected_dir):
+                # download all files from selected area
+                for obj in bucket.objects.filter(Prefix=selected_area):
                     # skip the top-level directory
-                    if obj.key == selected_dir:
+                    if obj.key == selected_area:
                         continue
                     fs.append(FileTransfer(key=obj.key, size=obj.size))
             else:
@@ -45,7 +45,7 @@ class CmdDownload:
 
                 for f in self.args.f:
                     # check if f exists
-                    key = f'{selected_dir}{f}'
+                    key = f'{selected_area}{f}'
                     try:
                         # if you're able to download (s3:GetObject) you can do HEAD Object which
                         # is used by resource.ObjectSummary

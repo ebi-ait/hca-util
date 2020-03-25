@@ -1,8 +1,8 @@
 import json
 from botocore.exceptions import ClientError
-from hca_util.local_state import get_selected_dir
+from hca_util.local_state import get_selected_area
 from hca_util.common import print_err
-from hca_util.command.dir import CmdDir
+from hca_util.command.area import CmdArea
 
 
 class CmdDelete:
@@ -17,43 +17,43 @@ class CmdDelete:
 
     def run(self):
 
-        selected_dir = get_selected_dir()
+        selected_area = get_selected_area()
 
-        if not selected_dir:
-            print('No directory selected')
+        if not selected_area:
+            print('No area selected')
             return
 
         try:
             s3_resource = self.aws.common_session.resource('s3')
             bucket = s3_resource.Bucket(self.aws.bucket_name)
 
-            if self.args.d:  # delete dir
+            if self.args.d:  # delete area
                 if self.aws.is_contributor:
                     print('You don\'t have permission to use this command')
                     return
 
-                confirm = input(f'Confirm delete {selected_dir}? Y/y to proceed: ')
+                confirm = input(f'Confirm delete {selected_area}? Y/y to proceed: ')
 
                 if confirm.lower() == 'y':
                     print('Deleting...')
 
-                    for obj in bucket.objects.filter(Prefix=selected_dir):
+                    for obj in bucket.objects.filter(Prefix=selected_area):
                         print(obj.key)
                         obj.delete()
 
                     # delete bucket policy for HCAContributer-folder permissions
                     # only wrangler who has perms to set policy can do this
-                    delete_dir_perms_from_bucket_policy(s3_resource, self.aws.bucket_name, selected_dir)
+                    delete_dir_perms_from_bucket_policy(s3_resource, self.aws.bucket_name, selected_area)
 
-                    # clear selected dir
-                    CmdDir.clear(False)
+                    # clear selected area
+                    CmdArea.clear(False)
                 return
 
             if self.args.a:  # delete all files
                 print('Deleting...')
-                for obj in bucket.objects.filter(Prefix=selected_dir):
+                for obj in bucket.objects.filter(Prefix=selected_area):
                     # do not delete folder object
-                    if obj.key == selected_dir:
+                    if obj.key == selected_area:
                         continue
                     print(obj.key)
                     obj.delete()
@@ -65,13 +65,13 @@ class CmdDelete:
                     # you may have perm x but not d (to load or even do a head object)
                     # so use obj_exists
 
-                    if self.aws.obj_exists(selected_dir + f):
+                    if self.aws.obj_exists(selected_area + f):
 
-                        obj = s3_resource.ObjectSummary(self.aws.bucket_name, selected_dir + f)
+                        obj = s3_resource.ObjectSummary(self.aws.bucket_name, selected_area + f)
                         obj.delete()
-                        print(selected_dir + f + '  Done.')
+                        print(selected_area + f + '  Done.')
                     else:
-                        print(selected_dir + f + '  File not found.')
+                        print(selected_area + f + '  File not found.')
                 return
 
         except Exception as e:
