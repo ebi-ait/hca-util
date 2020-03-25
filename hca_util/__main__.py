@@ -34,7 +34,7 @@ def parse_args(args):
     parser_config.add_argument('ACCESS_KEY', help='AWS Access Key ID')
     parser_config.add_argument('SECRET_KEY', help='AWS Secret Access Key')
 
-    parser_create = cmd_parser.add_parser('create', help='create an upload directory (authorised user only)')
+    parser_create = cmd_parser.add_parser('create', help='create an upload area (authorised user only)')
     parser_create.add_argument('-n', metavar='name',
                                help='optional project name for new directory', type=valid_project_name)
     parser_create.add_argument('-p', choices=ALLOWED_PERMS, default=DEFAULT_PERMS, help=f'allowed actions ('
@@ -44,10 +44,10 @@ def parse_args(args):
                                                                                         f'download. Default is '
                                                                                         f'{DEFAULT_PERMS}')
 
-    parser_select = cmd_parser.add_parser('select', help='select active directory')
-    parser_select.add_argument('DIR', help='directory uuid', type=valid_dir)
+    parser_select = cmd_parser.add_parser('select', help='select an upload area or show the currently selected area')
+    parser_select.add_argument('DIR', help='directory uuid', type=valid_dir, nargs='?')
 
-    cmd_parser.add_parser('dir', help='display active (selected) directory')
+    # cmd_parser.add_parser('dir', help='display active (selected) directory')
 
     parser_clear = cmd_parser.add_parser('clear', help='clear current selection')
     parser_clear.add_argument('-a', action='store_true', help='clear all - selection and known dirs')

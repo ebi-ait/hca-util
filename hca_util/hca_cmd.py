@@ -28,9 +28,11 @@ class HcaCmd():
             success, msg = CmdConfig(args).run()
             print(msg)
 
-        elif args.command == 'dir':
-            success, msg = CmdDir.run()
-            print(msg)
+            """
+            elif args.command == 'dir':
+                success, msg = CmdDir.run()
+                print(msg)
+            """
 
         elif args.command == 'clear':
             a = args.a  # clear all
