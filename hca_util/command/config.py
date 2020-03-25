@@ -16,11 +16,16 @@ class CmdConfig:
     def run(self):
 
         try:
-            set_profile(DEFAULT_PROFILE, DEFAULT_REGION, self.args.ACCESS_KEY, self.args.SECRET_KEY)
+            if self.args.profile:
+                profile = self.args.profile
+            else:
+                profile = DEFAULT_PROFILE
+
+            set_profile(profile, DEFAULT_REGION, self.args.ACCESS_KEY, self.args.SECRET_KEY)
 
             # check new profile
-            if profile_exists(DEFAULT_PROFILE):
-                user_profile = get_profile(DEFAULT_PROFILE)
+            if profile_exists(profile):
+                user_profile = get_profile(profile)
                 aws = Aws(user_profile)
 
                 if aws.is_valid_credentials():
