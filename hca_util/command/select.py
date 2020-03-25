@@ -23,7 +23,11 @@ class CmdSelect:
                 else:
                     print("Upload area does not exist")
             else:
-                print('Currently selected upload area is ' + get_selected_area())
+                selected_area = get_selected_area()
+                if selected_area:
+                    print('Currently selected upload area is ' + get_selected_area())
+                else:
+                    print('No upload area currently selected')
 
         except Exception as e:
             print_err(e, 'select')
