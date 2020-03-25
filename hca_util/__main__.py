@@ -44,7 +44,7 @@ def parse_args(args):
                                                                                         f'download. Default is '
                                                                                         f'{DEFAULT_PERMS}')
 
-    parser_select = cmd_parser.add_parser('select', help='select an upload area or show the current area')
+    parser_select = cmd_parser.add_parser('select', help='select or show the active upload area')
     parser_select.add_argument('AREA', help='area uuid', type=valid_area, nargs='?')
 
     # cmd_parser.add_parser('dir', help='display active (selected) directory')

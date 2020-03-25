@@ -67,7 +67,7 @@ Running a command with the `--profile` argument uses the specified profile inste
 
 ## `create` command
 
-Create an upload area **(authorised user only)**
+Create an upload area **(authorised users only)**
 
 ```shell script
 $ hca-util create [-n name] [-p {u,ud,ux,udx}]
@@ -80,7 +80,7 @@ optional arguments:
 
 ## `select` command
 
-Select or show active area
+Select or show the active upload area
 
 ```shell script
 $ hca-util select AREA
@@ -102,7 +102,7 @@ optional arguments:
 
 ## `upload` command
 
-Upload files to selected area
+Upload files to the selected area
 
 ```shell script
 $ hca-util upload (-a | -f file [file ...]) [-o]
@@ -115,7 +115,7 @@ optional arguments:
 
 ## `download` command
 
-Download files from selected area
+Download files from the selected area
 
 ```shell script
 $ hca-util download (-a | -f file [file ...])
@@ -127,7 +127,7 @@ optional arguments:
 
 ## `delete` command
 
-Delete files from selected area
+Delete files from the selected area
 
 ```shell script
 $ hca-util delete (-a | -f file [file ...] | -d)
