@@ -1,4 +1,4 @@
-from hca_util.user_profile import profile_exists, get_profile, UserProfile
+from hca_util.user_profile import profile_exists, get_profile
 from hca_util.aws_client import Aws
 from hca_util.command.config import CmdConfig
 from hca_util.command.create import CmdCreate
@@ -10,7 +10,7 @@ from hca_util.command.download import CmdDownload
 from hca_util.command.delete import CmdDelete
 
 
-class HcaCmd():
+class HcaCmd:
     """
     steps to perform before executing command
     if cmd is config, skip steps, run config
