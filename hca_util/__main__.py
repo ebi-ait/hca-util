@@ -35,7 +35,8 @@ def parse_args(args):
     parser_config.add_argument('SECRET_KEY', help='AWS Secret Access Key')
 
     parser_create = cmd_parser.add_parser('create', help='create an upload directory (authorised user only)')
-    parser_create.add_argument('-n', metavar='name', help='optional project name for new directory', type=valid_project_name)
+    parser_create.add_argument('-n', metavar='name',
+                               help='optional project name for new directory', type=valid_project_name)
     parser_create.add_argument('-p', choices=ALLOWED_PERMS, default=DEFAULT_PERMS, help=f'allowed actions ('
                                                                                         f'permissions) on new '
                                                                                         f'directory. u for upload, '
@@ -46,7 +47,7 @@ def parse_args(args):
     parser_select = cmd_parser.add_parser('select', help='select active directory')
     parser_select.add_argument('DIR', help='directory uuid', type=valid_dir)
 
-    parser_dir = cmd_parser.add_parser('dir', help='display active (selected) directory')
+    cmd_parser.add_parser('dir', help='display active (selected) directory')
 
     parser_clear = cmd_parser.add_parser('clear', help='clear current selection')
     parser_clear.add_argument('-a', action='store_true', help='clear all - selection and known dirs')
@@ -58,7 +59,8 @@ def parse_args(args):
     group_upload = parser_upload.add_mutually_exclusive_group(required=True)
 
     group_upload.add_argument('-a', action='store_true', help='upload all files from current user directory')
-    group_upload.add_argument('-f', metavar='file', nargs='+', help='upload specified file(s)', type=argparse.FileType('r'))
+    group_upload.add_argument('-f', metavar='file', nargs='+',
+                              help='upload specified file(s)', type=argparse.FileType('r'))
     parser_upload.add_argument('-o', action='store_true', help='overwrite files with same names')
 
     parser_download = cmd_parser.add_parser('download', help='download files from selected directory')
