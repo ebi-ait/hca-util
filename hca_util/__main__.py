@@ -99,6 +99,15 @@ if __name__ == '__main__':
         parsed_args = parse_args(sys.argv[1:])
         HcaCmd(parsed_args)
     except KeyboardInterrupt:
-        # If SIGINT is triggered whilst threads are active (upload/download) we need to end the entire process to get
-        # a clean exit
+        # If SIGINT is triggered whilst threads are active (upload/download) we kill the entire process to give the
+        # user an instant exist, rather than have to hammer on ctrl+c multiple times with various obscure messages.
+        #
+        # However, os_.exit() is nasty because it allows the Python interpreter to do no cleanup
+        # One alternative is to make our transfer threads daemon. However, there are then other non-daemon threads
+        # employed by boto for the multi-part transfer. Here, configuring boto to only use the main thread for transfer
+        # works but with unmeasured effects on transfer speed. Alternatively, it might be possible to call
+        # boto3 client.abort_multipart_upload() but don't know for sure and in any case this requires more work to
+        # keep hold of upload IDs, etc.
+        #
+        # So for now risking the kill though might want to revisit this decision.
         os._exit(0)
