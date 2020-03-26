@@ -35,7 +35,7 @@ def parse_args(args):
     parser_config.add_argument('SECRET_KEY', help='AWS Secret Access Key')
 
     parser_create = cmd_parser.add_parser('create', help='create an upload area (authorised users only)')
-    parser_create.add_argument('name', help='name for the new area', type=valid_project_name)
+    parser_create.add_argument('NAME', help='name for the new area', type=valid_project_name)
     parser_create.add_argument('-p', choices=ALLOWED_PERMS, default=DEFAULT_PERMS, help=f'allowed actions ('
                                                                                         f'permissions) on new '
                                                                                         f'area. u for upload, '
