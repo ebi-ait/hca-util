@@ -70,7 +70,11 @@ Running a command with the `--profile` argument uses the specified profile inste
 Create an upload area **(authorised users only)**
 
 ```shell script
-$ hca-util create [-n name] [-p {u,ud,ux,udx}]
+$ hca-util create NAME [-p {u,ud,ux,udx}]
+
+
+positional arguments:
+  NAME               name for the new area
 
 optional arguments:
   -n name            optional project name for new area
