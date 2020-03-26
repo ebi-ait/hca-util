@@ -147,11 +147,11 @@ optional arguments:
 Run 
 
 ```shell script
-python -m hca_util.__main__
+python3 -m hca_util
 ```
 
 Run tests
 
 ```shell script
-python -m tests.test_hca_util
+python3 -m tests.test_hca_util
 ```
