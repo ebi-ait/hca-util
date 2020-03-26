@@ -52,7 +52,7 @@ def parse_args(args):
     # parser_clear.add_argument('-a', action='store_true', help='clear all - selection and known dirs')
 
     parser_list = cmd_parser.add_parser('list', help='list contents of the area')
-    parser_list.add_argument('-b', action='store_true', help='list all areas in the S3 bucket (authorised user only)')
+    parser_list.add_argument('-b', action='store_true', help='list all areas in the S3 bucket (authorised users only)')
 
     parser_upload = cmd_parser.add_parser('upload', help='upload files to the area')
     group_upload = parser_upload.add_mutually_exclusive_group(required=True)
@@ -73,7 +73,7 @@ def parse_args(args):
 
     group_delete.add_argument('-a', action='store_true', help='delete all files from the area')
     group_delete.add_argument('-f', metavar='file', nargs='+', help='delete specified file(s) only')
-    group_delete.add_argument('-d', action='store_true', help='delete upload area and contents (authorised user only)')
+    group_delete.add_argument('-d', action='store_true', help='delete upload area and contents (authorised users only)')
 
     ps = [parser]
     if DEBUG_MODE:
