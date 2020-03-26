@@ -71,6 +71,14 @@ class CmdUpload:
                         # put_object maps to the low-level S3 API request, it does not handle multipart uploads
                         res.Bucket(self.aws.bucket_name).upload_file(Filename=fname, Key=key,
                                                                      Callback=TransferProgress(fs[idx]))
+
+                        # if file size is 0, callback will likely never be called
+                        # and complete will not change to True
+                        # hack
+                        if fs[idx].size == 0:
+                            fs[idx].status = 'Empty file.'
+                            fs[idx].complete = True
+
                 except Exception as thread_ex:
                     fs[idx].status = 'Upload failed.'
                     fs[idx].complete = True
