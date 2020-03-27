@@ -1,5 +1,5 @@
 import os
-from hca_util.local_state import get_selected_dir
+from hca_util.local_state import get_selected_area
 from hca_util.common import print_err
 from hca_util.file_transfer import FileTransfer, TransferProgress, transfer
 
@@ -24,10 +24,10 @@ class CmdUpload:
 
     def run(self):
 
-        selected_dir = get_selected_dir()
+        selected_area = get_selected_area()
 
-        if not selected_dir:
-            print('No directory selected')
+        if not selected_area:
+            print('No area selected')
             return
 
         try:
@@ -55,7 +55,7 @@ class CmdUpload:
             def upload(idx):
                 try:
                     fname = fs[idx].key
-                    key = selected_dir + os.path.basename(fname)
+                    key = selected_area + os.path.basename(fname)
 
                     # creating a new session for each file upload/thread, as it's unclear whether they're
                     # thread-safe or not

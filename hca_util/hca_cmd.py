@@ -1,16 +1,16 @@
-from hca_util.user_profile import profile_exists, get_profile, UserProfile
+from hca_util.user_profile import profile_exists, get_profile
 from hca_util.aws_client import Aws
 from hca_util.command.config import CmdConfig
 from hca_util.command.create import CmdCreate
 from hca_util.command.select import CmdSelect
 from hca_util.command.list import CmdList
-from hca_util.command.dir import CmdDir
+# from hca_util.command.dir import CmdDir
 from hca_util.command.upload import CmdUpload
 from hca_util.command.download import CmdDownload
 from hca_util.command.delete import CmdDelete
 
 
-class HcaCmd():
+class HcaCmd:
     """
     steps to perform before executing command
     if cmd is config, skip steps, run config
@@ -28,14 +28,18 @@ class HcaCmd():
             success, msg = CmdConfig(args).run()
             print(msg)
 
-        elif args.command == 'dir':
-            success, msg = CmdDir.run()
-            print(msg)
+            """
+            elif args.command == 'dir':
+                success, msg = CmdDir.run()
+                print(msg)
+            """
 
-        elif args.command == 'clear':
-            a = args.a  # clear all
-            success, msg = CmdDir.clear(a)
-            print(msg)
+            """
+            elif args.command == 'clear':
+                a = args.a  # clear all
+                success, msg = CmdDir.clear(a)
+                print(msg)
+            """
 
         else:
 
@@ -47,16 +51,16 @@ class HcaCmd():
                     # print('Valid credentials')
                     try:
                         self.aws.get_bucket_name()
-                        self.execute(args)
-
                     except:
                         print('Unable to get bucket')
+
+                    self.execute(args)
 
                 else:
                     print('Invalid credentials')
 
             else:
-                print(f'Profile \'{args.profile}\' not found')
+                print(f'Profile \'{args.profile}\' not found. Please run hca-util config with your access keys')
 
     def execute(self, args):
         if args.command == 'create':

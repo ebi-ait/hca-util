@@ -29,8 +29,11 @@ class Aws:
             if arn.endswith(f'user/{IAM_USER_CONTRIBUTOR}'):
                 self.is_contributor = True
             return True
-        except:
-            return False
+        except Exception as e:
+            if e is not KeyboardInterrupt:
+                return False
+            else:
+                raise e
 
     def get_bucket_name(self):
         """

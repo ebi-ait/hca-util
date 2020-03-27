@@ -20,21 +20,17 @@ class CmdCreate:
         if self.aws.is_contributor:
             return False, 'You don\'t have permission to use this command'
 
-        project_name = self.args.n  # optional str, None
+        area_name = self.args.name
         perms = self.args.p  # optional str, default 'ux'
 
-        # generate random uuid prefix for directory name
-        dir_name = gen_uuid()
+        # generate random uuid prefix for area name
+        area_id = gen_uuid()
 
         try:
-
-            metadata = {}
-            if project_name:
-                metadata['name'] = project_name
-            metadata['perms'] = perms
+            metadata = {'name': area_name, 'perms': perms}
 
             s3_client = self.aws.common_session.client('s3')
-            s3_client.put_object(Bucket=self.aws.bucket_name, Key=(dir_name + '/'), Metadata=metadata)
+            s3_client.put_object(Bucket=self.aws.bucket_name, Key=(area_id + '/'), Metadata=metadata)
 
             # get bucket policy
             s3_resource = self.aws.common_session.resource('s3')
@@ -50,13 +46,13 @@ class CmdCreate:
                 policy_json = json.loads('{ "Version": "2012-10-17", "Statement": [] }')
 
             # add new statement for dir to existing bucket policy
-            new_statement = new_policy_statement(self.aws.bucket_name, dir_name, perms)
+            new_statement = new_policy_statement(self.aws.bucket_name, area_id, perms)
             policy_json['Statement'].append(new_statement)
 
             updated_policy = json.dumps(policy_json)
 
             bucket_policy.put(Policy=updated_policy)
-            return True, 'Created ' + dir_name
+            return True, 'Created upload area with UUID ' + area_id + ' and name ' + area_name
 
         except Exception as e:
             print_err(e, 'create')

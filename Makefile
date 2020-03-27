@@ -14,7 +14,7 @@ clean:
 
 test:
 	@echo "test"
-	python -m tests.test_hca_util
+	python3 -m tests.test_hca_util
 
 publish:
 	@echo "publish"
