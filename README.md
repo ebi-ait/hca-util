@@ -2,7 +2,7 @@
 
 CLI tool for uploading and downloading files from an HCA upload area.
 
-https://github.com/ebi-ait/hca-util
+PyPi: https://pypi.org/project/hca-util/
 
 # Users
 
