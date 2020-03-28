@@ -72,6 +72,9 @@ def create_if_not_exists(file):
     :return:
     """
     if not os.path.exists(file):
+        basedir = os.path.dirname(file)
+        if not os.path.exists(basedir):
+            os.makedirs(basedir)
         open(file, 'w').close()
 
 
@@ -82,6 +85,10 @@ def print_err(e, cmd):
     :param cmd:
     :return:
     """
+    err = str(e)
+    if 'Forbidden' in err or 'AccessDenied' in err:
+        print('You don\'t have permission to use this command')
+        return
     if DEBUG_MODE:
         print(f'An exception of type {e.__class__.__name__} occurred in command {cmd}.\nDetail: ' + str(e))
     else:
