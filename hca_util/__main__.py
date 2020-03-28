@@ -33,6 +33,7 @@ def parse_args(args):
     parser_config = cmd_parser.add_parser('config', help='configure AWS credentials')
     parser_config.add_argument('ACCESS_KEY', help='AWS Access Key ID')
     parser_config.add_argument('SECRET_KEY', help='AWS Secret Access Key')
+    parser_config.add_argument('--bucket', help='use BUCKET instead of default bucket')
 
     parser_create = cmd_parser.add_parser('create', help='create an upload area (authorised users only)')
     parser_create.add_argument('NAME', help='name for the new area', type=valid_project_name)
@@ -77,7 +78,7 @@ def parse_args(args):
 
     ps = [parser]
     if DEBUG_MODE:
-        ps = [parser, parser_config, parser_create, parser_list, parser_select]
+        ps = [parser, parser_config, parser_create, parser_select, parser_list, parser_upload, parser_download, parser_delete]
 
     for p in ps:
         p.add_argument(
@@ -95,7 +96,7 @@ def parse_args(args):
     return parser.parse_args(args)
 
 
-if __name__ == '__main__':
+def main():
     try:
         parsed_args = parse_args(sys.argv[1:])
         HcaCmd(parsed_args)
@@ -112,3 +113,6 @@ if __name__ == '__main__':
         #
         # So for now risking the kill though might want to revisit this decision.
         os._exit(0)
+
+if __name__ == '__main__':
+	main()
