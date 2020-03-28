@@ -5,6 +5,7 @@ from hca_util.settings import LOCAL_STATE_FILE
 class LocalState:
 
     def __init__(self):
+        self.bucket = None # default
         self.selected_area = None
         self.known_areas = []
         # potential other local state vars
@@ -37,15 +38,6 @@ class LocalState:
 
         return s
 
-
-def set_selected_area(area_name):
-    obj = deserialize(LOCAL_STATE_FILE)
-    if obj is None or not isinstance(obj, LocalState):
-        obj = LocalState()
-    obj.select_area(area_name)
-    serialize(LOCAL_STATE_FILE, obj)
-
-
 def get_local_state():
     obj = deserialize(LOCAL_STATE_FILE)
     if obj and isinstance(obj, LocalState):
@@ -62,3 +54,26 @@ def get_selected_area():
     if obj and isinstance(obj, LocalState):
         return obj.selected_area
     return None
+
+
+def set_selected_area(area_name):
+    obj = deserialize(LOCAL_STATE_FILE)
+    if obj is None or not isinstance(obj, LocalState):
+        obj = LocalState()
+    obj.select_area(area_name)
+    serialize(LOCAL_STATE_FILE, obj)
+
+
+def get_bucket():
+    obj = deserialize(LOCAL_STATE_FILE)
+    if obj and isinstance(obj, LocalState):
+        return obj.bucket
+    return None
+
+    
+def set_bucket(bucket):
+    obj = deserialize(LOCAL_STATE_FILE)
+    if obj is None or not isinstance(obj, LocalState):
+        obj = LocalState()
+    obj.bucket(bucket)
+    serialize(LOCAL_STATE_FILE, obj)
