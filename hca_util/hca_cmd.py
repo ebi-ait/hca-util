@@ -1,5 +1,6 @@
 from hca_util.user_profile import profile_exists, get_profile
 from hca_util.aws_client import Aws
+from hca_util.local_state import get_bucket
 from hca_util.command.config import CmdConfig
 from hca_util.command.create import CmdCreate
 from hca_util.command.select import CmdSelect
@@ -48,11 +49,15 @@ class HcaCmd:
                 self.aws = Aws(self.user_profile)
 
                 if self.aws.is_valid_credentials():
-                    # print('Valid credentials')
-                    try:
-                        self.aws.get_bucket_name()
-                    except:
-                        print('Unable to get bucket')
+                    # get bucket from local state if set
+                    bucket = get_bucket()
+                    if bucket:
+                        self.aws.bucket_name = bucket
+                    else:
+                        try:
+                            self.aws.get_bucket_name()
+                        except:
+                            print('Unable to get bucket')
 
                     self.execute(args)
 
