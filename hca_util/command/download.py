@@ -54,6 +54,9 @@ class CmdDownload:
                     except botocore.exceptions.ClientError as e:
                         if e.response['Error']['Code'] == "404":
                             fs.append(FileTransfer(key=key, status='File not found.', complete=True))
+                        elif e.response['Error']['Code'] == "403":
+                            # An error occurred (403) when calling the HeadObject operation: Forbidden
+                            fs.append(FileTransfer(key=key, status='Access denied.', complete=True))
                         else:
                             # Something else has gone wrong.
                             fs.append(FileTransfer(key=key, status='Download error.', complete=True))
@@ -69,8 +72,18 @@ class CmdDownload:
                     s3 = self.aws.new_session().resource('s3')
                     s3.Bucket(self.aws.bucket_name).download_file(file, file, Callback=TransferProgress(fs[idx]))
 
+                    # if file size is 0, callback will likely never be called
+                    # and complete will not change to True
+                    # hack
+                    if fs[idx].size == 0:
+                        fs[idx].status = 'Empty file.'
+                        fs[idx].complete = True
+
                 except Exception as thread_ex:
-                    fs[idx].status = 'Download failed.'
+                    if 'Forbidden' in str(thread_ex) or 'AccessDenied' in str(thread_ex):
+                        fs[idx].status = 'Access denied.'
+                    else:
+                        fs[idx].status = 'Download failed.'
                     fs[idx].complete = True
 
             print('Downloading...')
