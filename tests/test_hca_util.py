@@ -30,8 +30,14 @@ class TestHcaUtil(unittest.TestCase):
         self.assertFalse(success)
         self.assertEqual(msg, 'Invalid credentials')
 
-    def test_cmd_config_valid_creds(self):
-        args = ['config', contributor_access, contributor_secret, '--profile', 'test1']
+    def test_cmd_config_valid_creds_contributor(self):
+        self.valid_creds(contributor_access, contributor_secret, 'HCAContributor')
+
+    def test_cmd_config_valid_creds_wrangler(self):
+        self.valid_creds(wrangler_access, wrangler_secret, 'HCAWrangler')
+
+    def valid_creds(self, access, secret, profile):
+        args = ['config', access, secret, '--profile', profile]
         success, msg = CmdConfig(parse_args(args)).run()
         self.assertTrue(success)
         self.assertEqual(msg, 'Valid credentials')
@@ -42,23 +48,7 @@ class TestHcaUtil(unittest.TestCase):
         #self.assertEqual(sys.stdout, 'Selection cleared\n')
         pass
 
-    """
-    # tests with wrangler profile
-    def test_setup_wrangler_profile(self):
-        util = HcaUtil(profile='HCAWrangler')
-        self.assertEqual(util.setup_ok, True)
-        self.assertTrue(util.bucket_name)
 
-    def test_setup_invalid_profile(self):
-        util = HcaUtil(profile='invalid')
-        self.assertEqual(util.setup_ok, False)
-        self.assertFalse(util.bucket_name)
-
-    def test_setup_default_profile(self):
-        util = HcaUtil()
-        self.assertEqual(util.setup_ok, True)
-        self.assertTrue(util.bucket_name)
-    """
     def test_cmd_select_noargs(self):
         pass
 
