@@ -1,8 +1,8 @@
-# hca-util
+# covid-util
 
 CLI tool for uploading and downloading files from an HCA upload area.
 
-PyPi: https://pypi.org/project/hca-util/
+PyPi: https://pypi.org/project/covid-util/
 
 # Users
 
@@ -13,10 +13,10 @@ Users need to have
 3. Credentials to access data in the S3 bucket (access and secret keys)
 
 ## Install
-Get `hca-util` from PyPi.
+Get `covid-util` from PyPi.
 
 ```shell script
-$ pip install hca-util
+$ pip install covid-util
 ```
                            
 ## Usage
@@ -24,8 +24,8 @@ $ pip install hca-util
 Display help
 
 ```shell script
-$ hca-util -h
-usage: hca-util [-h] [--profile PROFILE]
+$ covid-util -h
+usage: covid-util [-h] [--profile PROFILE]
                    {config,create,select,dir,clear,list,upload,download,delete}
 ```
 
@@ -34,7 +34,7 @@ In the above, optional arguments are between `[]` and choices between `{}`.
 The basic usage is as follows:
 
 ```shell script
-$ hca-util cmd ARG1 ARG2 -o1 -o2
+$ covid-util cmd ARG1 ARG2 -o1 -o2
 ```
 
 Use the tool by specifying a command (`cmd` - see list below) to run, any mandatory (positional) arguments (e.g. `ARG1` and `ARG2` - see positional args for each command), and any optional arguments (e.g. `-o1` and `o2` - see options for each command).
@@ -44,7 +44,7 @@ Use the tool by specifying a command (`cmd` - see list below) to run, any mandat
 help for a specific command:
 
 ```shell script
-$ hca-util <command> -h
+$ covid-util <command> -h
 ```
 
 Some commands or options/flags are restricted to authorised users (for e.g. wranglers, admin) only.
@@ -54,23 +54,23 @@ Some commands or options/flags are restricted to authorised users (for e.g. wran
 Configure AWS credentials
 
 ```shell script
-$ hca-util config ACCESS_KEY SECRET_KEY
+$ covid-util config ACCESS_KEY SECRET_KEY
 
 positional arguments:
   ACCESS_KEY         AWS Access Key ID
   SECRET_KEY         AWS Secret Access Key
 ```
 
-By default, this tool looks for and uses the profile name _hca-util_, if it exists, or it can be set by the `config` command.
+By default, this tool looks for and uses the profile name _covid-util_, if it exists, or it can be set by the `config` command.
 
-Running a command with the `--profile` argument uses the specified profile instead of the default _hca-util_ profile.
+Running a command with the `--profile` argument uses the specified profile instead of the default _covid-util_ profile.
 
 ## `create` command
 
 Create an upload area **(authorised users only)**
 
 ```shell script
-$ hca-util create NAME [-p {u,ud,ux,udx}]
+$ covid-util create NAME [-p {u,ud,ux,udx}]
 
 
 positional arguments:
@@ -87,7 +87,7 @@ optional arguments:
 Select or show the active upload area
 
 ```shell script
-$ hca-util select AREA
+$ covid-util select AREA
 
 positional arguments:
   AREA                area uuid. If not present then selected area is shown
@@ -98,7 +98,7 @@ positional arguments:
 List contents of selected area
 
 ```shell script
-$ hca-util list [-b]
+$ covid-util list [-b]
 
 optional arguments:
   -b                 list all areas in bucket **(authorised users only)**
@@ -109,7 +109,7 @@ optional arguments:
 Upload files to the selected area
 
 ```shell script
-$ hca-util upload (-a | -f file [file ...]) [-o]
+$ covid-util upload (-a | -f file [file ...]) [-o]
 
 optional arguments:
   -a                  upload all files from current user directory
@@ -122,7 +122,7 @@ optional arguments:
 Download files from the selected area
 
 ```shell script
-$ hca-util download (-a | -f file [file ...])
+$ covid-util download (-a | -f file [file ...])
 
 optional arguments:
   -a                  download all files from selected area
@@ -134,7 +134,7 @@ optional arguments:
 Delete files from the selected area
 
 ```shell script
-$ hca-util delete (-a | -f file [file ...] | -d)
+$ covid-util delete (-a | -f file [file ...] | -d)
 
 optional arguments:
   -a                  delete all files from selected area

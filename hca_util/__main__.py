@@ -25,7 +25,7 @@ def valid_area(string):
 
 
 def parse_args(args):
-    parser = argparse.ArgumentParser(description='hca-util')
+    parser = argparse.ArgumentParser(description='covid-util')
 
     cmd_parser = parser.add_subparsers(title='command', dest='command')
     cmd_parser.required = True
