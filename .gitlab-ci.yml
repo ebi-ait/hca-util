@@ -8,3 +8,5 @@ test_cli:
   script:
     - python -m tests.test_hca_util
 
+before_script:
+  - pip install -r requirements.txt
