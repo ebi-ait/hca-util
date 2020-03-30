@@ -4,3 +4,4 @@ build/
 dist/
 hca_util.egg-info/
 testpypi-env/
+venv/
