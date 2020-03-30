@@ -9,6 +9,8 @@ from hca_util.command.select import CmdSelect
 from hca_util.command.list import CmdList
 from hca_util.command.area import CmdArea
 
+# TODO: change language here wrangler -> admin, contributor -> user
+
 contributor_profile = 'HCAContributor'
 wrangler_profile = 'HCAWrangler'
 
