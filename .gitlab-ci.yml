@@ -1,0 +1,12 @@
+image: python:3.6
+
+stages:
+  - test
+
+test_cli:
+  stage: test
+  script:
+    - python -m tests.test_hca_util
+
+before_script:
+  - pip install -r requirements.txt
