@@ -9,21 +9,24 @@ from hca_util.command.select import CmdSelect
 from hca_util.command.list import CmdList
 from hca_util.command.area import CmdArea
 
-# TODO: change language here wrangler -> admin, contributor -> user
+# TODO: run setenv script before running tests
 
-contributor_profile = 'HCAContributor'
-wrangler_profile = 'HCAWrangler'
+# 2 user types: admin and (normal) user
+# in the context of hca, wrangler=admin and contributor=user
 
-contributor_access = os.environ['HCA_UTIL_CONTRIBUTOR_ACCESS']
-contributor_secret = os.environ['HCA_UTIL_CONTRIBUTOR_SECRET']
+user_profile = 'HCAContributor'
+admin_profile = 'HCAWrangler'
 
-wrangler_access = os.environ['HCA_UTIL_WRANGLER_ACCESS']
-wrangler_secret = os.environ['HCA_UTIL_WRANGLER_SECRET']
+user_access = os.environ['HCA_UTIL_USER_ACCESS']
+user_secret = os.environ['HCA_UTIL_USER_SECRET']
+
+admin_access = os.environ['HCA_UTIL_ADMIN_ACCESS']
+admin_secret = os.environ['HCA_UTIL_ADMIN_SECRET']
 
 
 class TestHcaUtil(unittest.TestCase):
 
-    # test: contributor can't delete folder
+    # test: user can't delete folder
     # test: don't repeat upload
 
     def test_cmd_config_invalid_creds(self):
@@ -32,11 +35,11 @@ class TestHcaUtil(unittest.TestCase):
         self.assertFalse(success)
         self.assertEqual(msg, 'Invalid credentials')
 
-    def test_cmd_config_valid_creds_contributor(self):
-        self.valid_creds(contributor_access, contributor_secret, 'HCAContributor')
+    def test_cmd_config_valid_creds_user(self):
+        self.valid_creds(user_access, user_secret, user_profile)
 
-    def test_cmd_config_valid_creds_wrangler(self):
-        self.valid_creds(wrangler_access, wrangler_secret, 'HCAWrangler')
+    def test_cmd_config_valid_creds_admin(self):
+        self.valid_creds(admin_access, admin_secret, admin_profile)
 
     def valid_creds(self, access, secret, profile):
         args = ['config', access, secret, '--profile', profile]
@@ -66,11 +69,11 @@ class TestHcaUtil(unittest.TestCase):
     def test_cmd_select_valid_ok(self):
         pass
 
-    # tests with contributor profile
+    # tests with user profile
     def test_one(self):
         pass
 
-    # test - create (wrangler)
+    # test - create (admin)
     dir_u = None
     dir_ud = None
     dir_ux = None
@@ -87,16 +90,16 @@ class TestHcaUtil(unittest.TestCase):
         """
         pass
 
-    def test_dirs_wrangler_access(self):
-        self.dirs_access(wrangler_profile)
+    def test_dirs_admin_access(self):
+        self.dirs_access(admin_profile)
 
-    def test_dirs_contributor_access(self):
-        self.dirs_access(contributor_profile)
+    def test_dirs_user_access(self):
+        self.dirs_access(user_profile)
 
     def dirs_access(self, user):
         """
-        Test user (contributor & wrangler) permissions to carry out command on folder with specified perms
-                  - contributor -   -  wrangler   -
+        Test admin vs user permissions to carry out command on folder with specified perms
+                  -  user  -          -  admin  -
         cmd       u   ud  ux  udx   u   ud  ux  udx
         ---       -   --  --  ---   -   --  --  ---
         select    Y   Y   Y   Y     Y   Y   Y   Y
