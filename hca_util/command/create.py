@@ -24,7 +24,7 @@ class CmdCreate:
         if self.aws.is_contributor:
             return False, 'You don\'t have permission to use this command'
 
-        area_name = self.args.name
+        area_name = self.args.NAME
         perms = self.args.p  # optional str, default 'ux'
 
         # generate random uuid prefix for area name
