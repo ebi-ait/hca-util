@@ -6,7 +6,7 @@ stages:
 test_cli:
   stage: test
   script:
-    - python -m tests.test_config
+    - python -m tests.test_config # TODO run all
 
 before_script:
   - pip install -r requirements.txt
