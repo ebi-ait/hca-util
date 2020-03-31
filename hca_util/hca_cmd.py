@@ -1,16 +1,15 @@
 import sys
 
-from hca_util.user_profile import profile_exists, get_profile
 from hca_util.aws_client import Aws
-from hca_util.local_state import get_bucket
 from hca_util.command.config import CmdConfig
 from hca_util.command.create import CmdCreate
-from hca_util.command.select import CmdSelect
-from hca_util.command.list import CmdList
-# from hca_util.command.dir import CmdDir
-from hca_util.command.upload import CmdUpload
-from hca_util.command.download import CmdDownload
 from hca_util.command.delete import CmdDelete
+from hca_util.command.download import CmdDownload
+from hca_util.command.list import CmdList
+from hca_util.command.select import CmdSelect
+from hca_util.command.upload import CmdUpload
+from hca_util.local_state import get_bucket
+from hca_util.user_profile import profile_exists, get_profile
 
 
 class HcaCmd:
@@ -61,20 +60,32 @@ class HcaCmd:
     def execute(self, args):
         if args.command == 'create':
             success, msg = CmdCreate(self.aws, args).run()
-            print(msg)
-            sys.exit(1)
+            self.exit(success, msg)
 
         elif args.command == 'select':
-            CmdSelect(self.aws, args).run()
+            success, msg = CmdSelect(self.aws, args).run()
+            self.exit(success, msg)
 
         elif args.command == 'list':
-            CmdList(self.aws, args).run()
+            success, msg = CmdList(self.aws, args).run()
+            self.exit(success, msg)
 
         elif args.command == 'upload':
-            CmdUpload(self.aws, args).run()
+            success, msg = CmdUpload(self.aws, args).run()
+            self.exit(success, msg)
 
         elif args.command == 'download':
-            CmdDownload(self.aws, args).run()
+            success, msg = CmdDownload(self.aws, args).run()
+            self.exit(success, msg)
 
         elif args.command == 'delete':
-            CmdDelete(self.aws, args).run()
+            success, msg = CmdDelete(self.aws, args).run()
+            self.exit(success, msg)
+
+    def exit(self, success, message):
+        print(message)
+
+        if success:
+            sys.exit(0)
+        else:
+            sys.exit(1)

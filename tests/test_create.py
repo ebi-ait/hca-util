@@ -104,7 +104,10 @@ class TestCreate(unittest.TestCase):
         # when
         with self.assertRaises(SystemExit) as error:
             parsed_args = parse_args(args)
+            success, msg = CmdCreate(self.aws_mock, parsed_args).run()
             self.assertFalse(parsed_args)
+            self.assertFalse(success)
+            self.assertFalse(msg)
 
         self.assertEqual(error.exception.code, 2)
 
