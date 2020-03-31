@@ -1,5 +1,7 @@
 import json
 from botocore.exceptions import ClientError
+
+from hca_util.aws_client import Aws
 from hca_util.bucket_policy import new_policy_statement
 from hca_util.common import gen_uuid
 from hca_util.common import print_err
@@ -11,11 +13,13 @@ class CmdCreate:
     aws resource or client used in command - s3 client (put_object), s3 resource (BucketPolicy)
     """
 
-    def __init__(self, aws, args):
+    def __init__(self, aws: Aws, args):
         self.aws = aws
         self.args = args
 
     def run(self):
+        if not self.aws:
+            return False, 'You need configure your profile first'
 
         if self.aws.is_contributor:
             return False, 'You don\'t have permission to use this command'

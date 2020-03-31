@@ -29,21 +29,7 @@ class HcaCmd:
             success, msg = CmdConfig(args).run()
             print(msg)
 
-            """
-            elif args.command == 'dir':
-                success, msg = CmdDir.run()
-                print(msg)
-            """
-
-            """
-            elif args.command == 'clear':
-                a = args.a  # clear all
-                success, msg = CmdDir.clear(a)
-                print(msg)
-            """
-
         else:
-
             if profile_exists(args.profile):
                 self.user_profile = get_profile(args.profile)
                 self.aws = Aws(self.user_profile)
@@ -86,3 +72,6 @@ class HcaCmd:
 
         elif args.command == 'delete':
             CmdDelete(self.aws, args).run()
+
+    def get_aws_profile(self):
+        pass
