@@ -1,8 +1,8 @@
 # common functions
 
 import os
-import uuid
 import pickle
+import uuid
 
 from hca_util.settings import DEBUG_MODE
 
@@ -85,14 +85,7 @@ def print_err(e, cmd):
     :param cmd:
     :return:
     """
-    err = str(e)
-    if 'Forbidden' in err or 'AccessDenied' in err:
-        print('You don\'t have permission to use this command')
-        return
-    if DEBUG_MODE:
-        print(f'An exception of type {e.__class__.__name__} occurred in command {cmd}.\nDetail: ' + str(e))
-    else:
-        print(f'An error occurred in command: {cmd}')
+    print(format_err(e, cmd))
 
 
 def format_err(e, cmd):
@@ -105,7 +98,7 @@ def format_err(e, cmd):
     err = str(e)
 
     if 'Forbidden' in err or 'AccessDenied' in err:
-         'You don\'t have permission to use this command'
+        'You don\'t have permission to use this command'
 
     if DEBUG_MODE:
         return f'An exception of type {e.__class__.__name__} occurred in command {cmd}.\nDetail: ' + str(e)

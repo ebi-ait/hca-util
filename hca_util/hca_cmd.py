@@ -83,7 +83,8 @@ class HcaCmd:
             self.exit(success, msg)
 
     def exit(self, success, message):
-        print(message)
+        if message:
+            print(message)
 
         if success:
             sys.exit(0)

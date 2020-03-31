@@ -10,3 +10,4 @@ test_cli:
 
 before_script:
   - pip install -r requirements.txt
+  - pip install covid-util # for e2e tests
