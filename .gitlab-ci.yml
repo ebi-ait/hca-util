@@ -6,7 +6,7 @@ stages:
 test_cli:
   stage: test
   script:
-    - python -m tests.test_hca_util
+    - python -m tests.test_config
 
 before_script:
   - pip install -r requirements.txt
