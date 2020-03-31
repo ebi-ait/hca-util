@@ -5,3 +5,9 @@ dist/
 hca_util.egg-info/
 testpypi-env/
 venv/
+
+# vscode ide
+.vscode
+
+# Distribution / packaging
+*.egg-info/
