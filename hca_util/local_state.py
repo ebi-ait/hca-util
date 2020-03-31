@@ -66,7 +66,7 @@ def set_selected_area(area_name):
 
 def get_bucket():
     obj = deserialize(LOCAL_STATE_FILE)
-    if obj and isinstance(obj, LocalState):
+    if obj and isinstance(obj, LocalState) and hasattr(obj, 'bucket'):
         return obj.bucket
     return None
 
