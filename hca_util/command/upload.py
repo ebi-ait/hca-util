@@ -39,68 +39,45 @@ class CmdUpload:
 
             ps = []
             for p in self.args.PATH:
-                p = os.path.abspath(p)
+                p = os.path.abspath(p)  # Normalize a pathname by collapsing redundant separators and up-level references so that A//B, A/B/, A/./B and A/foo/../B all become A/B.
                 if not p in ps:
                     ps.append(p)
 
-            # create list of files 
-
-            # PATH=['/home/prabhat', '/home/prabhat/f1', '.', '/home/prabhat'], command='upload', d=None, o=False, profile='hca-util', r=False
-
+            # create list of files to upload
             fs = []
+
             max_depth = 1  # default
             if self.args.r:
                 max_depth = MAX_DIR_DEPTH
             
-            def get_files(path, curr_path, level):
-                if level < max_depth:
+            def get_files(upload_path, curr_path, level):
+                if level < max_depth:  # skip files deeper than max depth
                     level += 1
-                    for f in os.listdir(curr_path):
+                    for f in os.listdir(curr_path): 
                         full_path = os.path.join(curr_path, f)
                         # skip hidden files and dirs
                         if not exclude(f):
                             if os.path.isfile(full_path):
-                                add_file(fs, full_path, path if level > 1 else None)
+                                f_size = os.path.getsize(full_path)
+                                rel_path = full_path.replace(upload_path+('' if upload_path.endswith('/') else '/'), '')
+                                fs.append(FileTransfer(path=full_path, key=rel_path, size=f_size))
+
                             elif os.path.isdir(full_path):
-                                get_files(path, full_path, level)
+                                get_files(upload_path, full_path, level)
 
             for p in ps:
-                if os.path.isfile(p):
-                    add_file(fs, p)
+                if os.path.isfile(p):  # explicitly specified files, whether hidden or starts with '__' not skipped
+                    f_size = os.path.getsize(p)
+                    f_name = os.path.basename(p)
+                    fs.append(FileTransfer(path=p, key=f_name, size=f_size))
+
                 elif os.path.isdir(p):  # recursively handle dir upload
                     get_files(p, p, 0) 
 
-            for f in fs:
-                print(f)
-
-            return
-
-
-            # choice 1
-            all_files = self.args.a  # optional bool
-
-            fs = []
-            if all_files:
-                # upload files from current directory
-                for f in os.listdir('.'):
-                    # only files (not directories) and skip hidden files
-                    if os.path.isfile(f) and not f.startswith('.'):
-                        f_size = os.path.getsize(f)
-                        fs.append(FileTransfer(key=f, size=f_size))
-            else:
-
-                # choice 2 upload specified list of files
-                # optional list of <_io.TextIOWrapper name='f1' mode='r' encoding='UTF-8'>
-
-                for f in self.args.f :
-                    # argparse takes care of path expansion and check if file doesn't exist
-                    f_size = os.path.getsize(f.name)
-                    fs.append(FileTransfer(key=f.name, size=f_size))
 
             def upload(idx):
                 try:
-                    fname = fs[idx].key
-                    key = selected_area + os.path.basename(fname)
+                    key = selected_area + fs[idx].key
 
                     # creating a new session for each file upload/thread, as it's unclear whether they're
                     # thread-safe or not
@@ -114,7 +91,7 @@ class CmdUpload:
                         res = sess.resource('s3')
                         # upload_file automatically handles multipart uploads via the S3 Transfer Manager
                         # put_object maps to the low-level S3 API request, it does not handle multipart uploads
-                        res.Bucket(self.aws.bucket_name).upload_file(Filename=fname, Key=key,
+                        res.Bucket(self.aws.bucket_name).upload_file(Filename=fs[idx].path, Key=key,
                                                                      Callback=TransferProgress(fs[idx]))
 
                         # if file size is 0, callback will likely never be called
@@ -139,15 +116,6 @@ class CmdUpload:
 
 def exclude(f):
     return f.startswith('.') or f.startswith('__')
-
-
-def add_file(fs, path, curr_path=None):
-    print(f'{path} -- {curr_path}')
-    f_size = os.path.getsize(path)
-    f_name = os.path.basename(path)
-    if curr_path:
-        f_name = remove_prefix(path, curr_path)
-    fs.append(FileTransfer(key=f_name, size=f_size))
 
 
 def remove_prefix(text, prefix):
