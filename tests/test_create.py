@@ -99,10 +99,12 @@ class TestCreate(unittest.TestCase):
 
     @patch('hca_util.aws_client.Aws')
     def test_create_upload_area_with_invalid_credentials(self, aws_mock):
+        # given
         aws_mock.is_valid_credentials = False
-        # configure invalid
+
         args = ['create', 'uploadArea']
 
+        # when
         with self.assertRaises(SystemExit) as error:
             HcaCmd(parse_args(args))
 
