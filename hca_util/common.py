@@ -22,11 +22,7 @@ def is_valid_uuid(val):
 
 
 def is_valid_project_name(name):
-    """Project name has to be between 1 and MAX_LEN chars and contains only alphanum chars"""
-    if name.isalnum() and 0 < len(name) <= MAX_LEN_PROJECT_NAME:
-        return True
-    else:
-        return False
+    return 0 < len(name) <= MAX_LEN_PROJECT_NAME
 
 
 def is_valid_area_name(area_name):
