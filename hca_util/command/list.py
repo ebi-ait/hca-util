@@ -1,6 +1,5 @@
+from hca_util.common import format_err
 from hca_util.local_state import get_selected_area
-
-from hca_util.common import print_err
 
 
 class CmdList:
@@ -17,8 +16,7 @@ class CmdList:
 
         if self.args.b:  # list all areas in bucket
             if self.aws.is_contributor:
-                print('You don\'t have permission to use this command')
-                return
+                return False, 'You don\'t have permission to use this command'
             try:
                 s3_resource = self.aws.common_session.resource('s3')
                 bucket = s3_resource.Bucket(self.aws.bucket_name)
@@ -41,17 +39,17 @@ class CmdList:
                         folder_count += 1
 
                 print_count(folder_count)
+                return True, None
 
             except Exception as e:
-                print_err(e, 'list')
+                return False, format_err(e, 'list')
 
         else:  # list selected area contents
 
             selected_area = get_selected_area()
 
             if not selected_area:
-                print('No area selected')
-                return
+                return False, 'No area selected'
 
             try:
                 selected_area += '' if selected_area.endswith('/') else '/'
@@ -66,9 +64,9 @@ class CmdList:
                     if not k.endswith('/'):
                         file_count += 1
                 print_count(file_count)
-
+                return True, None
             except Exception as e:
-                print_err(e, 'list')
+                return False, format_err(e, 'list')
 
 
 def print_count(count):

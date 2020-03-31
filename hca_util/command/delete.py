@@ -1,8 +1,10 @@
 import json
+
 from botocore.exceptions import ClientError
-from hca_util.local_state import get_selected_area
-from hca_util.common import print_err
+
 from hca_util.command.area import CmdArea
+from hca_util.common import format_err
+from hca_util.local_state import get_selected_area
 
 
 class CmdDelete:
@@ -20,8 +22,7 @@ class CmdDelete:
         selected_area = get_selected_area()
 
         if not selected_area:
-            print('No area selected')
-            return
+            return False, 'No area selected'
 
         try:
             s3_resource = self.aws.common_session.resource('s3')
@@ -29,8 +30,7 @@ class CmdDelete:
 
             if self.args.d:  # delete area
                 if self.aws.is_contributor:
-                    print('You don\'t have permission to use this command')
-                    return
+                    return False, 'You don\'t have permission to use this command'
 
                 confirm = input(f'Confirm delete {selected_area}? Y/y to proceed: ')
 
@@ -47,7 +47,7 @@ class CmdDelete:
 
                     # clear selected area
                     CmdArea.clear(False)
-                return
+                return True, None
 
             if self.args.a:  # delete all files
                 print('Deleting...')
@@ -57,7 +57,7 @@ class CmdDelete:
                         continue
                     print(obj.key)
                     obj.delete()
-                return
+                return True, None
 
             if self.args.f:  # delete list of file(s)
                 print('Deleting...')
@@ -69,13 +69,13 @@ class CmdDelete:
 
                         obj = s3_resource.ObjectSummary(self.aws.bucket_name, selected_area + f)
                         obj.delete()
-                        print(selected_area + f + '  Done.')
+                        return True, selected_area + f + '  Done.'
                     else:
-                        print(selected_area + f + '  File not found.')
+                        return False, selected_area + f + '  File not found.'
                 return
 
         except Exception as e:
-            print_err(e, 'delete')
+            return False, format_err(e, 'delete')
 
 
 def delete_dir_perms_from_bucket_policy(s3_res, bucket_name, dir_name):

@@ -1,10 +1,10 @@
 import json
+
 from botocore.exceptions import ClientError
 
 from hca_util.aws_client import Aws
 from hca_util.bucket_policy import new_policy_statement
-from hca_util.common import gen_uuid
-from hca_util.common import print_err
+from hca_util.common import gen_uuid, format_err
 
 
 class CmdCreate:
@@ -59,4 +59,4 @@ class CmdCreate:
             return True, 'Created upload area with UUID ' + area_id + ' and name ' + area_name
 
         except Exception as e:
-            print_err(e, 'create')
+            return False, format_err(e, 'create')

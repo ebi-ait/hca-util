@@ -1,5 +1,5 @@
+from hca_util.common import format_err
 from hca_util.local_state import get_selected_area, set_selected_area
-from hca_util.common import print_err
 
 
 class CmdSelect:
@@ -19,15 +19,15 @@ class CmdSelect:
 
                 if self.aws.obj_exists(key):
                     set_selected_area(key)
-                    print('Selected upload area is ' + key)
+                    return True, 'Selected upload area is ' + key
                 else:
-                    print("Upload area does not exist")
+                    return False, "Upload area does not exist"
             else:
                 selected_area = get_selected_area()
                 if selected_area:
-                    print('Currently selected upload area is ' + get_selected_area())
+                    return True, 'Currently selected upload area is ' + get_selected_area()
                 else:
-                    print('No upload area currently selected')
+                    return False, 'No upload area currently selected'
 
         except Exception as e:
-            print_err(e, 'select')
+            return False, format_err(e, 'select')
