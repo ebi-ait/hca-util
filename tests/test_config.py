@@ -32,7 +32,3 @@ class TestConfig(unittest.TestCase):
         success, msg = CmdConfig(parse_args(args)).run()
         self.assertFalse(success)
         self.assertEqual(msg, 'Invalid credentials')
-
-
-if __name__ == '__main__':
-    unittest.main()
