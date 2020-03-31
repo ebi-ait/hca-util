@@ -1,3 +1,5 @@
+import sys
+
 from hca_util.user_profile import profile_exists, get_profile
 from hca_util.aws_client import Aws
 from hca_util.local_state import get_bucket
@@ -44,14 +46,17 @@ class HcaCmd:
                             self.aws.get_bucket_name()
                         except:
                             print('Unable to get bucket')
+                            sys.exit(1)
 
                     self.execute(args)
 
                 else:
                     print('Invalid credentials')
+                    sys.exit(1)
 
             else:
                 print(f'Profile \'{args.profile}\' not found. Please run config command with your access keys')
+                sys.exit(1)
 
     def execute(self, args):
         if args.command == 'create':
@@ -72,6 +77,3 @@ class HcaCmd:
 
         elif args.command == 'delete':
             CmdDelete(self.aws, args).run()
-
-    def get_aws_profile(self):
-        pass

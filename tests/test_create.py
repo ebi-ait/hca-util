@@ -1,6 +1,8 @@
 import unittest
 from unittest.mock import MagicMock, Mock, patch
 
+from hca_util.hca_cmd import HcaCmd
+
 from hca_util.__main__ import parse_args
 from hca_util.command.create import CmdCreate
 
@@ -84,17 +86,24 @@ class TestCreate(unittest.TestCase):
         metadata = {'name': upload_area_name, 'perms': permission}
         self.client.put_object.assert_called_once_with(Bucket='bucket-name', Key='uuid/', Metadata=metadata)
 
-    @patch('uuid.uuid4')
-    def test_admin_create_upload_area_no_name(self, uuid):
+    def test_admin_create_upload_area_no_name(self):
         # given
-        uuid.return_value = 'uuid'
-        args = ['create', 'testUploadArea']
+        args = ['create']
 
         # when
-        success, msg = CmdCreate(self.aws_mock, parse_args(args)).run()
+        with self.assertRaises(SystemExit) as error:
+            parsed_args = parse_args(args)
+            self.assertFalse(parsed_args)
 
-        # then
-        self.assertTrue(success)
+        self.assertEqual(error.exception.code, 2)
 
-        metadata = {'name': 'testUploadArea', 'perms': 'ux'}
-        self.client.put_object.assert_called_once_with(Bucket='bucket-name', Key='uuid/', Metadata=metadata)
+    @patch('hca_util.aws_client.Aws')
+    def test_create_upload_area_with_invalid_credentials(self, aws_mock):
+        aws_mock.is_valid_credentials = False
+        # configure invalid
+        args = ['create', 'uploadArea']
+
+        with self.assertRaises(SystemExit) as error:
+            HcaCmd(parse_args(args))
+
+        self.assertEqual(error.exception.code, 1)
