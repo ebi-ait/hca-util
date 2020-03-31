@@ -5,7 +5,7 @@ from hca_util.common import print_err
 
 class CmdList:
     """
-    user: both wrangler and contributor
+    admin and user
     aws resource or client used in command - s3 resource (bucket.objects, Object().metadata)
     """
 
@@ -16,7 +16,7 @@ class CmdList:
     def run(self):
 
         if self.args.b:  # list all areas in bucket
-            if self.aws.is_contributor:
+            if self.aws.is_user:
                 print('You don\'t have permission to use this command')
                 return
             try:

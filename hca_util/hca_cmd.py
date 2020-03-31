@@ -9,7 +9,7 @@ from hca_util.command.list import CmdList
 from hca_util.command.upload import CmdUpload
 from hca_util.command.download import CmdDownload
 from hca_util.command.delete import CmdDelete
-
+import os
 
 class HcaCmd:
     """
@@ -19,7 +19,7 @@ class HcaCmd:
         check user profile (default or specified via --profile)
         instantiate an aws client
         check valid credentials (via sts get caller identity)
-        flag is_contributor
+        flag is_user
         get bucket name (from secret mgr)
     """
 

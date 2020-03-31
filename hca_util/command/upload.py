@@ -2,6 +2,7 @@ import os
 from hca_util.local_state import get_selected_area
 from hca_util.common import print_err
 from hca_util.file_transfer import FileTransfer, TransferProgress, transfer
+from hca_util.settings import MAX_DIR_DEPTH
 
 
 """
@@ -14,7 +15,7 @@ Uploading to Upload Service upload area
 
 class CmdUpload:
     """
-    user: both wrangler and contributor
+    admin and user
     aws resource or client used in command - s3 resource (Bucket().upload_file), s3 client list_objects_v2
     """
 
@@ -31,6 +32,50 @@ class CmdUpload:
             return
 
         try:
+            
+            # filter out any duplicate path after expansion 
+            # . -> curent drectory
+            # ~ -> user home directory
+
+            ps = []
+            for p in self.args.PATH:
+                p = os.path.abspath(p)
+                if not p in ps:
+                    ps.append(p)
+
+            # create list of files 
+
+            # PATH=['/home/prabhat', '/home/prabhat/f1', '.', '/home/prabhat'], command='upload', d=None, o=False, profile='hca-util', r=False
+
+            fs = []
+            max_depth = 1  # default
+            if self.args.r:
+                max_depth = MAX_DIR_DEPTH
+            
+            def get_files(path, curr_path, level):
+                if level < max_depth:
+                    level += 1
+                    for f in os.listdir(curr_path):
+                        full_path = os.path.join(curr_path, f)
+                        # skip hidden files and dirs
+                        if not exclude(f):
+                            if os.path.isfile(full_path):
+                                add_file(fs, full_path, path if level > 1 else None)
+                            elif os.path.isdir(full_path):
+                                get_files(path, full_path, level)
+
+            for p in ps:
+                if os.path.isfile(p):
+                    add_file(fs, p)
+                elif os.path.isdir(p):  # recursively handle dir upload
+                    get_files(p, p, 0) 
+
+            for f in fs:
+                print(f)
+
+            return
+
+
             # choice 1
             all_files = self.args.a  # optional bool
 
@@ -88,4 +133,25 @@ class CmdUpload:
             transfer(upload, fs)
 
         except Exception as e:
-            print_err(e, 'upload')
+            #print_err(e, 'upload')
+            raise e
+
+
+def exclude(f):
+    return f.startswith('.') or f.startswith('__')
+
+
+def add_file(fs, path, curr_path=None):
+    print(f'{path} -- {curr_path}')
+    f_size = os.path.getsize(path)
+    f_name = os.path.basename(path)
+    if curr_path:
+        f_name = remove_prefix(path, curr_path)
+    fs.append(FileTransfer(key=f_name, size=f_size))
+
+
+def remove_prefix(text, prefix):
+    if text.startswith(prefix):
+        return text[len(prefix):]
+    return text  # or whatever
+

@@ -47,7 +47,7 @@ help for a specific command:
 $ hca-util <command> -h
 ```
 
-Some commands or options/flags are restricted to authorised users (for e.g. wranglers, admin) only.
+Some commands or options/flags are restricted to authorised users (for e.g. admin) only.
 
 ## `config` command
 

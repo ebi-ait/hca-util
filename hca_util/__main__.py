@@ -24,6 +24,13 @@ def valid_area(string):
     return string
 
 
+def valid_path(path):
+    if os.path.exists(path):  # true if the path is a file, directory, or a valid symlink.
+        return path
+    else:
+        raise argparse.ArgumentTypeError(f"'{path}' is not a valid path")
+
+
 def parse_args(args):
     parser = argparse.ArgumentParser(description='hca-util')
 
@@ -55,13 +62,20 @@ def parse_args(args):
     parser_list = cmd_parser.add_parser('list', help='list contents of the area')
     parser_list.add_argument('-b', action='store_true', help='list all areas in the S3 bucket (authorised users only)')
 
-    parser_upload = cmd_parser.add_parser('upload', help='upload files to the area')
-    group_upload = parser_upload.add_mutually_exclusive_group(required=True)
+    # parser_upload = cmd_parser.add_parser('upload', help='upload files to the area')
+    # group_upload = parser_upload.add_mutually_exclusive_group(required=True)
 
-    group_upload.add_argument('-a', action='store_true', help='upload all files')
-    group_upload.add_argument('-f', metavar='file', nargs='+',
-                              help='upload specified file(s)', type=argparse.FileType('r'))
-    parser_upload.add_argument('-o', action='store_true', help='overwrite files with same names')
+    # group_upload.add_argument('-a', action='store_true', help='upload all files')
+    # group_upload.add_argument('-f', metavar='file', nargs='+',
+    #                           help='upload specified file(s)', type=argparse.FileType('r'))
+    # parser_upload.add_argument('-o', action='store_true', help='overwrite files with same names')
+
+    parser_upload = cmd_parser.add_parser('upload', help='upload files to the area')
+    parser_upload.add_argument('PATH', help='valid file or directory', type=valid_path, nargs='+')
+    parser_upload.add_argument('-r', action='store_true', help='recursively upload sub-directories')
+    parser_upload.add_argument('-o', action='store_true', help='overwrite file or directory with same name')
+    parser_upload.add_argument('-d', metavar='DIR', help='upload to specified directory')
+
 
     parser_download = cmd_parser.add_parser('download', help='download files from the area')
     group_download = parser_download.add_mutually_exclusive_group(required=True)

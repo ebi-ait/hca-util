@@ -8,7 +8,7 @@ from hca_util.common import print_err
 
 class CmdDownload:
     """
-    user: both wrangler and contributor
+    admin and user
     aws resource or client used in command - s3 resource (Bucket().upload_file), s3 client list_objects_v2
     """
 

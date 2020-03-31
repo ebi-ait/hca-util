@@ -3,6 +3,8 @@ from pathlib import Path
 # when true, displays exception details; otherwise user-friendly error message
 DEBUG_MODE = True
 
+MAX_DIR_DEPTH = 5
+
 # user home directory
 USER_HOME = str(Path.home())
 
@@ -20,5 +22,9 @@ DEFAULT_REGION = 'us-east-1'
 # local state for user
 LOCAL_STATE_FILE = USER_HOME + '/.hca-util'
 
-# contributor IAM user name
-IAM_USER_CONTRIBUTOR = 'HCAContributor'
+# 2 IAM user types: admin and (normal) user
+# in the context of hca, admin=wrangler and user=contributor
+IAM_USER = 'HCAContributor'
+IAM_ADMIN = 'HCAWrangler'
+
+AWS_ACCOUNT = '871979166454'

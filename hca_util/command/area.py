@@ -3,7 +3,7 @@ from hca_util.local_state import get_local_state, set_local_state, LocalState
 
 class CmdArea:
     """
-    user: both wrangler and contributor
+    both admin and user
     aws resource or client used in command - none, all local operations.
     """
 

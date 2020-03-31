@@ -7,7 +7,7 @@ from hca_util.common import print_err
 
 class CmdConfig:
     """
-    user: both wrangler and contributor
+    both admin and user
     aws resource or client used in command - sts (to check valid credentials).
     """
 

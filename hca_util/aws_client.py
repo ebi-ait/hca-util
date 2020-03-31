@@ -1,6 +1,6 @@
 import boto3
 import json
-from hca_util.settings import AWS_SECRET_NAME, IAM_USER_CONTRIBUTOR
+from hca_util.settings import AWS_SECRET_NAME, IAM_USER
 
 
 class Aws:
@@ -8,7 +8,7 @@ class Aws:
     def __init__(self, user_profile):
         self.user_profile = user_profile
         self.common_session = self.new_session()
-        self.is_contributor = False
+        self.is_user = False # not admin
         self.bucket_name = None
 
     def new_session(self):
@@ -26,8 +26,8 @@ class Aws:
         try:
             resp = sts.get_caller_identity()
             arn = resp.get('Arn')
-            if arn.endswith(f'user/{IAM_USER_CONTRIBUTOR}'):
-                self.is_contributor = True
+            if arn.endswith(f'user/{IAM_USER}'):
+                self.is_user = True
             return True
         except Exception as e:
             if e is not KeyboardInterrupt:

@@ -7,7 +7,7 @@ from hca_util.common import print_err
 
 class CmdCreate:
     """
-    user: wrangler only
+    admin only
     aws resource or client used in command - s3 client (put_object), s3 resource (BucketPolicy)
     """
 
@@ -17,10 +17,10 @@ class CmdCreate:
 
     def run(self):
 
-        if self.aws.is_contributor:
+        if self.aws.is_user:
             return False, 'You don\'t have permission to use this command'
 
-        area_name = self.args.name
+        area_name = self.args.NAME
         perms = self.args.p  # optional str, default 'ux'
 
         # generate random uuid prefix for area name

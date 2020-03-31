@@ -7,7 +7,7 @@ from hca_util.command.area import CmdArea
 
 class CmdDelete:
     """
-    user: both wrangler and contributor, though contributor can't delete folder
+    both admin and user, though user can't delete folder
     aws resource or client used in command - s3 resource (bucket.objects/ obj.delete)
     """
 
@@ -28,7 +28,7 @@ class CmdDelete:
             bucket = s3_resource.Bucket(self.aws.bucket_name)
 
             if self.args.d:  # delete area
-                if self.aws.is_contributor:
+                if self.aws.is_user:
                     print('You don\'t have permission to use this command')
                     return
 
@@ -42,7 +42,7 @@ class CmdDelete:
                         obj.delete()
 
                     # delete bucket policy for HCAContributer-folder permissions
-                    # only wrangler who has perms to set policy can do this
+                    # only admin who has perms to set policy can do this
                     delete_dir_perms_from_bucket_policy(s3_resource, self.aws.bucket_name, selected_area)
 
                     # clear selected area
@@ -78,7 +78,7 @@ class CmdDelete:
             print_err(e, 'delete')
 
 
-def delete_dir_perms_from_bucket_policy(s3_res, bucket_name, dir_name):
+def delete_dir_perms_from_bucket_policy(s3_res, bucket_name, area_name):
     try:
         bucket_policy = s3_res.BucketPolicy(bucket_name)
         policy_str = bucket_policy.policy
@@ -89,7 +89,7 @@ def delete_dir_perms_from_bucket_policy(s3_res, bucket_name, dir_name):
         policy_json = json.loads(policy_str)
         changed = False
         for stmt in policy_json['Statement']:
-            if dir_name in stmt['Resource']:
+            if area_name in stmt['Resource']:
                 policy_json['Statement'].remove(stmt)
                 changed = True
         if changed:
