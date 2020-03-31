@@ -61,11 +61,11 @@ class TestConfig(unittest.TestCase):
         bucket_policy = MagicMock()
 
         client.put_object = Mock()
-        resource.BucketPolicy = Mock(bucket_policy)
-        bucket_policy.policy = 'policy'
+        resource.BucketPolicy = Mock(return_value=bucket_policy)
+        bucket_policy.policy = None
 
         session.client = Mock(return_value=client)
-        session.resource = resource
+        session.resource = Mock(return_value=resource)
 
         aws_mock.is_contributor = False
         aws_mock.common_session = session
@@ -74,7 +74,7 @@ class TestConfig(unittest.TestCase):
         args = ['create', 'testUploadArea']
         success, msg = CmdCreate(aws_mock, parse_args(args)).run()
 
-        self.assertFalse(success)
+        self.assertTrue(success)
 
 
     def test_select_valid(self):
