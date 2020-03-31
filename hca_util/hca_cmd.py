@@ -62,6 +62,7 @@ class HcaCmd:
         if args.command == 'create':
             success, msg = CmdCreate(self.aws, args).run()
             print(msg)
+            sys.exit(1)
 
         elif args.command == 'select':
             CmdSelect(self.aws, args).run()

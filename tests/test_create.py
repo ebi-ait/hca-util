@@ -28,7 +28,7 @@ class TestCreate(unittest.TestCase):
         self.aws_mock.common_session = session
         self.aws_mock.bucket_name = 'bucket-name'
 
-    def test_create_upload_area_no_config(self):
+    def test_create_upload_area_no_config_display_error(self):
         # given
         args = ['create', 'testUploadArea']
 
@@ -38,6 +38,17 @@ class TestCreate(unittest.TestCase):
         # then
         self.assertFalse(success)
         self.assertEqual(msg, 'You need configure your profile first')
+
+    def test_create_upload_area_no_config_exits_error(self):
+        # given
+        args = ['create', 'testUploadArea']
+
+        # when
+        with self.assertRaises(SystemExit) as error:
+            HcaCmd(parse_args(args))
+
+        # then
+        self.assertEqual(error.exception.code, 1)
 
     def test_user_create_upload_area_has_valid_config(self):
         # given
@@ -108,4 +119,5 @@ class TestCreate(unittest.TestCase):
         with self.assertRaises(SystemExit) as error:
             HcaCmd(parse_args(args))
 
+        # then
         self.assertEqual(error.exception.code, 1)
