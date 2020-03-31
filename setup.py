@@ -16,7 +16,7 @@ setup(
     # dashes are ok in repo and PyPI dist names but not in package (i.e. directory) and
     # module (.py file) names. can't do import xyz-abc
     name='covid-util',
-    version='0.0.3',
+    version='0.0.4',
     description='CLI tool for uploading data to the European COVID-19 data platform',
     long_description=README,
     long_description_content_type='text/markdown',
