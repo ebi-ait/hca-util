@@ -8,14 +8,9 @@ from hca_util.command.create import CmdCreate
 from hca_util.command.select import CmdSelect
 from hca_util.command.list import CmdList
 from hca_util.command.area import CmdArea
+from hca_util.settings import IAM_ADMIN, IAM_USER
 
 # TODO: run setenv script before running tests
-
-# 2 user types: admin and (normal) user
-# in the context of hca, wrangler=admin and contributor=user
-
-user_profile = 'HCAContributor'
-admin_profile = 'HCAWrangler'
 
 user_access = os.environ['HCA_UTIL_USER_ACCESS']
 user_secret = os.environ['HCA_UTIL_USER_SECRET']
@@ -36,10 +31,10 @@ class TestHcaUtil(unittest.TestCase):
         self.assertEqual(msg, 'Invalid credentials')
 
     def test_cmd_config_valid_creds_user(self):
-        self.valid_creds(user_access, user_secret, user_profile)
+        self.valid_creds(user_access, user_secret, IAM_USER)
 
     def test_cmd_config_valid_creds_admin(self):
-        self.valid_creds(admin_access, admin_secret, admin_profile)
+        self.valid_creds(admin_access, admin_secret, IAM_ADMIN)
 
     def valid_creds(self, access, secret, profile):
         args = ['config', access, secret, '--profile', profile]
@@ -91,10 +86,10 @@ class TestHcaUtil(unittest.TestCase):
         pass
 
     def test_dirs_admin_access(self):
-        self.dirs_access(admin_profile)
+        self.dirs_access(IAM_ADMIN)
 
     def test_dirs_user_access(self):
-        self.dirs_access(user_profile)
+        self.dirs_access(IAM_USER)
 
     def dirs_access(self, user):
         """
