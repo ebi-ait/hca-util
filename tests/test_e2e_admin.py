@@ -7,7 +7,7 @@ admin_access = os.environ.get('HCA_UTIL_ADMIN_ACCESS')
 admin_secret = os.environ.get('HCA_UTIL_ADMIN_SECRET')
 
 
-def run(command, input=None):
+def run(command: str, input: str = None):
     parsed_command = command.split(' ')
     proc = subprocess.Popen(parsed_command,
                             stdin=subprocess.PIPE,
@@ -22,8 +22,8 @@ def run(command, input=None):
     return proc.returncode, stdout.decode(), stderr.decode()
 
 
-def search_uuid(string):
-    m = re.search('([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})', string)
+def search_uuid(text: str):
+    m = re.search('([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})', text)
     if m:
         return m.group(1)
     return None
@@ -66,7 +66,7 @@ class TestAdminE2E(TestCase):
         # list files
         print('Listing file')
         list_files, output, error = run(f'covid-util list')
-        self.assertEqual(list_files, 0, 'file cannot be listed')
+        self.assertEqual(list_files, 0, f'file cannot be listed, output: {output}, error:{error}')
         self.assertTrue(filename in output,
                         f'file {filename} was not uploaded to {upload_area}, output: {output}, error:{error}')
 
