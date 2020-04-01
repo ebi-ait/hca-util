@@ -6,7 +6,8 @@ stages:
 test_cli:
   stage: test
   script:
-    - python -m tests.test_hca_util
+    - nosetests
 
 before_script:
-  - pip install -r requirements.txt
+  - pip install -r requirements-dev.txt
+  - pip install covid-util
