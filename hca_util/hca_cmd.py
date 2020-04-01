@@ -65,7 +65,7 @@ class HcaCmd:
                     print('Invalid credentials')
 
             else:
-                print(f'Profile \'{args.profile}\' not found. Please run hca-util config with your access keys')
+                print(f'Profile \'{args.profile}\' not found. Please run config command with your access keys')
 
     def execute(self, args):
         if args.command == 'create':
