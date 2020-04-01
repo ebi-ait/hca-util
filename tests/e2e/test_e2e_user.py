@@ -14,7 +14,7 @@ admin_profile = 'test-hca-util'
 admin_access = os.environ.get('HCA_UTIL_ADMIN_ACCESS')
 admin_secret = os.environ.get('HCA_UTIL_ADMIN_SECRET')
 
-name = 'hca-util'
+name = 'hca_util'
 cli = f'python3 -m {name}'
 
 
