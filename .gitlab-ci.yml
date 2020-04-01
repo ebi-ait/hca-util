@@ -1,12 +1,18 @@
 image: python:3.6
 
 stages:
-  - test
+  - tests
 
-test_cli:
-  stage: test
+e2e_test:
+  stage: tests
   script:
-    - nosetests
+    - PYTHONPATH=$PWD nosetests -v tests.e2e
+
+integration_test:
+  stage: tests
+  script:
+    - nosetests -v tests.command
+
 
 before_script:
   - pip install -r requirements-dev.txt
