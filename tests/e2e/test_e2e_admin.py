@@ -7,7 +7,9 @@ admin_access = os.environ.get('HCA_UTIL_ADMIN_ACCESS')
 admin_secret = os.environ.get('HCA_UTIL_ADMIN_SECRET')
 
 admin_profile = 'test-hca-util'
-cli = 'python3 -m hca_util'
+
+name = 'hca-util'
+cli = f'python3 -m {name}'
 
 
 class TestAdminE2E(TestCase):
