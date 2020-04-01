@@ -1,6 +1,7 @@
 import sys
 
 from hca_util.aws_client import Aws
+from hca_util.local_state import get_bucket
 from hca_util.command.config import CmdConfig
 from hca_util.command.create import CmdCreate
 from hca_util.command.delete import CmdDelete
@@ -56,6 +57,7 @@ class HcaCmd:
             else:
                 print(f'Profile \'{args.profile}\' not found. Please run config command with your access keys')
                 sys.exit(1)
+
 
     def execute(self, args):
         if args.command == 'create':

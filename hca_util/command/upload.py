@@ -77,6 +77,7 @@ class CmdUpload:
                         if fs[idx].size == 0:
                             fs[idx].status = 'Empty file.'
                             fs[idx].complete = True
+
                 except Exception as thread_ex:
                     fs[idx].status = 'Upload failed.'
                     fs[idx].complete = True
