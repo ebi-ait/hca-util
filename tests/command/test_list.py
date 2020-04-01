@@ -71,11 +71,5 @@ class TestList(unittest.TestCase):
 
             self.assertTrue("3 items" in cmd_output_lines)
 
-
-
-
-
-
-
 if __name__ == '__main__':
     unittest.main()
