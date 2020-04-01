@@ -2,21 +2,25 @@ import os
 import sys
 from unittest import TestCase
 
-from tests.e2e.test_utils import search_uuid, run
+from tests.e2e.test_e2e_admin import search_uuid, run
 
+sys.path.append(os.getcwd())
+
+user_profile = 'covid-util-user'
+user_access = os.environ.get('HCA_UTIL_USER_ACCESS')
+user_secret = os.environ.get('HCA_UTIL_USER_SECRET')
+
+admin_profile = 'covid-util'
 admin_access = os.environ.get('HCA_UTIL_ADMIN_ACCESS')
 admin_secret = os.environ.get('HCA_UTIL_ADMIN_SECRET')
 
 
-sys.path.append(os.getcwd())
+class TestUserE2E(TestCase):
+    def test_e2e_user(self):
+        profile = f'--profile {admin_profile}'
 
-
-class TestAdminE2E(TestCase):
-    def test_e2e_admin(self):
-        profile = '--profile covid-util'
-
-        print('# Configuring covid-util\n')
-        self._assert_successful_run(f'covid-util config {admin_access} {admin_secret} {profile}', verbose=False)
+        print('# Configuring covid-util admin\n')
+        self._assert_successful_run(f'covid-util config {admin_access} {admin_secret} {profile}', verbose=True)
 
         print('# Creating Upload Area\n')
         upload_area = 'testuploadarea'
@@ -24,6 +28,10 @@ class TestAdminE2E(TestCase):
 
         upload_area_uuid = search_uuid(output)
         self.assertTrue(upload_area_uuid, 'The upload area uuid could not be found from the output')
+
+        profile = f'--profile {user_profile}'
+        print('# Configuring covid-util user\n')
+        self._assert_successful_run(f'covid-util config {user_access} {user_secret} {profile}', verbose=True)
 
         print('# Selecting Upload Area\n')
         self._assert_successful_run(f'covid-util select {upload_area_uuid} {profile}')
@@ -46,13 +54,23 @@ class TestAdminE2E(TestCase):
         self.assertFalse(filename in output, f'file {filename} was not deleted to {upload_area}, output: {output}')
 
         print('# Deleting upload area\n')
+        exit_code, output, error = run(f'covid-util delete -d {profile}', input="y\n")
+        # TODO the cli command should have exit code 1 when it fails
+        # self.assertEqual(exit_code, 1, f'user has no permission to delete upload area, output: {output}, error:{error}')
+
+        print('# Listing upload area to check if it is deleted\n')
+        select_upload, output, error = run(f'covid-util select {upload_area_uuid} {profile}')
+        self.assertEqual(select_upload, 0,
+                         f'upload area {upload_area_uuid} should not be deleted, output: {output}, error:{error}')
+
+        profile = f'--profile {admin_profile}'
+        print('# Deleting upload area\n')
         self._assert_successful_run(f'covid-util delete -d {profile}', input="y\n")
 
         print('# Listing upload area to check if it is deleted\n')
         select_upload, output, error = run(f'covid-util select {upload_area_uuid} {profile}')
-        # TODO add back when changes to this branch is released
-        # the cli command should have exit code 1 when it fails
-        # self.assertEqual(1, select_upload,
+        # TODO the cli command should have exit code 1 when it fails
+        # self.assertEqual(select_upload, 1,
         #                  f'upload area {upload_area_uuid} is not deleted, output: {output}, error:{error}')
 
         # cleanup

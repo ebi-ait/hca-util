@@ -6,7 +6,7 @@ stages:
 e2e_test:
   stage: tests
   script:
-    - PYTHONPATH=$PWD nosetests -v tests.e2e
+    - PYTHONPATH=$PWD/tests nosetests -v tests.e2e
 
 integration_test:
   stage: tests
