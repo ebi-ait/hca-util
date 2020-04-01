@@ -1,4 +1,4 @@
-from hca_util.settings import AWS_ACCOUNT, IAM_USER
+from settings import AWS_ACCOUNT, IAM_USER
 
 """
 Permissions include

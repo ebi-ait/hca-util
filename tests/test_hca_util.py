@@ -8,7 +8,7 @@ from hca_util.command.create import CmdCreate
 from hca_util.command.select import CmdSelect
 from hca_util.command.list import CmdList
 from hca_util.command.area import CmdArea
-from hca_util.settings import IAM_ADMIN, IAM_USER
+from settings.hca_util import IAM_ADMIN, IAM_USER
 
 # TODO: run setenv script before running tests
 

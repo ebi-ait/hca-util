@@ -4,7 +4,7 @@ import argparse
 import os
 import sys
 
-from hca_util.settings import DEFAULT_PROFILE, DEBUG_MODE
+from settings import DEFAULT_PROFILE, DEBUG_MODE
 from hca_util.common import is_valid_project_name, is_valid_area_name
 from hca_util.hca_cmd import HcaCmd
 from hca_util.bucket_policy import ALLOWED_PERMS, DEFAULT_PERMS

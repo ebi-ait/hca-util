@@ -1,7 +1,7 @@
 import os
 import botocore
 from hca_util.file_transfer import FileTransfer, TransferProgress, transfer
-from hca_util.settings import DEBUG_MODE
+from settings import DEBUG_MODE
 from hca_util.local_state import get_selected_area
 from hca_util.common import print_err
 

@@ -4,7 +4,7 @@ import os
 import uuid
 import pickle
 
-from hca_util.settings import DEBUG_MODE
+from settings import DEBUG_MODE
 
 MAX_LEN_PROJECT_NAME = 36
 

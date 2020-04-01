@@ -1,6 +1,6 @@
 import boto3
 import json
-from hca_util.settings import AWS_SECRET_NAME, IAM_USER
+from settings import AWS_SECRET_NAME, IAM_USER
 
 
 class Aws:

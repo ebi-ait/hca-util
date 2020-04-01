@@ -1,7 +1,7 @@
 import os
 import configparser
 from hca_util.common import create_if_not_exists
-from hca_util.settings import AWS_CONFIG_FILE, AWS_CREDENTIALS_FILE, DEFAULT_REGION
+from settings import AWS_CONFIG_FILE, AWS_CREDENTIALS_FILE, DEFAULT_REGION
 
 
 class UserProfile:
