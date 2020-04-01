@@ -26,7 +26,7 @@ class TestUserE2E(TestCase):
         self._assert_successful_run(f'{cli} config {admin_access} {admin_secret} {profile}', verbose=False)
 
         print('# Creating Upload Area\n')
-        upload_area = 'testuploadarea'
+        upload_area = 'testuseruploadarea'
         output = self._assert_successful_run(f'{cli} create {upload_area} {profile}')
 
         upload_area_uuid = search_uuid(output)
@@ -39,7 +39,7 @@ class TestUserE2E(TestCase):
         print('# Selecting Upload Area\n')
         self._assert_successful_run(f'{cli} select {upload_area_uuid} {profile}')
 
-        filename = 'tests-file.txt'
+        filename = 'test-user-file.txt'
         self._assert_successful_run(f'touch {filename}')
 
         print('# Uploading file\n')
