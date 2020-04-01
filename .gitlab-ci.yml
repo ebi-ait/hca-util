@@ -3,10 +3,15 @@ image: python:3.6
 stages:
   - tests
 
-e2e_test:
+test_e2e_admin:
   stage: tests
   script:
-    - PYTHONPATH=$PWD/tests nosetests -v tests.e2e
+    - nosetests -v tests/e2e/test_e2e_admin.py
+
+test_e2e_user:
+  stage: tests
+    script:
+      - nosetests -v tests/e2e/test_e2e_user.py
 
 integration_test:
   stage: tests
@@ -16,4 +21,3 @@ integration_test:
 
 before_script:
   - pip install -r requirements-dev.txt
-  - pip install covid-util

@@ -14,7 +14,7 @@ clean:
 
 test:
 	@echo "test"
-	python3 -m tests.test_hca_util
+	nosetests
 
 publish:
 	@echo "publish"
