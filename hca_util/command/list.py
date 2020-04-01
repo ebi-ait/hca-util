@@ -18,26 +18,19 @@ class CmdList:
             if self.aws.is_contributor:
                 return False, 'You don\'t have permission to use this command'
             try:
-                s3_resource = self.aws.common_session.resource('s3')
-                bucket = s3_resource.Bucket(self.aws.bucket_name)
-
                 folder_count = 0
-                for obj in bucket.objects.all():
-                    k = obj.key
-                    if k.endswith('/'):
-                        print(k, end=' ')
-                        obj_meta = obj.Object().metadata
-                        if obj_meta:
-                            p = ''
-                            if 'perms' in obj_meta:
-                                p = obj_meta.get('perms')
-                            print(p.ljust(3), end=' ')
-                            if 'name' in obj_meta:
-                                n = obj_meta.get('name')
-                                print(f'{n}' if n else '', end=' ')
-                        print()
-                        folder_count += 1
-
+                for area in self.list_bucket_areas():
+                    k = area["key"]
+                    print(k, end=' ')
+                    p = ''
+                    if 'perms' in area:
+                        p = area.get('perms') or ''
+                    print(p.ljust(3), end=' ')
+                    if 'name' in area:
+                        n = area.get('name')
+                        print(f'{n}' if n else '', end=' ')
+                    print()
+                    folder_count += 1
                 print_count(folder_count)
                 return True, None
 
@@ -45,7 +38,6 @@ class CmdList:
                 return False, format_err(e, 'list')
 
         else:  # list selected area contents
-
             selected_area = get_selected_area()
 
             if not selected_area:
@@ -54,19 +46,46 @@ class CmdList:
             try:
                 selected_area += '' if selected_area.endswith('/') else '/'
 
-                s3_resource = self.aws.common_session.resource('s3')
-                bucket = s3_resource.Bucket(self.aws.bucket_name)
-
                 file_count = 0
-                for obj in bucket.objects.filter(Prefix=selected_area):
-                    k = obj.key
+                for k in self.list_area_contents(selected_area):
                     print(k)
                     if not k.endswith('/'):
                         file_count += 1
+
                 print_count(file_count)
                 return True, None
             except Exception as e:
                 return False, format_err(e, 'list')
+
+    def list_bucket_areas(self):
+        areas = []
+        s3_resource = self.aws.common_session.resource('s3')
+        bucket = s3_resource.Bucket(self.aws.bucket_name)
+        for obj in bucket.objects.all():
+            k = obj.key
+            if k.endswith('/'):
+                obj_meta = obj.Object().metadata
+                if obj_meta:
+                    areas.append(dict(
+                        key=k, perms=obj_meta.get('perms'), name=obj_meta.get('name')
+                    ))
+                else:
+                    areas.append(dict(
+                        key=k, perms=None, name=None
+                    ))
+        return areas
+
+    def list_area_contents(self, selected_area):
+        contents = []
+
+        s3_resource = self.aws.common_session.resource('s3')
+        bucket = s3_resource.Bucket(self.aws.bucket_name)
+
+        for obj in bucket.objects.filter(Prefix=selected_area):
+            k = obj.key
+            contents.append(k)
+
+        return contents
 
 
 def print_count(count):
