@@ -1,8 +1,8 @@
 # common functions
 
 import os
-import uuid
 import pickle
+import uuid
 
 from settings import DEBUG_MODE
 
@@ -81,11 +81,22 @@ def print_err(e, cmd):
     :param cmd:
     :return:
     """
+    print(format_err(e, cmd))
+
+
+def format_err(e, cmd):
+    """
+    Format to user-friendly error message or exception details depending on DEBUG MODE
+    :param e:
+    :param cmd:
+    :return:
+    """
     err = str(e)
+
     if 'Forbidden' in err or 'AccessDenied' in err:
-        print('You don\'t have permission to use this command')
-        return
+        'You don\'t have permission to use this command'
+
     if DEBUG_MODE:
-        print(f'An exception of type {e.__class__.__name__} occurred in command {cmd}.\nDetail: ' + str(e))
+        return f'An exception of type {e.__class__.__name__} occurred in command {cmd}.\nDetail: ' + str(e)
     else:
-        print(f'An error occurred in command: {cmd}')
+        return f'An error occurred in command: {cmd}'

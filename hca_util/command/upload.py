@@ -1,9 +1,9 @@
 import os
-from hca_util.local_state import get_selected_area
-from hca_util.common import print_err
-from hca_util.file_transfer import FileTransfer, TransferProgress, transfer
-from settings import MAX_DIR_DEPTH
 
+from hca_util.common import format_err
+from hca_util.file_transfer import FileTransfer, TransferProgress, transfer
+from hca_util.local_state import get_selected_area
+from settings import MAX_DIR_DEPTH
 
 """
 Uploading to Upload Service upload area
@@ -28,8 +28,7 @@ class CmdUpload:
         selected_area = get_selected_area()
 
         if not selected_area:
-            print('No area selected')
-            return
+            return False, 'No area selected'
 
         try:
             
@@ -49,6 +48,8 @@ class CmdUpload:
             max_depth = 1  # default
             if self.args.r:
                 max_depth = MAX_DIR_DEPTH
+
+            exclude = lambda f: f.startswith('.') or f.startswith('__')
             
             def get_files(upload_path, curr_path, level):
                 if level < max_depth:  # skip files deeper than max depth
@@ -100,7 +101,6 @@ class CmdUpload:
                         if fs[idx].size == 0:
                             fs[idx].status = 'Empty file.'
                             fs[idx].complete = True
-
                 except Exception as thread_ex:
                     fs[idx].status = 'Upload failed.'
                     fs[idx].complete = True
@@ -109,17 +109,7 @@ class CmdUpload:
 
             transfer(upload, fs)
 
+            return True, 'Success upload'
+
         except Exception as e:
-            #print_err(e, 'upload')
-            raise e
-
-
-def exclude(f):
-    return f.startswith('.') or f.startswith('__')
-
-
-def remove_prefix(text, prefix):
-    if text.startswith(prefix):
-        return text[len(prefix):]
-    return text  # or whatever
-
+            return False, format_err(e, 'upload')

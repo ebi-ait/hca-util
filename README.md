@@ -143,6 +143,10 @@ optional arguments:
 ```
 
 # Developers
+Download dependencies
+```
+pip install -r requirements.txt
+```
 
 Run 
 
@@ -153,5 +157,5 @@ python3 -m hca_util
 Run tests
 
 ```shell script
-python3 -m tests.test_hca_util
+nosetests
 ```

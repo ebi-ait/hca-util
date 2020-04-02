@@ -1,8 +1,8 @@
-from hca_util.user_profile import set_profile, profile_exists, get_profile
-from settings import DEFAULT_PROFILE, DEFAULT_REGION
-from hca_util.local_state import set_bucket
 from hca_util.aws_client import Aws
-from hca_util.common import print_err
+from hca_util.common import format_err
+from hca_util.local_state import set_bucket
+from settings import DEFAULT_PROFILE, DEFAULT_REGION
+from hca_util.user_profile import set_profile, profile_exists, get_profile
 
 
 class CmdConfig:
@@ -36,4 +36,4 @@ class CmdConfig:
                 return False, 'Error setting profile'
 
         except Exception as e:
-            print_err(e, 'config')
+            return False, format_err(e, 'config')

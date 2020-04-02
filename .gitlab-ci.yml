@@ -3,10 +3,21 @@ image: python:3.6
 stages:
   - test
 
-test_cli:
+test_e2e_admin:
   stage: test
   script:
-    - python -m tests.test_hca_util
+    - nosetests -v tests/e2e/test_e2e_admin.py
+
+test_e2e_user:
+  stage: test
+  script:
+    - nosetests -v tests/e2e/test_e2e_user.py
+
+integration_test:
+  stage: test
+  script:
+    - nosetests -v tests.command
+
 
 before_script:
-  - pip install -r requirements.txt
+  - pip install -r requirements-dev.txt

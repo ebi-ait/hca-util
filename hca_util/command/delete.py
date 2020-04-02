@@ -1,8 +1,10 @@
 import json
+
 from botocore.exceptions import ClientError
-from hca_util.local_state import get_selected_area
-from hca_util.common import print_err
+
 from hca_util.command.area import CmdArea
+from hca_util.common import format_err
+from hca_util.local_state import get_selected_area
 
 
 class CmdDelete:
@@ -20,8 +22,7 @@ class CmdDelete:
         selected_area = get_selected_area()
 
         if not selected_area:
-            print('No area selected')
-            return
+            return False, 'No area selected'
 
         try:
             s3_resource = self.aws.common_session.resource('s3')
@@ -29,8 +30,7 @@ class CmdDelete:
 
             if self.args.d:  # delete area
                 if self.aws.is_user:
-                    print('You don\'t have permission to use this command')
-                    return
+                    return False, 'You don\'t have permission to use this command'
 
                 confirm = input(f'Confirm delete upload area {selected_area}? Y/y to proceed: ')
 
@@ -47,7 +47,7 @@ class CmdDelete:
 
                     # clear selected area
                     CmdArea.clear(False)
-                return
+                return True, None
 
             if self.args.a:  # delete all files
                 
@@ -62,7 +62,7 @@ class CmdDelete:
                             continue
                         print(obj.key)
                         obj.delete()
-                return
+                return True, None
 
             if self.args.PATH:  # list of files and dirs to delete
                 print('Deleting...')
@@ -80,10 +80,10 @@ class CmdDelete:
                             print(k + '  Done.')
                     else:
                         print(prefix + '  File not found.')
-                return
+                return True, None
 
         except Exception as e:
-            print_err(e, 'delete')
+            return False, format_err(e, 'delete')
 
     # based on obj_exists method
     def all_keys(self, prefix):
