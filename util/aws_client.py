@@ -1,6 +1,6 @@
 import boto3
 import json
-from hca_util.settings import AWS_SECRET_NAME, IAM_USER_CONTRIBUTOR
+from settings import AWS_SECRET_NAME, IAM_USER
 
 
 class Aws:
@@ -8,7 +8,7 @@ class Aws:
     def __init__(self, user_profile):
         self.user_profile = user_profile
         self.common_session = self.new_session()
-        self.is_contributor = False
+        self.is_user = False # not admin
         self.bucket_name = None
 
     def new_session(self):
@@ -26,8 +26,8 @@ class Aws:
         try:
             resp = sts.get_caller_identity()
             arn = resp.get('Arn')
-            if arn.endswith(f'user/{IAM_USER_CONTRIBUTOR}'):
-                self.is_contributor = True
+            if arn.endswith(f'user/{IAM_USER}'):
+                self.is_user = True
             return True
         except Exception as e:
             if e is not KeyboardInterrupt:
@@ -57,7 +57,7 @@ class Aws:
         Refer to https://www.peterbe.com/plog/fastest-way-to-find-out-if-a-file-exists-in-s3
         for comparison between client.list_objects_v2 and client.head_object to make this check.
         Also check https://stackoverflow.com/questions/33842944/check-if-a-key-exists-in-a-bucket-in-s3-using-boto3
-        which suggests using Object.load() - which does a HEAD request, however, HCAContributor doesn't have
+        which suggests using Object.load() - which does a HEAD request, however, user doesn't have
         s3:GetObject permission by default, so this will fail for them.
         """
         response = self.new_session().client('s3').list_objects_v2(

@@ -1,3 +1,5 @@
+from settings import AWS_ACCOUNT, IAM_USER
+
 """
 Permissions include
 u for upload
@@ -11,8 +13,8 @@ ALLOWED_PERMS = ['u', 'ud', 'ux', 'udx']
 DEFAULT_PERMS = 'ux'
 
 # user groups:
-# hca-wrangler     s3 full access
-# hca-contributor  hca-util bucket (ListBucket except top-level/root directory)
+# admin     (normally) s3 full access
+# user      util bucket (ListBucket except top-level/root directory)
 
 # Permissions for Object operations
 #                       permissions        s3 operations
@@ -25,16 +27,16 @@ def get_policy_statement_template():
     return {
         'Action': [],
         'Effect': 'Allow',
-        'Resource': 'arn:aws:s3:::BUCKET_NAME/DIR_NAME/*',
+        'Resource': 'arn:aws:s3:::BUCKET_NAME/AREA_NAME/*',
         'Principal': {
             'AWS': [
-                'arn:aws:iam::871979166454:user/HCAContributor'
+                f'arn:aws:iam::{AWS_ACCOUNT}:user/{IAM_USER}'
             ]
         }
     }.copy()
 
 
-def new_policy_statement(bucket, dir, perms=None):
+def new_policy_statement(bucket, area, perms=None):
     statement = get_policy_statement_template()
     # add permissions/actions
     if perms is None or perms not in ALLOWED_PERMS:
@@ -42,5 +44,5 @@ def new_policy_statement(bucket, dir, perms=None):
     for p in perms:
         statement['Action'].append(s3_permissions.get(p))
         res = statement['Resource']
-        statement['Resource'] = res.replace('BUCKET_NAME', bucket).replace('DIR_NAME', dir)
+        statement['Resource'] = res.replace('BUCKET_NAME', bucket).replace('AREA_NAME', area)
     return statement

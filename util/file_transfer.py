@@ -22,7 +22,8 @@ class TransferProgress(object):
 
 
 class FileTransfer:
-    def __init__(self, key, size=0, seen_so_far=0, status='', complete=False):
+    def __init__(self, path, key, size=0, seen_so_far=0, status='', complete=False):
+        self.path = path
         self.key = key
         self.size = size
         self.seen_so_far = seen_so_far
@@ -30,7 +31,7 @@ class FileTransfer:
         self.complete = complete
 
     def __str__(self):
-        return f'FileTransfer (key={self.key}, size={self.size}, seen_so_far={self.seen_so_far}, status={self.status}, complete={self.complete}) '
+        return f'FileTransfer (path={self.path}, key={self.key}, size={self.size}, seen_so_far={self.seen_so_far}, status={self.status}, complete={self.complete}) '
 
 
 # with Pool(12) as p:

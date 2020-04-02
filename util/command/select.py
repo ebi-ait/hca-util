@@ -1,10 +1,10 @@
-from hca_util.common import format_err
-from hca_util.local_state import get_selected_area, set_selected_area
+from util.common import format_err
+from util.local_state import get_selected_area, set_selected_area
 
 
 class CmdSelect:
     """
-    user: both wrangler and contributor
+    admin and user
     aws resource or client used in command - s3 client (list_objects_v2)
     """
 

@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import MagicMock, Mock
 
-from hca_util.__main__ import parse_args
-from hca_util.command.select import CmdSelect
+from util.__main__ import parse_args
+from util.command.select import CmdSelect
 
 
 class TestSelect(unittest.TestCase):
@@ -22,7 +22,7 @@ class TestSelect(unittest.TestCase):
         session.client = Mock(return_value=self.client)
         session.resource = Mock(return_value=resource)
 
-        self.aws_mock.is_contributor = True
+        self.aws_mock.is_user = True
         self.aws_mock.common_session = session
         self.aws_mock.bucket_name = 'bucket-name'
         self.aws_mock.obj_exists = Mock(return_value=True)

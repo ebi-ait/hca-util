@@ -1,5 +1,5 @@
-from hca_util.common import serialize, deserialize
-from hca_util.settings import LOCAL_STATE_FILE
+from util.common import serialize, deserialize
+from settings import LOCAL_STATE_FILE
 
 
 class LocalState:

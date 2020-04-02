@@ -3,12 +3,12 @@ from unittest import TestCase
 
 from tests.e2e.test_utils import search_uuid, run
 
-admin_access = os.environ.get('HCA_UTIL_ADMIN_ACCESS')
-admin_secret = os.environ.get('HCA_UTIL_ADMIN_SECRET')
+admin_access = os.environ.get('ADMIN_ACCESS')
+admin_secret = os.environ.get('ADMIN_SECRET')
 
-admin_profile = 'test-hca-util'
+admin_profile = 'test-util'
 
-name = 'hca_util'
+name = 'util'
 cli = f'python3 -m {name}'
 
 
@@ -33,14 +33,14 @@ class TestAdminE2E(TestCase):
         self._assert_successful_run(f'touch {filename}')
 
         print('# Uploading file\n')
-        self._assert_successful_run(f'{cli} upload -f {filename} {profile}')
+        self._assert_successful_run(f'{cli} upload {filename} {profile}')
 
         print('# Listing file\n')
         output = self._assert_successful_run(f'{cli} list {profile}')
         self.assertTrue(filename in output, f'file {filename} was not uploaded to {upload_area}, output: {output}')
 
         print('# Deleting file\n')
-        self._assert_successful_run(f'{cli} delete -f {filename} {profile}')
+        self._assert_successful_run(f'{cli} delete {filename} {profile}')
 
         print('# Listing file to check if it is deleted\n')
         output = self._assert_successful_run(f'{cli} list {profile}')

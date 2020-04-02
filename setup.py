@@ -1,6 +1,7 @@
 import os
 import pathlib
 from setuptools import setup
+from settings import NAME, VERSION, DESC, AUTHOR, AUTHOR_EMAIL
 
 # directory containing this file
 HERE = pathlib.Path(__file__).parent
@@ -15,14 +16,14 @@ INSTALL_REQS = [line.rstrip() for line in open(os.path.join(os.path.dirname(__fi
 setup(
     # dashes are ok in repo and PyPI dist names but not in package (i.e. directory) and
     # module (.py file) names. can't do import xyz-abc
-    name='hca-util',
-    version='0.1.9',
-    description='CLI tool for file transfer (upload and download) to/from AWS S3.',
+    name=NAME,
+    version=VERSION,
+    description=DESC,
     long_description=README,
     long_description_content_type='text/markdown',
     url='https://github.com/ebi-ait/hca-util',
-    author='hca-ingest-dev',
-    author_email='prabhat@ebi.ac.uk',
+    author=AUTHOR,
+    author_email=AUTHOR_EMAIL,
     license='Apache License',
     classifiers=[
         'License :: OSI Approved :: Apache Software License',
@@ -33,12 +34,12 @@ setup(
         'Programming Language :: Python :: 3.7',
     ],
     platforms=['MacOS X', 'Posix'],
-    packages=['hca_util', 'hca_util.command'],
+    packages=['util', 'util.command'],
     include_package_data=True,
     install_requires=INSTALL_REQS,
     entry_points={
         'console_scripts': [
-            'hca-util=hca_util.__main__:main',
+            f'{NAME}=util.__main__:main',
         ]
     },
 )

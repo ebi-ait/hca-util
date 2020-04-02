@@ -4,10 +4,10 @@ import argparse
 import os
 import sys
 
-from hca_util.settings import DEFAULT_PROFILE, DEBUG_MODE
-from hca_util.common import is_valid_project_name, is_valid_area_name
-from hca_util.hca_cmd import HcaCmd
-from hca_util.bucket_policy import ALLOWED_PERMS, DEFAULT_PERMS
+from settings import DEFAULT_PROFILE, DEBUG_MODE, NAME
+from util.common import is_valid_project_name, is_valid_area_name
+from util.cmd import Cmd
+from util.bucket_policy import ALLOWED_PERMS, DEFAULT_PERMS
 
 
 def valid_project_name(string):
@@ -24,8 +24,30 @@ def valid_area(string):
     return string
 
 
+def valid_path(path):
+    if os.path.exists(path):  # true if the path is a file, directory, or a valid symlink.
+        return path
+    else:
+        raise argparse.ArgumentTypeError(f"'{path}' is not a valid path")
+
+
+def valid_remote_path(path): 
+    # file, dir/file, dir, dir/, dir/dir1, etc
+    err_msg = f"'{path}' is not a valid path. e.g. paths - file, dir/file, dir, dir/, dir/dir1, etc"
+
+    if path.startswith('/'):
+        raise argparse.ArgumentTypeError(err_msg)
+    else:
+
+        if os.path.isabs(f'/{path}'):  # leading / is needed for isabs to return true, BUT it is invalid if provided path starts with /
+            #isabs also normalises path e.g remove double //, etc
+            return path
+        else:
+            raise argparse.ArgumentTypeError(err_msg)
+
+
 def parse_args(args):
-    parser = argparse.ArgumentParser(description='hca-util')
+    parser = argparse.ArgumentParser(description=NAME)
 
     cmd_parser = parser.add_subparsers(title='command', dest='command')
     cmd_parser.required = True
@@ -55,13 +77,20 @@ def parse_args(args):
     parser_list = cmd_parser.add_parser('list', help='list contents of the area')
     parser_list.add_argument('-b', action='store_true', help='list all areas in the S3 bucket (authorised users only)')
 
-    parser_upload = cmd_parser.add_parser('upload', help='upload files to the area')
-    group_upload = parser_upload.add_mutually_exclusive_group(required=True)
+    # parser_upload = cmd_parser.add_parser('upload', help='upload files to the area')
+    # group_upload = parser_upload.add_mutually_exclusive_group(required=True)
 
-    group_upload.add_argument('-a', action='store_true', help='upload all files')
-    group_upload.add_argument('-f', metavar='file', nargs='+',
-                              help='upload specified file(s)', type=argparse.FileType('r'))
-    parser_upload.add_argument('-o', action='store_true', help='overwrite files with same names')
+    # group_upload.add_argument('-a', action='store_true', help='upload all files')
+    # group_upload.add_argument('-f', metavar='file', nargs='+',
+    #                           help='upload specified file(s)', type=argparse.FileType('r'))
+    # parser_upload.add_argument('-o', action='store_true', help='overwrite files with same names')
+
+    parser_upload = cmd_parser.add_parser('upload', help='upload files to the area')
+    parser_upload.add_argument('PATH', help='valid file or directory', type=valid_path, nargs='+')
+    parser_upload.add_argument('-r', action='store_true', help='recursively upload sub-directories')
+    parser_upload.add_argument('-o', action='store_true', help='overwrite file or directory with same name')
+    parser_upload.add_argument('-d', metavar='DIR', help='upload to specified directory')
+
 
     parser_download = cmd_parser.add_parser('download', help='download files from the area')
     group_download = parser_download.add_mutually_exclusive_group(required=True)
@@ -70,10 +99,9 @@ def parse_args(args):
     group_download.add_argument('-f', metavar='file', nargs='+', help='download specified file(s) only')
 
     parser_delete = cmd_parser.add_parser('delete', help='delete files from the area')
-    group_delete = parser_delete.add_mutually_exclusive_group(required=True)
-
+    parser_delete.add_argument('PATH', help='path to file or directory to delete', type=valid_remote_path, nargs='*')
+    group_delete = parser_delete.add_mutually_exclusive_group(required=False)
     group_delete.add_argument('-a', action='store_true', help='delete all files from the area')
-    group_delete.add_argument('-f', metavar='file', nargs='+', help='delete specified file(s) only')
     group_delete.add_argument('-d', action='store_true', help='delete upload area and contents (authorised users only)')
 
     ps = [parser]
@@ -99,7 +127,7 @@ def parse_args(args):
 def main():
     try:
         parsed_args = parse_args(sys.argv[1:])
-        HcaCmd(parsed_args)
+        Cmd(parsed_args)
     except KeyboardInterrupt:
         # If SIGINT is triggered whilst threads are active (upload/download) we kill the entire process to give the
         # user an instant exist, rather than have to hammer on ctrl+c multiple times with various obscure messages.

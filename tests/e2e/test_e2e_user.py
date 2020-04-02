@@ -6,15 +6,15 @@ from tests.e2e.test_e2e_admin import search_uuid, run
 
 sys.path.append(os.getcwd())
 
-user_profile = 'test-hca-util-user'
-user_access = os.environ.get('HCA_UTIL_USER_ACCESS')
-user_secret = os.environ.get('HCA_UTIL_USER_SECRET')
+user_profile = 'test-util-user'
+user_access = os.environ.get('USER_ACCESS')
+user_secret = os.environ.get('USER_SECRET')
 
-admin_profile = 'test-hca-util'
-admin_access = os.environ.get('HCA_UTIL_ADMIN_ACCESS')
-admin_secret = os.environ.get('HCA_UTIL_ADMIN_SECRET')
+admin_profile = 'test-util'
+admin_access = os.environ.get('ADMIN_ACCESS')
+admin_secret = os.environ.get('ADMIN_SECRET')
 
-name = 'hca_util'
+name = 'util'
 cli = f'python3 -m {name}'
 
 
@@ -43,14 +43,14 @@ class TestUserE2E(TestCase):
         self._assert_successful_run(f'touch {filename}')
 
         print('# Uploading file\n')
-        self._assert_successful_run(f'{cli} upload -f {filename} {profile}')
+        self._assert_successful_run(f'{cli} upload {filename} {profile}')
 
         print('# Listing file\n')
         output = self._assert_successful_run(f'{cli} list {profile}')
         self.assertTrue(filename in output, f'file {filename} was not uploaded to {upload_area}, output: {output}')
 
         print('# Deleting file\n')
-        self._assert_successful_run(f'{cli} delete -f {filename} {profile}')
+        self._assert_successful_run(f'{cli} delete {filename} {profile}')
 
         print('# Listing file to check if it is deleted\n')
         output = self._assert_successful_run(f'{cli} list {profile}')
