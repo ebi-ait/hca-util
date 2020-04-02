@@ -32,7 +32,7 @@ class CmdDelete:
                     print('You don\'t have permission to use this command')
                     return
 
-                confirm = input(f'Confirm delete {selected_area}? Y/y to proceed: ')
+                confirm = input(f'Confirm delete upload area {selected_area}? Y/y to proceed: ')
 
                 if confirm.lower() == 'y':
                     print('Deleting...')
@@ -50,32 +50,52 @@ class CmdDelete:
                 return
 
             if self.args.a:  # delete all files
-                print('Deleting...')
-                for obj in bucket.objects.filter(Prefix=selected_area):
-                    # do not delete folder object
-                    if obj.key == selected_area:
-                        continue
-                    print(obj.key)
-                    obj.delete()
+                
+                confirm = input(f'Confirm delete all contents from {selected_area}? Y/y to proceed: ')
+                
+                if confirm.lower() == 'y':
+                    print('Deleting...')
+
+                    for obj in bucket.objects.filter(Prefix=selected_area):
+                        # do not delete folder object
+                        if obj.key == selected_area:
+                            continue
+                        print(obj.key)
+                        obj.delete()
                 return
 
-            if self.args.f:  # delete list of file(s)
+            if self.args.PATH:  # list of files and dirs to delete
                 print('Deleting...')
-                for f in self.args.f:
+                for p in self.args.PATH:
                     # you may have perm x but not d (to load or even do a head object)
                     # so use obj_exists
 
-                    if self.aws.obj_exists(selected_area + f):
+                    prefix = selected_area + p
+                    keys = self.all_keys(prefix)
 
-                        obj = s3_resource.ObjectSummary(self.aws.bucket_name, selected_area + f)
-                        obj.delete()
-                        print(selected_area + f + '  Done.')
+                    if keys:
+                        for k in keys:
+                            obj = s3_resource.ObjectSummary(self.aws.bucket_name, k)
+                            obj.delete()
+                            print(k + '  Done.')
                     else:
-                        print(selected_area + f + '  File not found.')
+                        print(prefix + '  File not found.')
                 return
 
         except Exception as e:
             print_err(e, 'delete')
+
+    # based on obj_exists method
+    def all_keys(self, prefix):
+        keys = []
+        response = self.aws.common_session.client('s3').list_objects_v2(
+            Bucket=self.aws.bucket_name,
+            Prefix=prefix,
+        )
+        for obj in response.get('Contents', []):
+            keys.append(obj['Key'])
+            
+        return keys
 
 
 def delete_dir_perms_from_bucket_policy(s3_res, bucket_name, area_name):

@@ -31,6 +31,21 @@ def valid_path(path):
         raise argparse.ArgumentTypeError(f"'{path}' is not a valid path")
 
 
+def valid_remote_path(path): 
+    # file, dir/file, dir, dir/, dir/dir1, etc
+    err_msg = f"'{path}' is not a valid path. e.g. paths - file, dir/file, dir, dir/, dir/dir1, etc"
+
+    if path.startswith('/'):
+        raise argparse.ArgumentTypeError(err_msg)
+    else:
+
+        if os.path.isabs(f'/{path}'):  # leading / is needed for isabs to return true, BUT it is invalid if provided path starts with /
+            #isabs also normalises path e.g remove double //, etc
+            return path
+        else:
+            raise argparse.ArgumentTypeError(err_msg)
+
+
 def parse_args(args):
     parser = argparse.ArgumentParser(description='hca-util')
 
@@ -84,10 +99,9 @@ def parse_args(args):
     group_download.add_argument('-f', metavar='file', nargs='+', help='download specified file(s) only')
 
     parser_delete = cmd_parser.add_parser('delete', help='delete files from the area')
-    group_delete = parser_delete.add_mutually_exclusive_group(required=True)
-
+    parser_delete.add_argument('PATH', help='path to file or directory to delete', type=valid_remote_path, nargs='*')
+    group_delete = parser_delete.add_mutually_exclusive_group(required=False)
     group_delete.add_argument('-a', action='store_true', help='delete all files from the area')
-    group_delete.add_argument('-f', metavar='file', nargs='+', help='delete specified file(s) only')
     group_delete.add_argument('-d', action='store_true', help='delete upload area and contents (authorised users only)')
 
     ps = [parser]
