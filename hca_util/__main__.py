@@ -6,7 +6,7 @@ import sys
 
 from settings import DEFAULT_PROFILE, DEBUG_MODE
 from hca_util.common import is_valid_project_name, is_valid_area_name
-from hca_util.hca_cmd import HcaCmd
+from hca_util.cmd import Cmd
 from hca_util.bucket_policy import ALLOWED_PERMS, DEFAULT_PERMS
 
 
@@ -127,7 +127,7 @@ def parse_args(args):
 def main():
     try:
         parsed_args = parse_args(sys.argv[1:])
-        HcaCmd(parsed_args)
+        Cmd(parsed_args)
     except KeyboardInterrupt:
         # If SIGINT is triggered whilst threads are active (upload/download) we kill the entire process to give the
         # user an instant exist, rather than have to hammer on ctrl+c multiple times with various obscure messages.

@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock, Mock, patch
 
-from hca_util.hca_cmd import HcaCmd
+from hca_util.cmd import Cmd
 
 from hca_util.__main__ import parse_args
 from hca_util.command.create import CmdCreate
@@ -45,7 +45,7 @@ class TestCreate(unittest.TestCase):
 
         # when
         with self.assertRaises(SystemExit) as error:
-            HcaCmd(parse_args(args))
+            Cmd(parse_args(args))
 
         # then
         self.assertEqual(error.exception.code, 1)
@@ -120,7 +120,7 @@ class TestCreate(unittest.TestCase):
 
         # when
         with self.assertRaises(SystemExit) as error:
-            HcaCmd(parse_args(args))
+            Cmd(parse_args(args))
 
         # then
         self.assertEqual(error.exception.code, 1)

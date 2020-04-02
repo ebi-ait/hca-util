@@ -12,7 +12,7 @@ from hca_util.local_state import get_bucket
 from hca_util.user_profile import profile_exists, get_profile
 
 
-class HcaCmd:
+class Cmd:
     """
     steps to perform before executing command
     if cmd is config, skip steps, run config
