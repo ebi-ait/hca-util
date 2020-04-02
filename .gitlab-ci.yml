@@ -6,12 +6,12 @@ stages:
 test_e2e_admin:
   stage: test
   script:
-    - nosetests -v tests/e2e/test_e2e_admin.py
+    - nosetests -v tests/e2e/test_e2e_admin.py --nocapture
 
 test_e2e_user:
   stage: test
   script:
-    - nosetests -v tests/e2e/test_e2e_user.py
+    - nosetests -v tests/e2e/test_e2e_user.py --nocapture
 
 integration_test:
   stage: test
