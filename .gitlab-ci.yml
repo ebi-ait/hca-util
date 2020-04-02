@@ -1,20 +1,20 @@
 image: python:3.6
 
 stages:
-  - tests
+  - test
 
 test_e2e_admin:
-  stage: tests
+  stage: test
   script:
     - nosetests -v tests/e2e/test_e2e_admin.py
 
 test_e2e_user:
-  stage: tests
+  stage: test
   script:
     - nosetests -v tests/e2e/test_e2e_user.py
 
 integration_test:
-  stage: tests
+  stage: test
   script:
     - nosetests -v tests.command
 
