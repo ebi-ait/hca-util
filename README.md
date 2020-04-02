@@ -1,8 +1,14 @@
 # hca-util
 
-CLI tool for uploading and downloading files from an HCA upload area.
+CLI tool for uploading data to a centralised data platform.
 
-PyPi: https://pypi.org/project/hca-util/
+There are two deployments of the tool both from PyPi:
+
+1. [hca_util](https://pypi.org/project/hca-util/) -- for uploading data to the HCA data platform
+2. [covid_util](https://pypi.org/project/covid-util/) -- for uploading data to the European COVID-19 data platform
+
+
+Dependending on which installation you use, replace `XXX-util` with either `hca-util` or `covid-util`. Note the data store used by each are separate.
 
 # Users
 
@@ -13,10 +19,10 @@ Users need to have
 3. Credentials to access data in the S3 bucket (access and secret keys)
 
 ## Install
-Get `hca-util` from PyPi.
+Get `XXX-util` from PyPi.
 
 ```shell script
-$ pip install hca-util
+$ pip install XXX-util
 ```
                            
 ## Usage
@@ -24,8 +30,8 @@ $ pip install hca-util
 Display help
 
 ```shell script
-$ hca-util -h
-usage: hca-util [-h] [--profile PROFILE]
+$ XXX-util -h
+usage: XXX-util [-h] [--profile PROFILE]
                    {config,create,select,dir,clear,list,upload,download,delete}
 ```
 
@@ -34,7 +40,7 @@ In the above, optional arguments are between `[]` and choices between `{}`.
 The basic usage is as follows:
 
 ```shell script
-$ hca-util cmd ARG1 ARG2 -o1 -o2
+$ XXX-util cmd ARG1 ARG2 -o1 -o2
 ```
 
 Use the tool by specifying a command (`cmd` - see list below) to run, any mandatory (positional) arguments (e.g. `ARG1` and `ARG2` - see positional args for each command), and any optional arguments (e.g. `-o1` and `o2` - see options for each command).
@@ -44,7 +50,7 @@ Use the tool by specifying a command (`cmd` - see list below) to run, any mandat
 help for a specific command:
 
 ```shell script
-$ hca-util <command> -h
+$ XXX-util <command> -h
 ```
 
 Some commands or options/flags are restricted to authorised users (for e.g. admin) only.
@@ -54,23 +60,23 @@ Some commands or options/flags are restricted to authorised users (for e.g. admi
 Configure AWS credentials
 
 ```shell script
-$ hca-util config ACCESS_KEY SECRET_KEY
+$ XXX-util config ACCESS_KEY SECRET_KEY
 
 positional arguments:
   ACCESS_KEY         AWS Access Key ID
   SECRET_KEY         AWS Secret Access Key
 ```
 
-By default, this tool looks for and uses the profile name _hca-util_, if it exists, or it can be set by the `config` command.
+By default, this tool looks for and uses the profile name _XXX-util_, if it exists, or it can be set by the `config` command.
 
-Running a command with the `--profile` argument uses the specified profile instead of the default _hca-util_ profile.
+Running a command with the `--profile` argument uses the specified profile instead of the default _XXX-util_ profile.
 
 ## `create` command
 
 Create an upload area **(authorised users only)**
 
 ```shell script
-$ hca-util create NAME [-p {u,ud,ux,udx}]
+$ XXX-util create NAME [-p {u,ud,ux,udx}]
 
 
 positional arguments:
@@ -87,7 +93,7 @@ optional arguments:
 Select or show the active upload area
 
 ```shell script
-$ hca-util select AREA
+$ XXX-util select AREA
 
 positional arguments:
   AREA                area uuid. If not present then selected area is shown
@@ -98,7 +104,7 @@ positional arguments:
 List contents of selected area
 
 ```shell script
-$ hca-util list [-b]
+$ XXX-util list [-b]
 
 optional arguments:
   -b                 list all areas in bucket **(authorised users only)**
@@ -109,7 +115,7 @@ optional arguments:
 Upload files to the selected area
 
 ```shell script
-$ hca-util upload (-a | -f file [file ...]) [-o]
+$ XXX-util upload (-a | -f file [file ...]) [-o]
 
 optional arguments:
   -a                  upload all files from current user directory
@@ -122,7 +128,7 @@ optional arguments:
 Download files from the selected area
 
 ```shell script
-$ hca-util download (-a | -f file [file ...])
+$ XXX-util download (-a | -f file [file ...])
 
 optional arguments:
   -a                  download all files from selected area
@@ -134,7 +140,7 @@ optional arguments:
 Delete files from the selected area
 
 ```shell script
-$ hca-util delete (-a | -f file [file ...] | -d)
+$ XXX-util delete (-a | -f file [file ...] | -d)
 
 optional arguments:
   -a                  delete all files from selected area

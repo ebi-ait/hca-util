@@ -2,6 +2,9 @@ from pathlib import Path
 
 NAME = 'covid-util'
 VERSION = '0.0.4'
+DESC = 'CLI tool for uploading data to the European COVID-19 data platform'
+AUTHOR = 'hca-ingest-dev'
+AUTHOR_EMAIL = 'hca-ingest-dev@ebi.ac.uk'
 
 # when true, displays exception details; otherwise user-friendly error message
 DEBUG_MODE = True
