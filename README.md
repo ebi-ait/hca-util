@@ -2,7 +2,7 @@
 
 CLI tool for uploading data to a centralised data platform.
 
-There are two deployments of the tool both from PyPi:
+There are currently two different deployments of the tool both published to PyPi:
 
 1. [hca_util](https://pypi.org/project/hca-util/) -- for uploading data to the HCA data platform
 2. [covid_util](https://pypi.org/project/covid-util/) -- for uploading data to the European COVID-19 data platform
