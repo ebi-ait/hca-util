@@ -1,5 +1,8 @@
 from pathlib import Path
 
+NAME = 'hca-util'
+VERSION = ''
+
 # when true, displays exception details; otherwise user-friendly error message
 DEBUG_MODE = True
 

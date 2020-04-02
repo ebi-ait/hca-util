@@ -1,4 +1,4 @@
-from hca_util.common import serialize, deserialize
+from util.common import serialize, deserialize
 from settings import LOCAL_STATE_FILE
 
 

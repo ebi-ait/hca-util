@@ -1,14 +1,14 @@
 import os
 
-from hca_util.common import format_err
-from hca_util.file_transfer import FileTransfer, TransferProgress, transfer
-from hca_util.local_state import get_selected_area
+from util.common import format_err
+from util.file_transfer import FileTransfer, TransferProgress, transfer
+from util.local_state import get_selected_area
 from settings import MAX_DIR_DEPTH
 
 """
 Uploading to Upload Service upload area
 1. get upload creds from upload service api
-2. upload via awscli or hca-util. set content-type accordingly
+2. upload via awscli or this util. set content-type accordingly
 3. post fileUpload notification to upload service api
 """
 

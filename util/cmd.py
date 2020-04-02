@@ -1,15 +1,15 @@
 import sys
 
-from hca_util.aws_client import Aws
-from hca_util.command.config import CmdConfig
-from hca_util.command.create import CmdCreate
-from hca_util.command.delete import CmdDelete
-from hca_util.command.download import CmdDownload
-from hca_util.command.list import CmdList
-from hca_util.command.select import CmdSelect
-from hca_util.command.upload import CmdUpload
-from hca_util.local_state import get_bucket
-from hca_util.user_profile import profile_exists, get_profile
+from util.aws_client import Aws
+from util.command.config import CmdConfig
+from util.command.create import CmdCreate
+from util.command.delete import CmdDelete
+from util.command.download import CmdDownload
+from util.command.list import CmdList
+from util.command.select import CmdSelect
+from util.command.upload import CmdUpload
+from util.local_state import get_bucket
+from util.user_profile import profile_exists, get_profile
 
 
 class Cmd:

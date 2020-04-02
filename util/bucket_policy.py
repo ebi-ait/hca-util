@@ -14,7 +14,7 @@ DEFAULT_PERMS = 'ux'
 
 # user groups:
 # admin     (normally) s3 full access
-# user      hca-util bucket (ListBucket except top-level/root directory)
+# user      util bucket (ListBucket except top-level/root directory)
 
 # Permissions for Object operations
 #                       permissions        s3 operations

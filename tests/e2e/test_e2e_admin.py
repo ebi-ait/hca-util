@@ -6,9 +6,9 @@ from tests.e2e.test_utils import search_uuid, run
 admin_access = os.environ.get('ADMIN_ACCESS')
 admin_secret = os.environ.get('ADMIN_SECRET')
 
-admin_profile = 'test-hca-util'
+admin_profile = 'test-util'
 
-name = 'hca_util'
+name = 'util'
 cli = f'python3 -m {name}'
 
 

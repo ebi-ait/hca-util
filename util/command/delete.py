@@ -2,9 +2,9 @@ import json
 
 from botocore.exceptions import ClientError
 
-from hca_util.command.area import CmdArea
-from hca_util.common import format_err
-from hca_util.local_state import get_selected_area
+from util.command.area import CmdArea
+from util.common import format_err
+from util.local_state import get_selected_area
 
 
 class CmdDelete:
@@ -41,7 +41,7 @@ class CmdDelete:
                         print(obj.key)
                         obj.delete()
 
-                    # delete bucket policy for HCAContributer-folder permissions
+                    # delete bucket policy for user-folder permissions
                     # only admin who has perms to set policy can do this
                     delete_dir_perms_from_bucket_policy(s3_resource, self.aws.bucket_name, selected_area)
 

@@ -1,8 +1,8 @@
 import os
 import unittest
 
-from hca_util.__main__ import parse_args
-from hca_util.command.config import CmdConfig
+from util.__main__ import parse_args
+from util.command.config import CmdConfig
 from settings import IAM_USER, IAM_ADMIN
 
 

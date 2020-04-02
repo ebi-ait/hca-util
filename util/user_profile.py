@@ -1,6 +1,6 @@
 import os
 import configparser
-from hca_util.common import create_if_not_exists
+from util.common import create_if_not_exists
 from settings import AWS_CONFIG_FILE, AWS_CREDENTIALS_FILE, DEFAULT_REGION
 
 

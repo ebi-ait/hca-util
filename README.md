@@ -151,7 +151,7 @@ pip install -r requirements.txt
 Run 
 
 ```shell script
-python3 -m hca_util
+python3 -m util
 ```
 
 Run tests

@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import MagicMock, Mock
 
-from hca_util.__main__ import parse_args
-from hca_util.command.select import CmdSelect
+from util.__main__ import parse_args
+from util.command.select import CmdSelect
 
 
 class TestSelect(unittest.TestCase):

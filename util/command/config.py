@@ -1,8 +1,8 @@
-from hca_util.aws_client import Aws
-from hca_util.common import format_err
-from hca_util.local_state import set_bucket
+from util.aws_client import Aws
+from util.common import format_err
+from util.local_state import set_bucket
 from settings import DEFAULT_PROFILE, DEFAULT_REGION
-from hca_util.user_profile import set_profile, profile_exists, get_profile
+from util.user_profile import set_profile, profile_exists, get_profile
 
 
 class CmdConfig:

@@ -1,5 +1,8 @@
 from pathlib import Path
 
+NAME = 'covid-util'
+VERSION = '0.0.4'
+
 # when true, displays exception details; otherwise user-friendly error message
 DEBUG_MODE = True
 

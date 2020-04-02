@@ -2,10 +2,10 @@ import os
 
 import botocore
 
-from hca_util.common import format_err
-from hca_util.file_transfer import FileTransfer, TransferProgress, transfer
+from util.common import format_err
+from util.file_transfer import FileTransfer, TransferProgress, transfer
 from settings import DEBUG_MODE
-from hca_util.local_state import get_selected_area
+from util.local_state import get_selected_area
 
 
 class CmdDownload:
