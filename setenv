@@ -3,8 +3,8 @@
 # todo: replace user/admin access and secret keys below to run script before 
 # running tests
 
-export HCA_UTIL_USER_ACCESS=<HCAContributor access key>
-export HCA_UTIL_USER_SECRET=<HCAContributor secret key>
+export USER_ACCESS=<User access key>
+export USER_SECRET=<User secret key>
 
-export HCA_UTIL_ADMIN_ACCESS=<HCAWrangler access key>
-export HCA_UTIL_ADMIN_SECRET=<HCAWrangler secret key>
+export ADMIN_ACCESS=<Admin access key>
+export ADMIN_SECRET=<Admin secret key>

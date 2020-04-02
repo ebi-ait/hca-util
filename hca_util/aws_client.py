@@ -57,7 +57,7 @@ class Aws:
         Refer to https://www.peterbe.com/plog/fastest-way-to-find-out-if-a-file-exists-in-s3
         for comparison between client.list_objects_v2 and client.head_object to make this check.
         Also check https://stackoverflow.com/questions/33842944/check-if-a-key-exists-in-a-bucket-in-s3-using-boto3
-        which suggests using Object.load() - which does a HEAD request, however, HCAContributor doesn't have
+        which suggests using Object.load() - which does a HEAD request, however, user doesn't have
         s3:GetObject permission by default, so this will fail for them.
         """
         response = self.new_session().client('s3').list_objects_v2(

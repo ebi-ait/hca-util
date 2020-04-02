@@ -3,8 +3,8 @@ from unittest import TestCase
 
 from tests.e2e.test_utils import search_uuid, run
 
-admin_access = os.environ.get('HCA_UTIL_ADMIN_ACCESS')
-admin_secret = os.environ.get('HCA_UTIL_ADMIN_SECRET')
+admin_access = os.environ.get('ADMIN_ACCESS')
+admin_secret = os.environ.get('ADMIN_SECRET')
 
 admin_profile = 'test-hca-util'
 

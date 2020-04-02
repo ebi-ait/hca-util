@@ -28,7 +28,7 @@ class TestUpload(TestCase):
 
     def test_upload_inexisting_file(self):
         # given
-        args = ['upload', '-f', 'inexisting-file.txt']
+        args = ['upload', 'inexisting-file.txt']
 
         # when
         with self.assertRaises(SystemExit) as error:
@@ -61,11 +61,8 @@ class TestUpload(TestCase):
         get_selected_area.return_value = 'selected'
         get_size.return_value = 'size'
 
-        file = MagicMock()
-        file.name = 'filename'
-
         args = MagicMock()
-        args.f = [file]
+        args.PATH = ['filename']
         args.a = None
 
         # when
