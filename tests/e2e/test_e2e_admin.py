@@ -7,9 +7,9 @@ from tests.e2e.test_utils import search_uuid, run
 ADMIN_ACCESS = os.environ.get('ADMIN_ACCESS')
 ADMIN_SECRET = os.environ.get('ADMIN_SECRET')
 
-ADMIN_PROFILE = 'test-hca-util'
+ADMIN_PROFILE = 'test-util-admin'
 
-NAME = 'hca_util'
+NAME = 'util'
 CLI = f'python3 -m {NAME}'
 
 
@@ -24,7 +24,7 @@ class TestAdminE2E(TestCase):
         filename = self.filename
         upload_area = self.upload_area
 
-        print(f'# Configuring {CLI}\n')
+        print(f'# Configuring {NAME}\n')
         self._assert_successful_run(f'{CLI} config {ADMIN_ACCESS} {ADMIN_SECRET} {profile}', verbose=False)
 
         print('# Creating Upload Area\n')

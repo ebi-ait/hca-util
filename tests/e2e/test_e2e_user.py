@@ -7,11 +7,11 @@ from tests.e2e.test_e2e_admin import search_uuid, run
 sys.path.append(os.getcwd())
 
 
-USER_PROFILE = 'test-hca-util-user'
+USER_PROFILE = 'test-util-user'
 USER_ACCESS = os.environ.get('USER_ACCESS')
 USER_SECRET = os.environ.get('USER_SECRET')
 
-ADMIN_PROFILE = 'test-hca-util'
+ADMIN_PROFILE = 'test-util-admin'
 ADMIN_ACCESS = os.environ.get('ADMIN_ACCESS')
 ADMIN_SECRET = os.environ.get('ADMIN_SECRET')
 
@@ -30,7 +30,7 @@ class TestUserE2E(TestCase):
         upload_area = self.upload_area
         filename = self.filename
 
-        print(f'# Configuring {CLI} admin\n')
+        print(f'# Configuring {NAME} admin\n')
         self._assert_successful_run(f'{CLI} config {ADMIN_ACCESS} {ADMIN_SECRET} {profile}', verbose=False)
 
         print('# Creating Upload Area\n')
