@@ -1,7 +1,18 @@
 from pathlib import Path
 
+# todo: have a base.py settings file for command settings across
+# the 2 deployments
+
+NAME = 'hca-util'
+VERSION = '0.1.9'
+DESC = 'CLI tool for uploading data to the HCA data platform'
+AUTHOR = 'hca-ingest-dev'
+AUTHOR_EMAIL = 'hca-ingest-dev@ebi.ac.uk'
+
 # when true, displays exception details; otherwise user-friendly error message
 DEBUG_MODE = True
+
+MAX_DIR_DEPTH = 5
 
 # user home directory
 USER_HOME = str(Path.home())
@@ -20,5 +31,10 @@ DEFAULT_REGION = 'us-east-1'
 # local state for user
 LOCAL_STATE_FILE = USER_HOME + '/.hca-util'
 
-# contributor IAM user name
-IAM_USER_CONTRIBUTOR = 'HCAContributor'
+# 2 IAM user types: admin and (normal) user
+# in the context of hca, admin=wrangler and user=contributor
+IAM_USER = 'HCAContributor'
+IAM_ADMIN = 'HCAWrangler'
+
+AWS_ACCOUNT = '871979166454'
+

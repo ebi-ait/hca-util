@@ -1,10 +1,10 @@
 import unittest
 from unittest.mock import MagicMock, Mock, patch
 
-from hca_util.hca_cmd import HcaCmd
+from util.cmd import Cmd
 
-from hca_util.__main__ import parse_args
-from hca_util.command.create import CmdCreate
+from util.__main__ import parse_args
+from util.command.create import CmdCreate
 
 
 class TestCreate(unittest.TestCase):
@@ -24,7 +24,7 @@ class TestCreate(unittest.TestCase):
         session.client = Mock(return_value=self.client)
         session.resource = Mock(return_value=resource)
 
-        self.aws_mock.is_contributor = False
+        self.aws_mock.is_user = False
         self.aws_mock.common_session = session
         self.aws_mock.bucket_name = 'bucket-name'
 
@@ -45,14 +45,14 @@ class TestCreate(unittest.TestCase):
 
         # when
         with self.assertRaises(SystemExit) as error:
-            HcaCmd(parse_args(args))
+            Cmd(parse_args(args))
 
         # then
         self.assertEqual(error.exception.code, 1)
 
     def test_user_create_upload_area_has_valid_config(self):
         # given
-        self.aws_mock.is_contributor = True
+        self.aws_mock.is_user = True
 
         args = ['create', 'testUploadArea']
 
@@ -111,7 +111,7 @@ class TestCreate(unittest.TestCase):
 
         self.assertEqual(error.exception.code, 2)
 
-    @patch('hca_util.aws_client.Aws')
+    @patch('util.aws_client.Aws')
     def test_create_upload_area_with_invalid_credentials(self, aws_mock):
         # given
         aws_mock.is_valid_credentials = False
@@ -120,7 +120,7 @@ class TestCreate(unittest.TestCase):
 
         # when
         with self.assertRaises(SystemExit) as error:
-            HcaCmd(parse_args(args))
+            Cmd(parse_args(args))
 
         # then
         self.assertEqual(error.exception.code, 1)

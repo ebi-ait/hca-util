@@ -2,14 +2,14 @@ import json
 
 from botocore.exceptions import ClientError
 
-from hca_util.aws_client import Aws
-from hca_util.bucket_policy import new_policy_statement
-from hca_util.common import gen_uuid, format_err
+from util.aws_client import Aws
+from util.bucket_policy import new_policy_statement
+from util.common import gen_uuid, format_err
 
 
 class CmdCreate:
     """
-    user: wrangler only
+    admin only
     aws resource or client used in command - s3 client (put_object), s3 resource (BucketPolicy)
     """
 
@@ -21,7 +21,7 @@ class CmdCreate:
         if not self.aws:
             return False, 'You need configure your profile first'
 
-        if self.aws.is_contributor:
+        if self.aws.is_user:
             return False, 'You don\'t have permission to use this command'
 
         area_name = self.args.NAME

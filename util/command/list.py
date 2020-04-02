@@ -1,10 +1,10 @@
-from hca_util.common import format_err
-from hca_util.local_state import get_selected_area
+from util.common import format_err
+from util.local_state import get_selected_area
 
 
 class CmdList:
     """
-    user: both wrangler and contributor
+    admin and user
     aws resource or client used in command - s3 resource (bucket.objects, Object().metadata)
     """
 
@@ -15,8 +15,9 @@ class CmdList:
     def run(self):
 
         if self.args.b:  # list all areas in bucket
-            if self.aws.is_contributor:
+            if self.aws.is_user:
                 return False, 'You don\'t have permission to use this command'
+            
             try:
                 folder_count = 0
                 for area in self.list_bucket_areas():

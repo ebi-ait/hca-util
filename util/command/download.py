@@ -2,14 +2,15 @@ import os
 
 import botocore
 
-from hca_util.common import format_err
-from hca_util.file_transfer import FileTransfer, TransferProgress, transfer
-from hca_util.local_state import get_selected_area
+from util.common import format_err
+from util.file_transfer import FileTransfer, TransferProgress, transfer
+from settings import DEBUG_MODE
+from util.local_state import get_selected_area
 
 
 class CmdDownload:
     """
-    user: both wrangler and contributor
+    admin and user
     aws resource or client used in command - s3 resource (Bucket().upload_file), s3 client list_objects_v2
     """
 

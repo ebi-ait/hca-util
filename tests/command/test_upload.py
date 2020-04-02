@@ -1,8 +1,8 @@
 from unittest import TestCase
 from unittest.mock import MagicMock, Mock, patch
 
-from hca_util.__main__ import parse_args
-from hca_util.command.upload import CmdUpload
+from util.__main__ import parse_args
+from util.command.upload import CmdUpload
 
 
 class TestUpload(TestCase):
@@ -22,13 +22,13 @@ class TestUpload(TestCase):
         session.client = Mock(return_value=self.client)
         session.resource = Mock(return_value=resource)
 
-        self.aws_mock.is_contributor = False
+        self.aws_mock.is_user = False
         self.aws_mock.common_session = session
         self.aws_mock.bucket_name = 'bucket-name'
 
     def test_upload_inexisting_file(self):
         # given
-        args = ['upload', '-f', 'inexisting-file.txt']
+        args = ['upload', 'inexisting-file.txt']
 
         # when
         with self.assertRaises(SystemExit) as error:
@@ -40,7 +40,7 @@ class TestUpload(TestCase):
 
         self.assertEqual(error.exception.code, 2)
 
-    @patch('hca_util.command.upload.get_selected_area')
+    @patch('util.command.upload.get_selected_area')
     def test_upload_file_no_upload_area_selected(self, get_selected_area):
         # given
         get_selected_area.return_value = None
@@ -53,19 +53,16 @@ class TestUpload(TestCase):
         self.assertFalse(success)
         self.assertEqual(msg, 'No area selected')
 
-    @patch('hca_util.command.upload.get_selected_area')
+    @patch('util.command.upload.get_selected_area')
     @patch('os.path.getsize')
-    @patch('hca_util.command.upload.transfer')
+    @patch('util.command.upload.transfer')
     def test_upload_file_in_selected_upload_area(self, transfer, get_size, get_selected_area):
         # given
         get_selected_area.return_value = 'selected'
         get_size.return_value = 'size'
 
-        file = MagicMock()
-        file.name = 'filename'
-
         args = MagicMock()
-        args.f = [file]
+        args.PATH = ['filename']
         args.a = None
 
         # when
