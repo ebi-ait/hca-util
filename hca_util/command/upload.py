@@ -1,8 +1,8 @@
 import os
-from hca_util.local_state import get_selected_area
-from hca_util.common import print_err
-from hca_util.file_transfer import FileTransfer, TransferProgress, transfer
 
+from hca_util.common import format_err
+from hca_util.file_transfer import FileTransfer, TransferProgress, transfer
+from hca_util.local_state import get_selected_area
 
 """
 Uploading to Upload Service upload area
@@ -27,8 +27,7 @@ class CmdUpload:
         selected_area = get_selected_area()
 
         if not selected_area:
-            print('No area selected')
-            return
+            return False, 'No area selected'
 
         try:
             # choice 1
@@ -47,7 +46,7 @@ class CmdUpload:
                 # choice 2 upload specified list of files
                 # optional list of <_io.TextIOWrapper name='f1' mode='r' encoding='UTF-8'>
 
-                for f in self.args.f :
+                for f in self.args.f:
                     # argparse takes care of path expansion and check if file doesn't exist
                     f_size = os.path.getsize(f.name)
                     fs.append(FileTransfer(key=f.name, size=f_size))
@@ -78,7 +77,6 @@ class CmdUpload:
                         if fs[idx].size == 0:
                             fs[idx].status = 'Empty file.'
                             fs[idx].complete = True
-
                 except Exception as thread_ex:
                     fs[idx].status = 'Upload failed.'
                     fs[idx].complete = True
@@ -87,5 +85,7 @@ class CmdUpload:
 
             transfer(upload, fs)
 
+            return True, 'Success upload'
+
         except Exception as e:
-            print_err(e, 'upload')
+            return False, format_err(e, 'upload')

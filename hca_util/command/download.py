@@ -1,9 +1,10 @@
 import os
+
 import botocore
+
+from hca_util.common import format_err
 from hca_util.file_transfer import FileTransfer, TransferProgress, transfer
-from hca_util.settings import DEBUG_MODE
 from hca_util.local_state import get_selected_area
-from hca_util.common import print_err
 
 
 class CmdDownload:
@@ -21,8 +22,7 @@ class CmdDownload:
         selected_area = get_selected_area()
 
         if not selected_area:
-            print('No area selected')
-            return
+            return False, 'No area selected'
 
         try:
             s3_resource = self.aws.common_session.resource('s3')
@@ -89,6 +89,7 @@ class CmdDownload:
             print('Downloading...')
 
             transfer(download, fs)
+            return True, None
 
         except Exception as e:
-            print_err(e, 'download')
+            return False, format_err(e, 'download')
