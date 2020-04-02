@@ -7,8 +7,7 @@ There are currently two different deployments of the tool both published to PyPi
 1. [hca-util](https://pypi.org/project/hca-util/) -- for uploading data to the HCA data platform
 2. [covid-util](https://pypi.org/project/covid-util/) -- for uploading data to the European COVID-19 data platform
 
-
-Dependending on which installation you use, replace `XXX-util` with either `hca-util` or `covid-util`. Note the data store used by each are separate.
+Depending on which installation you use, replace `XXX-util` with either `hca-util` or `covid-util`. Note that each tool deployment uses its own separate data storage and access credentials.
 
 # Users
 
