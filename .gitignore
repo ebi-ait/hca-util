@@ -11,3 +11,7 @@ venv/
 
 # Distribution / packaging
 *.egg-info/
+
+# nosetest code coverage
+.coverage
+coverage.xml
