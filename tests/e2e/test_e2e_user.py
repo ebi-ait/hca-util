@@ -34,7 +34,7 @@ class TestUserE2E(TestCase):
         self._assert_successful_run(f'{CLI} config {ADMIN_ACCESS} {ADMIN_SECRET} {profile}', verbose=False)
 
         print('# Creating Upload Area\n')
-        output = self._assert_successful_run(f'{CLI} create {self.upload_area} {profile}')
+        output = self._assert_successful_run(f'{CLI} create {self.upload_area} -p udx {profile}')
         self.upload_area_uuid = search_uuid(output)
         upload_area_uuid = self.upload_area_uuid
         self.assertTrue(self.upload_area_uuid, 'The upload area uuid could not be found from the output')
@@ -53,6 +53,12 @@ class TestUserE2E(TestCase):
         print('# Listing file\n')
         output = self._assert_successful_run(f'{CLI} list {profile}')
         self.assertTrue(filename in output, f'file {filename} was not uploaded to {upload_area}, output: {output}')
+
+        os.remove(filename)
+        print('# Downloading file\n')
+        self._assert_successful_run(f'{CLI} download {filename} {profile}')
+
+        self.assertTrue(os.path.exists(self.filename), f'File {filename} should have been downloaded.')
 
         print('# Deleting file\n')
         self._assert_successful_run(f'{CLI} delete {filename} {profile}')
