@@ -4,7 +4,7 @@ import argparse
 import os
 import sys
 
-from settings import DEFAULT_PROFILE, DEBUG_MODE, NAME
+from settings import DEFAULT_PROFILE, DEBUG_MODE, NAME, VERSION
 from util.common import is_valid_project_name, is_valid_area_name
 from util.cmd import Cmd
 from util.bucket_policy import ALLOWED_PERMS, DEFAULT_PERMS
@@ -48,8 +48,10 @@ def valid_remote_path(path):
 
 def parse_args(args):
     parser = argparse.ArgumentParser(description=NAME)
+    parser.add_argument('--version', '-v', action='version', version=f'{NAME} {VERSION}')
 
     cmd_parser = parser.add_subparsers(title='command', dest='command')
+
     cmd_parser.required = True
 
     parser_config = cmd_parser.add_parser('config', help='configure AWS credentials')
