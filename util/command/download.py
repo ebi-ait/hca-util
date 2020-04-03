@@ -39,7 +39,7 @@ class CmdDownload:
                     # skip the top-level directory
                     if obj.key == selected_area:
                         continue
-                    fs.append(FileTransfer(key=obj.key, size=obj.size))
+                    fs.append(FileTransfer(path='.', key=obj.key, size=obj.size))
             else:
                 # choice 2
                 # download specified file(s) only
