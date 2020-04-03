@@ -6,7 +6,6 @@ from tests.e2e.test_e2e_admin import search_uuid, run
 
 sys.path.append(os.getcwd())
 
-
 USER_PROFILE = 'test-util-user'
 USER_ACCESS = os.environ.get('USER_ACCESS')
 USER_SECRET = os.environ.get('USER_SECRET')
@@ -24,6 +23,7 @@ class TestUserE2E(TestCase):
         self.filename = 'test-user-file.txt'
         self.upload_area = 'testuseruploadarea'
         self.upload_area_uuid = None
+        self.downloaded_file = None
 
     def test_e2e_user(self):
         profile = f'--profile {ADMIN_PROFILE}'
@@ -47,18 +47,20 @@ class TestUserE2E(TestCase):
         self._assert_successful_run(f'{CLI} select {upload_area_uuid} {profile}')
 
         print('# Uploading file\n')
-        self._assert_successful_run(f'touch {filename}')
+        os.system(f'echo "test" > {filename}')
         self._assert_successful_run(f'{CLI} upload {filename} {profile}')
 
         print('# Listing file\n')
         output = self._assert_successful_run(f'{CLI} list {profile}')
         self.assertTrue(filename in output, f'file {filename} was not uploaded to {upload_area}, output: {output}')
 
-        os.remove(filename)
         print('# Downloading file\n')
-        self._assert_successful_run(f'{CLI} download {filename} {profile}')
-
-        self.assertTrue(os.path.exists(self.filename), f'File {filename} should have been downloaded.')
+        os.remove(filename)
+        self._assert_successful_run(f'{CLI} download -a {profile}')  # TODO should be specific file
+        self._assert_successful_run(f'ls')
+        cwd = os.getcwd()
+        self.downloaded_file = f'{cwd}/{upload_area_uuid}/{self.filename}'
+        self.assertTrue(os.path.exists(self.downloaded_file), f'File {filename} should have been downloaded.')
 
         print('# Deleting file\n')
         self._assert_successful_run(f'{CLI} delete {filename} {profile}')
@@ -92,10 +94,11 @@ class TestUserE2E(TestCase):
         return output
 
     def tearDown(self) -> None:
-        if os.path.exists(self.filename):
-            print(f'Deleting file {self.filename}')
-            os.remove(self.filename)
-            print(f'File {self.filename} deleted')
+        for file in [self.filename, self.downloaded_file]:
+            if os.path.exists(file):
+                print(f'Deleting file {file}')
+                os.remove(file)
+                print(f'File {file} deleted')
 
         if self.upload_area_uuid:
             print(f'Deleting upload area {self.upload_area_uuid}')
