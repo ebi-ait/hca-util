@@ -76,7 +76,6 @@ class CmdUpload:
                 elif os.path.isdir(p):  # recursively handle dir upload
                     get_files(p, p, 0) 
 
-
             def upload(idx):
                 try:
                     key = selected_area + fs[idx].key
