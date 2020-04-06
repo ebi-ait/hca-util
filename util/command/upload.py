@@ -22,6 +22,7 @@ class CmdUpload:
     def __init__(self, aws, args):
         self.aws = aws
         self.args = args
+        self.files = None
 
     def run(self):
 
@@ -106,6 +107,7 @@ class CmdUpload:
                     fs[idx].complete = True
 
             print('Uploading...')
+            self.files = fs
 
             transfer(upload, fs)
 

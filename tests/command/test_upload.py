@@ -54,19 +54,140 @@ class TestUpload(TestCase):
         self.assertEqual(msg, 'No area selected')
 
     @patch('util.command.upload.get_selected_area')
-    @patch('os.path.getsize')
+    @patch('util.command.upload.os.path')
     @patch('util.command.upload.transfer')
-    def test_upload_file_in_selected_upload_area(self, transfer, get_size, get_selected_area):
+    def test_upload_file_in_selected_upload_area(self, transfer, os_path, get_selected_area):
         # given
         get_selected_area.return_value = 'selected'
-        get_size.return_value = 'size'
+
+        os_path.get_size.return_value = 'size'
+        os_path.isfile.return_value = True
+        os_path.isdir.return_value = False
+        os_path.basename.return_value = 'filename'
+        os_path.abspath = lambda path: 'abs' + path
 
         args = MagicMock()
         args.PATH = ['filename']
         args.a = None
 
         # when
-        success, msg = CmdUpload(self.aws_mock, args).run()
+        cmd = CmdUpload(self.aws_mock, args)
+        success, msg = cmd.run()
+
         # then
         self.assertTrue(success)
         transfer.assert_called_once()
+        uploaded_files = [f.path for f in cmd.files]
+        self.assertEqual(uploaded_files, ['absfilename'])
+
+    @patch('util.command.upload.get_selected_area')
+    @patch('util.command.upload.os')
+    @patch('util.command.upload.transfer')
+    def test_upload_dir_in_selected_upload_area(self, transfer, os, get_selected_area):
+        # given
+        get_selected_area.return_value = 'selected'
+        path_map = {
+            'dir1': {
+                'isfile': False,
+                'isdir': True,
+                'listdir': ['file1', 'file2', '.file', '__file', 'dir2']
+            },
+            'dir1/file1': {
+                'isfile': True,
+                'isdir': False,
+                'getsize': 10
+            },
+            'dir1/file2': {
+                'isfile': True,
+                'isdir': False,
+                'getsize': 5
+            },
+            'dir1/dir2/file3': {
+                'isfile': True,
+                'isdir': False,
+                'getsize': 5
+            },
+            'dir1/dir2': {
+                'isfile': False,
+                'isdir': True,
+                'listdir': ['file3']
+            }
+        }
+        os.path.getsize = lambda path: path_map[path].get('getsize')
+        os.path.isfile = lambda path: path_map[path].get('isfile')
+        os.path.isdir = lambda path: path_map[path].get('isdir')
+        os.path.abspath = lambda path: path
+        os.path.join = lambda path, file: f'{path}/{file}'
+
+        os.listdir = lambda path: path_map[path].get('listdir')
+
+        args = Mock()
+        args.PATH = ['dir1']
+        args.a = None
+        args.r = None
+
+        # when
+        cmd = CmdUpload(self.aws_mock, args)
+        success, msg = cmd.run()
+
+        # then
+        self.assertTrue(success)
+        transfer.assert_called_once()
+        uploaded_files = [f.path for f in cmd.files]
+        self.assertEqual(uploaded_files, ['dir1/file1', 'dir1/file2'])
+
+    @patch('util.command.upload.get_selected_area')
+    @patch('util.command.upload.os')
+    @patch('util.command.upload.transfer')
+    def test_upload_dir_in_selected_upload_area_recursive(self, transfer, os, get_selected_area):
+        # given
+        get_selected_area.return_value = 'selected'
+        path_map = {
+            'dir1': {
+                'isfile': False,
+                'isdir': True,
+                'listdir': ['file1', 'file2', '.file', '__file', 'dir2']
+            },
+            'dir1/file1': {
+                'isfile': True,
+                'isdir': False,
+                'getsize': 10
+            },
+            'dir1/file2': {
+                'isfile': True,
+                'isdir': False,
+                'getsize': 5
+            },
+            'dir1/dir2/file3': {
+                'isfile': True,
+                'isdir': False,
+                'getsize': 5
+            },
+            'dir1/dir2': {
+                'isfile': False,
+                'isdir': True,
+                'listdir': ['file3']
+            }
+        }
+        os.path.getsize = lambda path: path_map[path].get('getsize')
+        os.path.isfile = lambda path: path_map[path].get('isfile')
+        os.path.isdir = lambda path: path_map[path].get('isdir')
+        os.path.abspath = lambda path: path
+        os.path.join = lambda path, file: f'{path}/{file}'
+
+        os.listdir = lambda path: path_map[path].get('listdir')
+
+        args = Mock()
+        args.PATH = ['dir1']
+        args.a = None
+        args.r = True
+
+        # when
+        cmd = CmdUpload(self.aws_mock, args)
+        success, msg = cmd.run()
+
+        # then
+        self.assertTrue(success)
+        transfer.assert_called_once()
+        uploaded_files = [f.path for f in cmd.files]
+        self.assertEqual(uploaded_files, ['dir1/file1', 'dir1/file2', 'dir1/dir2/file3'])
