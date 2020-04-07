@@ -110,9 +110,9 @@ class CmdUpload:
                     fs[idx].successful = False
 
             print('Uploading...')
-            self.files = fs
-
             transfer(upload, fs)
+
+            self.files = [f for f in fs if f.successful]
 
             if all([f.successful for f in fs]):
                 return True, 'Successful upload.'
