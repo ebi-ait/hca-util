@@ -22,7 +22,7 @@ class CmdUpload:
     def __init__(self, aws, args):
         self.aws = aws
         self.args = args
-        self.files = None
+        self.files = []
 
     def run(self):
 

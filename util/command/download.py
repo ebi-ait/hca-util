@@ -16,6 +16,7 @@ class CmdDownload:
     def __init__(self, aws, args):
         self.aws = aws
         self.args = args
+        self.files = []
 
     def run(self):
 
@@ -53,15 +54,15 @@ class CmdDownload:
                         obj_size = obj_summary.size
                     except botocore.exceptions.ClientError as e:
                         if e.response['Error']['Code'] == "404":
-                            fs.append(FileTransfer(key=key, status='File not found.', complete=True))
+                            fs.append(FileTransfer(path=os.getcwd(), key=key, status='File not found.', complete=True))
                         elif e.response['Error']['Code'] == "403":
                             # An error occurred (403) when calling the HeadObject operation: Forbidden
-                            fs.append(FileTransfer(key=key, status='Access denied.', complete=True))
+                            fs.append(FileTransfer(path=os.getcwd(), key=key, status='Access denied.', complete=True))
                         else:
                             # Something else has gone wrong.
-                            fs.append(FileTransfer(key=key, status='Download error.', complete=True))
+                            fs.append(FileTransfer(path=os.getcwd(), key=key, status='Download error.', complete=True))
                     else:
-                        fs.append(FileTransfer(key=key, size=obj_size))
+                        fs.append(FileTransfer(path=os.getcwd(), key=key, size=obj_size))
 
             def download(idx):
                 try:
@@ -90,6 +91,8 @@ class CmdDownload:
             print('Downloading...')
 
             transfer(download, fs)
+
+            self.files = [f for f in fs if f.successful]
 
             if all([f.successful for f in fs]):
                 return True, 'Successful download.'
