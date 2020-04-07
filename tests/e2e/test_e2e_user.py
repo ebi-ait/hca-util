@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 from unittest import TestCase
 
 from tests.e2e.test_e2e_admin import search_uuid, run
@@ -23,7 +24,10 @@ class TestUserE2E(TestCase):
         self.filename = 'test-user-file.txt'
         self.upload_area = 'testuseruploadarea'
         self.upload_area_uuid = None
+        self.downloaded_dir = None
         self.downloaded_file = None
+        self.dir = 'test-dir'
+        self.filename2 = 'test-user-file2.txt'
 
     def test_e2e_user(self):
         profile = f'--profile {ADMIN_PROFILE}'
@@ -47,20 +51,40 @@ class TestUserE2E(TestCase):
         self._assert_successful_run(f'{CLI} select {upload_area_uuid} {profile}')
 
         print('# Uploading file\n')
-        os.system(f'echo "test" > {filename}')
+        os.system(f'echo "t" > {filename}')
         self._assert_successful_run(f'{CLI} upload {filename} {profile}')
+
+        time.sleep(3)
+
+        print('# Uploading dir\n')
+        os.system(f'mkdir {self.dir}')
+        os.system(f'echo "t" > {self.dir}/{self.filename2}')
+        self._assert_successful_run(f'{CLI} upload {self.dir} -r {profile}')
+
+        time.sleep(3)
 
         print('# Listing file\n')
         output = self._assert_successful_run(f'{CLI} list {profile}')
         self.assertTrue(filename in output, f'file {filename} was not uploaded to {upload_area}, output: {output}')
+        self.assertTrue(self.filename2 in output,
+                        f'file {self.filename2} was not uploaded to {upload_area}, output: {output}')
 
-        print('# Downloading file\n')
-        os.remove(filename)
+        print('# Downloading all\n')
+        # os.remove(filename)
         self._assert_successful_run(f'{CLI} download -a {profile}')  # TODO should be specific file
+
+        time.sleep(3)
+
         self._assert_successful_run(f'ls')
         cwd = os.getcwd()
+
+        self.downloaded_dir = f'{cwd}/{upload_area_uuid}'
         self.downloaded_file = f'{cwd}/{upload_area_uuid}/{self.filename}'
+        self.downloaded_file2 = f'{cwd}/{upload_area_uuid}/{self.filename2}'
+
+        self.assertTrue(os.path.exists(self.downloaded_dir), f'Upload area {upload_area_uuid} dir should be downloaded')
         self.assertTrue(os.path.exists(self.downloaded_file), f'File {filename} should have been downloaded.')
+        self.assertTrue(os.path.exists(self.downloaded_file2), f'File {filename} should have been downloaded.')
 
         print('# Deleting file\n')
         self._assert_successful_run(f'{CLI} delete {filename} {profile}')
@@ -90,15 +114,31 @@ class TestUserE2E(TestCase):
 
     def _assert_successful_run(self, command: str, **kwargs):
         exit_code, output, error = run(command, **kwargs)
+
+        tries = 1
+        while exit_code != 0 and tries != 5:
+            print('Retrying command...')
+            time.sleep(3)
+            exit_code, output, error = run(command, **kwargs)
+            tries += 1
+
         self.assertEqual(0, exit_code, f'output: {output}, error:{error}')
         return output
 
     def tearDown(self) -> None:
-        for file in [self.filename, self.downloaded_file]:
+        for file in [self.filename]:
             if os.path.exists(file):
                 print(f'Deleting file {file}')
                 os.remove(file)
                 print(f'File {file} deleted')
+
+        if os.path.exists(self.downloaded_dir):
+            os.system(f'rm -rf {self.downloaded_dir}')
+            print(f'Deleted {self.downloaded_dir}')
+
+        if os.path.exists(self.dir):
+            os.system(f'rm -rf {self.dir}')
+            print(f'Deleted {self.dir}')
 
         if self.upload_area_uuid:
             print(f'Deleting upload area {self.upload_area_uuid}')
