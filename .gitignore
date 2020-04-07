@@ -15,3 +15,4 @@ venv/
 # nosetest code coverage
 .coverage
 coverage.xml
+/cover
