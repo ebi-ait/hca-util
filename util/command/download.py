@@ -4,7 +4,6 @@ import botocore
 
 from util.common import format_err
 from util.file_transfer import FileTransfer, TransferProgress, transfer
-from settings import DEBUG_MODE
 from util.local_state import get_selected_area
 
 
@@ -67,8 +66,7 @@ class CmdDownload:
             def download(idx):
                 try:
                     file = fs[idx].key
-                    if not os.path.exists(os.path.dirname(file)):
-                        os.makedirs(os.path.dirname(file))
+                    os.makedirs(os.path.dirname(file), exist_ok=True)
 
                     s3 = self.aws.new_session().resource('s3')
                     s3.Bucket(self.aws.bucket_name).download_file(file, file, Callback=TransferProgress(fs[idx]))
@@ -79,18 +77,24 @@ class CmdDownload:
                     if fs[idx].size == 0:
                         fs[idx].status = 'Empty file.'
                         fs[idx].complete = True
+                        fs[idx].successful = True
 
                 except Exception as thread_ex:
                     if 'Forbidden' in str(thread_ex) or 'AccessDenied' in str(thread_ex):
-                        fs[idx].status = 'Access denied.'
+                        fs[idx].status = f'Access denied.\n{str(thread_ex)}'
                     else:
-                        fs[idx].status = 'Download failed.'
+                        fs[idx].status = f'Download failed.\n{str(thread_ex)}'
                     fs[idx].complete = True
+                    fs[idx].successful = False
 
             print('Downloading...')
 
             transfer(download, fs)
-            return True, None
+
+            if all([f.successful for f in fs]):
+                return True, 'Successful download.'
+            else:
+                return False, 'Failed download.'
 
         except Exception as e:
             return False, format_err(e, 'download')
