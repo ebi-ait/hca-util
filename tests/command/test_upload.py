@@ -15,8 +15,12 @@ class TestUpload(TestCase):
         bucket_policy = MagicMock()
         bucket_policy.policy = None
 
+        bucket = Mock()
+        bucket.upload_file = Mock()
+
         resource = MagicMock()
         resource.BucketPolicy = Mock(return_value=bucket_policy)
+        resource.Bucket = Mock(return_value=bucket)
 
         session = MagicMock()
         session.client = Mock(return_value=self.client)
@@ -25,6 +29,35 @@ class TestUpload(TestCase):
         self.aws_mock.is_user = False
         self.aws_mock.common_session = session
         self.aws_mock.bucket_name = 'bucket-name'
+        self.aws_mock.new_session.return_value = session
+
+        self.path_map = {
+            'dir1': {
+                'isfile': False,
+                'isdir': True,
+                'listdir': ['file1', 'file2', '.file', '__file', 'dir2']
+            },
+            'dir1/file1': {
+                'isfile': True,
+                'isdir': False,
+                'getsize': 10
+            },
+            'dir1/file2': {
+                'isfile': True,
+                'isdir': False,
+                'getsize': 5
+            },
+            'dir1/dir2/file3': {
+                'isfile': True,
+                'isdir': False,
+                'getsize': 5
+            },
+            'dir1/dir2': {
+                'isfile': False,
+                'isdir': True,
+                'listdir': ['file3']
+            }
+        }
 
     def test_upload_inexisting_file(self):
         # given
@@ -56,7 +89,7 @@ class TestUpload(TestCase):
     @patch('util.command.upload.get_selected_area')
     @patch('util.command.upload.os.path')
     @patch('util.command.upload.transfer')
-    def test_upload_file_in_selected_upload_area(self, transfer, os_path, get_selected_area):
+    def test_upload_file_to_selected_upload_area(self, transfer, os_path, get_selected_area):
         # given
         get_selected_area.return_value = 'selected'
 
@@ -68,7 +101,6 @@ class TestUpload(TestCase):
 
         args = MagicMock()
         args.PATH = ['filename']
-        args.a = None
 
         # when
         cmd = CmdUpload(self.aws_mock, args)
@@ -83,36 +115,11 @@ class TestUpload(TestCase):
     @patch('util.command.upload.get_selected_area')
     @patch('util.command.upload.os')
     @patch('util.command.upload.transfer')
-    def test_upload_dir_in_selected_upload_area(self, transfer, os, get_selected_area):
+    def test_upload_dir_to_selected_upload_area(self, transfer, os, get_selected_area):
         # given
         get_selected_area.return_value = 'selected'
-        path_map = {
-            'dir1': {
-                'isfile': False,
-                'isdir': True,
-                'listdir': ['file1', 'file2', '.file', '__file', 'dir2']
-            },
-            'dir1/file1': {
-                'isfile': True,
-                'isdir': False,
-                'getsize': 10
-            },
-            'dir1/file2': {
-                'isfile': True,
-                'isdir': False,
-                'getsize': 5
-            },
-            'dir1/dir2/file3': {
-                'isfile': True,
-                'isdir': False,
-                'getsize': 5
-            },
-            'dir1/dir2': {
-                'isfile': False,
-                'isdir': True,
-                'listdir': ['file3']
-            }
-        }
+        path_map = self.path_map
+
         os.path.getsize = lambda path: path_map[path].get('getsize')
         os.path.isfile = lambda path: path_map[path].get('isfile')
         os.path.isdir = lambda path: path_map[path].get('isdir')
@@ -123,7 +130,6 @@ class TestUpload(TestCase):
 
         args = Mock()
         args.PATH = ['dir1']
-        args.a = None
         args.r = None
 
         # when
@@ -139,36 +145,11 @@ class TestUpload(TestCase):
     @patch('util.command.upload.get_selected_area')
     @patch('util.command.upload.os')
     @patch('util.command.upload.transfer')
-    def test_upload_dir_in_selected_upload_area_recursive(self, transfer, os, get_selected_area):
+    def test_upload_dir_to_selected_upload_area_recursive(self, transfer, os, get_selected_area):
         # given
         get_selected_area.return_value = 'selected'
-        path_map = {
-            'dir1': {
-                'isfile': False,
-                'isdir': True,
-                'listdir': ['file1', 'file2', '.file', '__file', 'dir2']
-            },
-            'dir1/file1': {
-                'isfile': True,
-                'isdir': False,
-                'getsize': 10
-            },
-            'dir1/file2': {
-                'isfile': True,
-                'isdir': False,
-                'getsize': 5
-            },
-            'dir1/dir2/file3': {
-                'isfile': True,
-                'isdir': False,
-                'getsize': 5
-            },
-            'dir1/dir2': {
-                'isfile': False,
-                'isdir': True,
-                'listdir': ['file3']
-            }
-        }
+        path_map = self.path_map
+
         os.path.getsize = lambda path: path_map[path].get('getsize')
         os.path.isfile = lambda path: path_map[path].get('isfile')
         os.path.isdir = lambda path: path_map[path].get('isdir')
