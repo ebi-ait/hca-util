@@ -25,9 +25,6 @@ class CmdDelete:
             return False, 'No area selected'
 
         try:
-            s3_resource = self.aws.common_session.resource('s3')
-            bucket = s3_resource.Bucket(self.aws.bucket_name)
-
             if self.args.d:  # delete area
                 if self.aws.is_user:
                     return False, 'You don\'t have permission to use this command'
@@ -37,13 +34,13 @@ class CmdDelete:
                 if confirm.lower() == 'y':
                     print('Deleting...')
 
-                    for obj in bucket.objects.filter(Prefix=selected_area):
-                        print(obj.key)
-                        obj.delete()
+                    deleted_keys = self.delete_upload_area(selected_area, incl_selected_area=True)
+                    for k in deleted_keys:
+                        print(k)
 
                     # delete bucket policy for user-folder permissions
                     # only admin who has perms to set policy can do this
-                    delete_dir_perms_from_bucket_policy(s3_resource, self.aws.bucket_name, selected_area)
+                    self.clear_area_perms_from_bucket_policy(selected_area)
 
                     # clear selected area
                     CmdArea.clear(False)
@@ -56,12 +53,10 @@ class CmdDelete:
                 if confirm.lower() == 'y':
                     print('Deleting...')
 
-                    for obj in bucket.objects.filter(Prefix=selected_area):
-                        # do not delete folder object
-                        if obj.key == selected_area:
-                            continue
-                        print(obj.key)
-                        obj.delete()
+                    deleted_keys = self.delete_upload_area(selected_area, incl_selected_area=False)
+                    for k in deleted_keys:
+                        print(k)
+
                 return True, None
 
             if self.args.PATH:  # list of files and dirs to delete
@@ -75,8 +70,7 @@ class CmdDelete:
 
                     if keys:
                         for k in keys:
-                            obj = s3_resource.ObjectSummary(self.aws.bucket_name, k)
-                            obj.delete()
+                            self.delete_s3_object(k)
                             print(k + '  Done.')
                     else:
                         print(prefix + '  File not found.')
@@ -97,21 +91,42 @@ class CmdDelete:
             
         return keys
 
+    def delete_s3_object(self, key):
+        s3_resource = self.aws.common_session.resource('s3')
+        s3_obj = s3_resource.ObjectSummary(self.aws.bucket_name, key)
+        s3_obj.delete()
+        return key
 
-def delete_dir_perms_from_bucket_policy(s3_res, bucket_name, area_name):
-    try:
-        bucket_policy = s3_res.BucketPolicy(bucket_name)
-        policy_str = bucket_policy.policy
-    except ClientError:
-        policy_str = ''
+    def delete_upload_area(self, selected_area, incl_selected_area=False):
+        s3_resource = self.aws.common_session.resource('s3')
+        bucket = s3_resource.Bucket(self.aws.bucket_name)
+        deleted_keys = []
+        objs_to_delete = bucket.objects.filter(Prefix=selected_area) if incl_selected_area else filter(lambda obj: obj.key != selected_area, bucket.objects.filter(Prefix=selected_area))
+        for obj in objs_to_delete:
+            obj.delete()
+            deleted_keys.append(obj.key)
 
-    if policy_str:
-        policy_json = json.loads(policy_str)
-        changed = False
-        for stmt in policy_json['Statement']:
-            if area_name in stmt['Resource']:
-                policy_json['Statement'].remove(stmt)
-                changed = True
-        if changed:
-            updated_policy = json.dumps(policy_json)
-            bucket_policy.put(Policy=updated_policy)
+        return deleted_keys
+
+    def clear_area_perms_from_bucket_policy(self, selected_area):
+        s3_resource = self.aws.common_session.resource('s3')
+        return CmdDelete.delete_dir_perms_from_bucket_policy(s3_resource, self.aws.bucket_name, selected_area)
+
+    @staticmethod
+    def delete_dir_perms_from_bucket_policy(s3_res, bucket_name, area_name):
+        try:
+            bucket_policy = s3_res.BucketPolicy(bucket_name)
+            policy_str = bucket_policy.policy
+        except ClientError:
+            policy_str = ''
+
+        if policy_str:
+            policy_json = json.loads(policy_str)
+            changed = False
+            for stmt in policy_json['Statement']:
+                if area_name in stmt['Resource']:
+                    policy_json['Statement'].remove(stmt)
+                    changed = True
+            if changed:
+                updated_policy = json.dumps(policy_json)
+                bucket_policy.put(Policy=updated_policy)
