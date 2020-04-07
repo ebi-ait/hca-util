@@ -1,9 +1,9 @@
 import os
 
+from settings import MAX_DIR_DEPTH
 from util.common import format_err
 from util.file_transfer import FileTransfer, TransferProgress, transfer
 from util.local_state import get_selected_area
-from settings import MAX_DIR_DEPTH
 
 """
 Uploading to Upload Service upload area
@@ -32,7 +32,7 @@ class CmdUpload:
             return False, 'No area selected'
 
         try:
-            
+
             # filter out any duplicate path after expansion 
             # . -> curent drectory
             # ~ -> user home directory
@@ -51,17 +51,17 @@ class CmdUpload:
                 max_depth = MAX_DIR_DEPTH
 
             exclude = lambda f: f.startswith('.') or f.startswith('__')
-            
+
             def get_files(upload_path, curr_path, level):
                 if level < max_depth:  # skip files deeper than max depth
                     level += 1
-                    for f in os.listdir(curr_path): 
+                    for f in os.listdir(curr_path):
                         full_path = os.path.join(curr_path, f)
                         # skip hidden files and dirs
                         if not exclude(f):
                             if os.path.isfile(full_path):
                                 f_size = os.path.getsize(full_path)
-                                rel_path = full_path.replace(upload_path+('' if upload_path.endswith('/') else '/'), '')
+                                rel_path = full_path.replace(upload_path + ('' if upload_path.endswith('/') else '/'), '')
                                 fs.append(FileTransfer(path=full_path, key=rel_path, size=f_size))
 
                             elif os.path.isdir(full_path):
@@ -74,7 +74,7 @@ class CmdUpload:
                     fs.append(FileTransfer(path=p, key=f_name, size=f_size))
 
                 elif os.path.isdir(p):  # recursively handle dir upload
-                    get_files(p, p, 0) 
+                    get_files(p, p, 0)
 
             def upload(idx):
                 try:
@@ -101,16 +101,23 @@ class CmdUpload:
                         if fs[idx].size == 0:
                             fs[idx].status = 'Empty file.'
                             fs[idx].complete = True
+                            fs[idx].successful = True
+
                 except Exception as thread_ex:
-                    fs[idx].status = 'Upload failed.'
+                    fs[idx].status = f'Upload failed.\n{str(thread_ex)}'
                     fs[idx].complete = True
+                    fs[idx].successful = False
 
             print('Uploading...')
             self.files = fs
 
             transfer(upload, fs)
 
-            return True, 'Success upload'
+            if all([f.successful for f in fs]):
+                return True, 'Successful upload.'
+
+            else:
+                return False, 'Failed upload.'
 
         except Exception as e:
             return False, format_err(e, 'upload')
