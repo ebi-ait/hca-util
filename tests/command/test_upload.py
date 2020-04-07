@@ -5,6 +5,11 @@ from util.__main__ import parse_args
 from util.command.upload import CmdUpload
 
 
+def mock_transfer(_, fs):
+    for f in fs:
+        f.successful = True
+
+
 class TestUpload(TestCase):
     def setUp(self) -> None:
         self.aws_mock = MagicMock()
@@ -99,6 +104,8 @@ class TestUpload(TestCase):
         os_path.basename.return_value = 'filename'
         os_path.abspath = lambda path: 'abs' + path
 
+        transfer.side_effect = mock_transfer
+
         args = MagicMock()
         args.PATH = ['filename']
 
@@ -127,6 +134,8 @@ class TestUpload(TestCase):
         os.path.join = lambda path, file: f'{path}/{file}'
 
         os.listdir = lambda path: path_map[path].get('listdir')
+
+        transfer.side_effect = mock_transfer
 
         args = Mock()
         args.PATH = ['dir1']
@@ -157,6 +166,8 @@ class TestUpload(TestCase):
         os.path.join = lambda path, file: f'{path}/{file}'
 
         os.listdir = lambda path: path_map[path].get('listdir')
+
+        transfer.side_effect = mock_transfer
 
         args = Mock()
         args.PATH = ['dir1']
