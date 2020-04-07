@@ -1,9 +1,8 @@
 import unittest
 from unittest.mock import MagicMock, Mock, patch
 
-from util.cmd import Cmd
-
 from util.__main__ import parse_args
+from util.cmd import Cmd
 from util.command.create import CmdCreate
 
 
@@ -124,3 +123,17 @@ class TestCreate(unittest.TestCase):
 
         # then
         self.assertEqual(error.exception.code, 1)
+
+    @patch('uuid.uuid4')
+    def test_admin_create_upload_area_has_exception(self, uuid):
+        # given
+        uuid.return_value = 'uuid'
+
+        args = ['create', 'testUploadArea']
+        self.client.put_object.side_effect = Mock(side_effect=Exception('Test'))
+
+        # when
+        success, msg = CmdCreate(self.aws_mock, parse_args(args)).run()
+
+        # then
+        self.assertFalse(success)

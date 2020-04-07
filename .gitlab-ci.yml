@@ -16,7 +16,7 @@ test_e2e_user:
 integration_test:
   stage: test
   script:
-    - nosetests -v tests.command
+    - nosetests --with-coverage --cover-erase --cover-package=util.command --cover-html --cover-branches  --cover-xml -v --nocapture tests.command
 
 
 before_script:
