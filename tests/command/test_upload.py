@@ -22,6 +22,7 @@ class TestUpload(TestCase):
 
         bucket = Mock()
         bucket.upload_file = Mock()
+        self.upload_file = bucket.upload_file
 
         resource = MagicMock()
         resource.BucketPolicy = Mock(return_value=bucket_policy)
@@ -183,3 +184,101 @@ class TestUpload(TestCase):
         transfer.assert_called_once()
         uploaded_files = [f.path for f in cmd.files]
         self.assertEqual(uploaded_files, ['dir1/file1', 'dir1/file2', 'dir1/dir2/file3'])
+
+    @patch('util.command.upload.get_selected_area')
+    @patch('util.command.upload.os')
+    @patch('util.command.upload.TransferProgress')
+    def test_upload_dir_to_selected_upload_area_no_overwrite(self, transfer_progress, os, get_selected_area):
+        # given
+        get_selected_area.return_value = 'selected/'
+        path_map = self.path_map
+
+        os.path.getsize = lambda path: path_map[path].get('getsize')
+        os.path.isfile = lambda path: path_map[path].get('isfile')
+        os.path.isdir = lambda path: path_map[path].get('isdir')
+        os.path.abspath = lambda path: path
+        os.path.join = lambda path, file: f'{path}/{file}'
+
+        os.listdir = lambda path: path_map[path].get('listdir')
+
+        def mock_file_transfer(f):
+            f.successful = True
+            f.complete = True
+
+        transfer_progress.side_effect = mock_file_transfer
+
+        args = Mock()
+        args.PATH = ['dir1']
+        args.r = True
+        args.o = False
+
+        existing_key_map = {
+            'selected/file1': True,
+            'selected/file2': False,
+            'selected/file3': False
+        }
+
+        self.aws_mock.obj_exists = lambda key: existing_key_map.get(key, False)
+
+        # when
+        cmd = CmdUpload(self.aws_mock, args)
+        success, msg = cmd.run()
+
+        # then
+        self.assertTrue(success)
+
+        uploaded_files_map = {}
+        for f in cmd.files:
+            uploaded_files_map[f.path] = f
+
+        self.assertEqual(list(uploaded_files_map.keys()), ['dir1/file1', 'dir1/file2', 'dir1/dir2/file3'])
+        self.assertEqual(self.upload_file.call_count, 2, 'Should not overwrite files')
+
+    @patch('util.command.upload.get_selected_area')
+    @patch('util.command.upload.os')
+    @patch('util.command.upload.TransferProgress')
+    def test_upload_dir_to_selected_upload_area_with_overwrite(self, transfer_progress, os, get_selected_area):
+        # given
+        get_selected_area.return_value = 'selected/'
+        path_map = self.path_map
+
+        os.path.getsize = lambda path: path_map[path].get('getsize')
+        os.path.isfile = lambda path: path_map[path].get('isfile')
+        os.path.isdir = lambda path: path_map[path].get('isdir')
+        os.path.abspath = lambda path: path
+        os.path.join = lambda path, file: f'{path}/{file}'
+
+        os.listdir = lambda path: path_map[path].get('listdir')
+
+        def mock_file_transfer(f):
+            f.successful = True
+            f.complete = True
+
+        transfer_progress.side_effect = mock_file_transfer
+
+        args = Mock()
+        args.PATH = ['dir1']
+        args.r = True
+        args.o = True
+
+        existing_key_map = {
+            'selected/file1': True,
+            'selected/file2': False,
+            'selected/file3': False
+        }
+
+        self.aws_mock.obj_exists = lambda key: existing_key_map.get(key, False)
+
+        # when
+        cmd = CmdUpload(self.aws_mock, args)
+        success, msg = cmd.run()
+
+        # then
+        self.assertTrue(success)
+
+        uploaded_files_map = {}
+        for f in cmd.files:
+            uploaded_files_map[f.path] = f
+
+        self.assertEqual(list(uploaded_files_map.keys()), ['dir1/file1', 'dir1/file2', 'dir1/dir2/file3'])
+        self.assertEqual(self.upload_file.call_count, 3, 'Should overwrite files')

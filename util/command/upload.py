@@ -87,6 +87,7 @@ class CmdUpload:
 
                     if not self.args.o and self.aws.obj_exists(key):
                         fs[idx].status = 'File exists. Use -o to overwrite.'
+                        fs[idx].successful = True
                         fs[idx].complete = True
                     else:
                         res = sess.resource('s3')
