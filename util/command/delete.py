@@ -34,9 +34,7 @@ class CmdDelete:
                 if confirm.lower() == 'y':
                     print('Deleting...')
 
-                    deleted_keys = self.delete_upload_area(selected_area, incl_selected_area=True)
-                    for k in deleted_keys:
-                        print(k)
+                    self.delete_upload_area(selected_area, incl_selected_area=True)
 
                     # delete bucket policy for user-folder permissions
                     # only admin who has perms to set policy can do this
@@ -53,9 +51,7 @@ class CmdDelete:
                 if confirm.lower() == 'y':
                     print('Deleting...')
 
-                    deleted_keys = self.delete_upload_area(selected_area, incl_selected_area=False)
-                    for k in deleted_keys:
-                        print(k)
+                    self.delete_upload_area(selected_area, incl_selected_area=False)
 
                 return True, None
 
@@ -100,13 +96,10 @@ class CmdDelete:
     def delete_upload_area(self, selected_area, incl_selected_area=False):
         s3_resource = self.aws.common_session.resource('s3')
         bucket = s3_resource.Bucket(self.aws.bucket_name)
-        deleted_keys = []
         objs_to_delete = bucket.objects.filter(Prefix=selected_area) if incl_selected_area else filter(lambda obj: obj.key != selected_area, bucket.objects.filter(Prefix=selected_area))
         for obj in objs_to_delete:
+            print(obj.key)
             obj.delete()
-            deleted_keys.append(obj.key)
-
-        return deleted_keys
 
     def clear_area_perms_from_bucket_policy(self, selected_area):
         s3_resource = self.aws.common_session.resource('s3')
