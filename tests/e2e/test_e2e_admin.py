@@ -18,6 +18,8 @@ class TestAdminE2E(TestCase):
         self.filename = 'test-admin-file.txt'
         self.upload_area = 'testadminuploadarea'
         self.upload_area_uuid = None
+        self.downloaded_file = None
+        self.downloaded_dir = None
 
     def test_e2e_admin(self):
         profile = f'--profile {ADMIN_PROFILE}'
@@ -43,10 +45,18 @@ class TestAdminE2E(TestCase):
         self._assert_successful_run(f'touch {filename}')
         self._assert_successful_run(f'{CLI} upload {filename} {profile}')
 
-
         print('# Listing file\n')
         output = self._assert_successful_run(f'{CLI} list {profile}')
         self.assertTrue(filename in output, f'file {filename} was not uploaded to {upload_area}, output: {output}')
+
+        print('# Downloading file\n')
+        os.remove(filename)
+        self._assert_successful_run(f'{CLI} download -a {profile}')  # TODO should be specific file
+        self._assert_successful_run(f'ls')
+        cwd = os.getcwd()
+        self.downloaded_dir = f'{cwd}/{upload_area_uuid}'
+        self.downloaded_file = f'{cwd}/{upload_area_uuid}/{self.filename}'
+        self.assertTrue(os.path.exists(self.downloaded_file), f'File {filename} should have been downloaded.')
 
         print('# Deleting file\n')
         self._assert_successful_run(f'{CLI} delete {filename} {profile}')
@@ -71,10 +81,15 @@ class TestAdminE2E(TestCase):
         return output
 
     def tearDown(self) -> None:
-        if os.path.exists(self.filename):
-            print(f'Deleting file {self.filename}')
-            os.remove(self.filename)
-            print(f'File {self.filename} deleted')
+        for file in [self.filename]:
+            if os.path.exists(file):
+                print(f'Deleting file {file}')
+                os.remove(file)
+                print(f'File {file} deleted')
+
+        if os.path.exists(self.downloaded_dir):
+            os.system(f'rm -rf {self.downloaded_dir}')
+            print(f'Deleted {self.downloaded_dir}')
 
         if self.upload_area_uuid:
             print(f'Deleting upload area {self.upload_area_uuid}')

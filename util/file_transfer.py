@@ -17,6 +17,7 @@ class TransferProgress(object):
 
             if percentage == 100.0:
                 self._file_transfer.complete = True
+                self._file_transfer.successful = True
 
             self._file_transfer.status = f'({percentage:.2f}%)'
 
@@ -29,6 +30,7 @@ class FileTransfer:
         self.seen_so_far = seen_so_far
         self.status = status
         self.complete = complete
+        self.successful = False
 
     def __str__(self):
         return f'FileTransfer (path={self.path}, key={self.key}, size={self.size}, seen_so_far={self.seen_so_far}, status={self.status}, complete={self.complete}) '

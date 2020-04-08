@@ -1,6 +1,8 @@
 import re
 import subprocess
 
+UUID_REGEX = r'([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})'
+
 
 def run(command: str, input: str = None, verbose: bool = True):
     parsed_command = command.split(' ')
@@ -23,7 +25,11 @@ def run(command: str, input: str = None, verbose: bool = True):
 
 
 def search_uuid(text: str):
-    m = re.search('([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})', text)
+    m = re.search(UUID_REGEX, text)
     if m:
         return m.group(1)
     return None
+
+
+def search_all_uuids(text: str):
+    return re.findall(UUID_REGEX, text)
