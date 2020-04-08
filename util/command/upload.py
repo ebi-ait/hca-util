@@ -105,7 +105,7 @@ class CmdUpload:
                             fs[idx].successful = True
 
                 except Exception as thread_ex:
-                    fs[idx].status = f'Upload failed.\n{str(thread_ex)}'
+                    fs[idx].status = 'Upload failed.'
                     fs[idx].complete = True
                     fs[idx].successful = False
 

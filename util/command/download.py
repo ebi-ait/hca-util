@@ -82,9 +82,9 @@ class CmdDownload:
 
                 except Exception as thread_ex:
                     if 'Forbidden' in str(thread_ex) or 'AccessDenied' in str(thread_ex):
-                        fs[idx].status = f'Access denied.\n{str(thread_ex)}'
+                        fs[idx].status = 'Access denied.'
                     else:
-                        fs[idx].status = f'Download failed.\n{str(thread_ex)}'
+                        fs[idx].status = 'Download failed.'
                     fs[idx].complete = True
                     fs[idx].successful = False
 

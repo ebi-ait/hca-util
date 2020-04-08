@@ -19,7 +19,7 @@ class MyTestCase(unittest.TestCase):
         mock_args.a = False
         mock_args.PATH = mock_files_to_delete
         mock_aws = MagicMock()
-        mock_aws.is_contributor = False
+        mock_aws.is_user = False
 
         mock_selected_area.return_value = mock_area
         mock_all_keys.side_effect = lambda prefix: list(
@@ -53,7 +53,7 @@ class MyTestCase(unittest.TestCase):
         mock_args.a = False
         mock_args.PATH = mock_files_to_delete
         mock_aws = MagicMock()
-        mock_aws.is_contributor = False
+        mock_aws.is_user = False
 
         mock_selected_area.return_value = mock_area
         mock_all_keys.side_effect = lambda prefix: list(
@@ -80,7 +80,7 @@ class MyTestCase(unittest.TestCase):
         mock_args.d = False
         mock_args.a = True
         mock_aws = MagicMock()
-        mock_aws.is_contributor = False
+        mock_aws.is_user = False
 
         mock_selected_area.return_value = "mock-area"
         mock_delete_upload_area.return_value = list(map(lambda file: f'{mock_area}/{file}', mock_files_to_delete))
