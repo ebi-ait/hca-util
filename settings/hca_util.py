@@ -4,7 +4,7 @@ from pathlib import Path
 # the 2 deployments
 
 NAME = 'hca-util'
-VERSION = '0.2.0'
+VERSION = '0.2.1'
 DESC = 'CLI tool for uploading data to the HCA data platform'
 AUTHOR = 'hca-ingest-dev'
 AUTHOR_EMAIL = 'hca-ingest-dev@ebi.ac.uk'

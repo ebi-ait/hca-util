@@ -34,7 +34,7 @@ setup(
         'Programming Language :: Python :: 3.7',
     ],
     platforms=['MacOS X', 'Posix'],
-    packages=['util', 'util.command'],
+    packages=['settings', 'util', 'util.command'],
     include_package_data=True,
     install_requires=INSTALL_REQS,
     entry_points={
