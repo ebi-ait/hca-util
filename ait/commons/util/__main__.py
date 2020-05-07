@@ -4,10 +4,10 @@ import argparse
 import os
 import sys
 
-from settings import DEFAULT_PROFILE, DEBUG_MODE, NAME, VERSION, DIR_SUPPORT
-from util.common import is_valid_project_name, is_valid_area_name
-from util.cmd import Cmd
-from util.bucket_policy import ALLOWED_PERMS, DEFAULT_PERMS
+from ait.commons.util.settings import DEFAULT_PROFILE, DEBUG_MODE, NAME, VERSION, DIR_SUPPORT
+from ait.commons.util.common import is_valid_project_name, is_valid_area_name
+from ait.commons.util.cmd import Cmd
+from ait.commons.util.bucket_policy import ALLOWED_PERMS, DEFAULT_PERMS
 
 
 def valid_project_name(string):

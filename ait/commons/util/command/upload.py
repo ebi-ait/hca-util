@@ -1,9 +1,9 @@
 import os
 
-from settings import DIR_SUPPORT, MAX_DIR_DEPTH
-from util.common import format_err
-from util.file_transfer import FileTransfer, TransferProgress, transfer
-from util.local_state import get_selected_area
+from ait.commons.util.settings import DIR_SUPPORT, MAX_DIR_DEPTH
+from ait.commons.util.common import format_err
+from ait.commons.util.file_transfer import FileTransfer, TransferProgress, transfer
+from ait.commons.util.local_state import get_selected_area
 
 """
 Uploading to Upload Service upload area

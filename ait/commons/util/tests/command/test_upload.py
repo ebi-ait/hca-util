@@ -1,9 +1,9 @@
 from unittest import TestCase
 from unittest.mock import MagicMock, Mock, patch
 
-from util.__main__ import parse_args
-from util.command.upload import CmdUpload
-from settings import DIR_SUPPORT
+from ait.commons.util.__main__ import parse_args
+from ait.commons.util.command.upload import CmdUpload
+from ait.commons.util.settings import DIR_SUPPORT
 
 
 def mock_transfer(_, fs):
@@ -85,7 +85,7 @@ class TestUpload(TestCase):
 
         self.assertEqual(error.exception.code, 2)
 
-    @patch('util.command.upload.get_selected_area')
+    @patch('ait.commons.util.command.upload.get_selected_area')
     def test_upload_file_no_upload_area_selected(self, get_selected_area):
         # given
         get_selected_area.return_value = None
@@ -98,9 +98,9 @@ class TestUpload(TestCase):
         self.assertFalse(success)
         self.assertEqual(msg, 'No area selected')
 
-    @patch('util.command.upload.get_selected_area')
-    @patch('util.command.upload.os.path')
-    @patch('util.command.upload.transfer')
+    @patch('ait.commons.util.command.upload.get_selected_area')
+    @patch('ait.commons.util.command.upload.os.path')
+    @patch('ait.commons.util.command.upload.transfer')
     def test_upload_file_to_selected_upload_area(self, transfer, os_path, get_selected_area):
         # given
         get_selected_area.return_value = 'selected'
@@ -126,9 +126,9 @@ class TestUpload(TestCase):
         uploaded_files = [f.path for f in cmd.files]
         self.assertEqual(uploaded_files, ['absfilename'])
 
-    @patch('util.command.upload.get_selected_area')
-    @patch('util.command.upload.os.path')
-    @patch('util.command.upload.transfer')
+    @patch('ait.commons.util.command.upload.get_selected_area')
+    @patch('ait.commons.util.command.upload.os.path')
+    @patch('ait.commons.util.command.upload.transfer')
     def test_upload_file_to_selected_upload_area_duplicate_path(self, transfer, os_path, get_selected_area):
         # given
         get_selected_area.return_value = 'selected'
@@ -154,9 +154,9 @@ class TestUpload(TestCase):
         uploaded_files = [f.path for f in cmd.files]
         self.assertEqual(uploaded_files, ['absfilename'])
 
-    @patch('util.command.upload.get_selected_area')
-    @patch('util.command.upload.os')
-    @patch('util.command.upload.transfer')
+    @patch('ait.commons.util.command.upload.get_selected_area')
+    @patch('ait.commons.util.command.upload.os')
+    @patch('ait.commons.util.command.upload.transfer')
     def test_upload_dir_to_selected_upload_area(self, transfer, os, get_selected_area):
         # given
         get_selected_area.return_value = 'selected'
@@ -186,9 +186,9 @@ class TestUpload(TestCase):
         uploaded_files = [f.path for f in cmd.files]
         self.assertEqual(uploaded_files, ['dir1/file1', 'dir1/file2'])
 
-    @patch('util.command.upload.get_selected_area')
-    @patch('util.command.upload.os')
-    @patch('util.command.upload.transfer')
+    @patch('ait.commons.util.command.upload.get_selected_area')
+    @patch('ait.commons.util.command.upload.os')
+    @patch('ait.commons.util.command.upload.transfer')
     def test_upload_dir_to_selected_upload_area_recursive(self, transfer, os, get_selected_area):
         # given
         get_selected_area.return_value = 'selected'
@@ -220,9 +220,9 @@ class TestUpload(TestCase):
         expected_files = ['dir1/file1', 'dir1/file2', 'dir1/dir2/file3'] if DIR_SUPPORT else ['dir1/file1', 'dir1/file2']
         self.assertEqual(uploaded_files, expected_files)
 
-    @patch('util.command.upload.get_selected_area')
-    @patch('util.command.upload.os')
-    @patch('util.command.upload.transfer')
+    @patch('ait.commons.util.command.upload.get_selected_area')
+    @patch('ait.commons.util.command.upload.os')
+    @patch('ait.commons.util.command.upload.transfer')
     def test_upload_dir_to_selected_upload_area_recursive_one_file_failure(self, transfer, os, get_selected_area):
         # given
         get_selected_area.return_value = 'selected'
@@ -261,9 +261,9 @@ class TestUpload(TestCase):
 
         self.assertEqual(uploaded_files, expected_files)
 
-    @patch('util.command.upload.get_selected_area')
-    @patch('util.command.upload.os')
-    @patch('util.command.upload.TransferProgress')
+    @patch('ait.commons.util.command.upload.get_selected_area')
+    @patch('ait.commons.util.command.upload.os')
+    @patch('ait.commons.util.command.upload.TransferProgress')
     def test_upload_dir_to_selected_upload_area_no_overwrite(self, transfer_progress, os, get_selected_area):
         # given
         get_selected_area.return_value = 'selected/'
@@ -313,9 +313,9 @@ class TestUpload(TestCase):
         self.assertEqual(list(uploaded_files_map.keys()), expected_files)
         self.assertEqual(self.upload_file.call_count, expected_count, 'Should not overwrite files')
 
-    @patch('util.command.upload.get_selected_area')
-    @patch('util.command.upload.os')
-    @patch('util.command.upload.TransferProgress')
+    @patch('ait.commons.util.command.upload.get_selected_area')
+    @patch('ait.commons.util.command.upload.os')
+    @patch('ait.commons.util.command.upload.TransferProgress')
     def test_upload_dir_to_selected_upload_area_with_overwrite(self, transfer_progress, os, get_selected_area):
         # given
         get_selected_area.return_value = 'selected/'
@@ -363,9 +363,9 @@ class TestUpload(TestCase):
         self.assertEqual(list(uploaded_files_map.keys()), expected_files)
         self.assertEqual(self.upload_file.call_count, expected_count, 'Should overwrite files')
 
-    @patch('util.command.upload.get_selected_area')
-    @patch('util.command.upload.os')
-    @patch('util.command.upload.TransferProgress')
+    @patch('ait.commons.util.command.upload.get_selected_area')
+    @patch('ait.commons.util.command.upload.os')
+    @patch('ait.commons.util.command.upload.TransferProgress')
     def test_upload_file_to_selected_upload_area_no_overwrite(self, transfer_progress, os, get_selected_area):
         # given
         get_selected_area.return_value = 'selected/'
@@ -412,9 +412,9 @@ class TestUpload(TestCase):
         self.assertEqual(list(uploaded_files_map.keys()), ['file0'])
         self.assertEqual(self.upload_file.call_count, 0, 'Should not overwrite files')
 
-    @patch('util.command.upload.get_selected_area')
-    @patch('util.command.upload.os')
-    @patch('util.command.upload.TransferProgress')
+    @patch('ait.commons.util.command.upload.get_selected_area')
+    @patch('ait.commons.util.command.upload.os')
+    @patch('ait.commons.util.command.upload.TransferProgress')
     def test_upload_file_to_selected_upload_area_with_overwrite(self, transfer_progress, os, get_selected_area):
         # given
         get_selected_area.return_value = 'selected/'
@@ -461,9 +461,9 @@ class TestUpload(TestCase):
         self.assertEqual(list(uploaded_files_map.keys()), ['file0'])
         self.assertEqual(self.upload_file.call_count, 1, 'Should overwrite files')
 
-    @patch('util.command.upload.get_selected_area')
-    @patch('util.command.upload.os')
-    @patch('util.command.upload.TransferProgress')
+    @patch('ait.commons.util.command.upload.get_selected_area')
+    @patch('ait.commons.util.command.upload.os')
+    @patch('ait.commons.util.command.upload.TransferProgress')
     def test_upload_file_to_selected_upload_area_with_exception(self, transfer_progress, os, get_selected_area):
         # given
         get_selected_area.return_value = 'selected/'

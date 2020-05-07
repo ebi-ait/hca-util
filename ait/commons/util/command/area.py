@@ -1,4 +1,4 @@
-from util.local_state import get_local_state, set_local_state, LocalState
+from ait.commons.util.local_state import get_local_state, set_local_state, LocalState
 
 
 class CmdArea:

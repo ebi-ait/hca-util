@@ -1,5 +1,5 @@
-from util.common import format_err
-from util.local_state import get_selected_area
+from ait.commons.util.common import format_err
+from ait.commons.util.local_state import get_selected_area
 
 
 class CmdList:

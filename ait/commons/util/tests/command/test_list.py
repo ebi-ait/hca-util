@@ -2,12 +2,12 @@ import unittest
 from unittest.mock import MagicMock, Mock, patch
 from io import StringIO
 
-from util.command.list import CmdList
+from ait.commons.util.command.list import CmdList
 
 
 class TestList(unittest.TestCase):
-    @patch("util.command.list.CmdList.list_area_contents")
-    @patch("util.command.list.get_selected_area")
+    @patch("ait.commons.util.command.list.CmdList.list_area_contents")
+    @patch("ait.commons.util.command.list.get_selected_area")
     def test_user_can_list_upload_area_contents(self, mock_selected_area, mock_list_area_contents):
         mock_selected_area.return_value = "/"
         mock_area_contents = ["f1", "f2", "dir1/", "dir1/f1", "dir1/f2", "dir2/", "dir2/f1", "dir2/f2"]
@@ -25,7 +25,7 @@ class TestList(unittest.TestCase):
 
             self.assertTrue("6 items" in cmd_output_lines)
 
-    @patch("util.command.list.get_selected_area")
+    @patch("ait.commons.util.command.list.get_selected_area")
     def test_user_message_when_no_area_selected(self, mock_selected_area):
         mock_selected_area.return_value = None
 
@@ -47,7 +47,7 @@ class TestList(unittest.TestCase):
 
         self.assertTrue(cmd_response[0] is False and cmd_response[1] == 'You don\'t have permission to use this command')
 
-    @patch("util.command.list.CmdList.list_bucket_areas")
+    @patch("ait.commons.util.command.list.CmdList.list_bucket_areas")
     def test_admin_can_list_upload_areas_in_bucket(self, mock_list_bucket_areas):
         mock_list_bucket_areas.return_value = [
             dict(key="mock-area-1", perms="u", name="mymockarea1"),

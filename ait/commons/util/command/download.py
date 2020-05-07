@@ -2,9 +2,9 @@ import os
 
 import botocore
 
-from util.common import format_err
-from util.file_transfer import FileTransfer, TransferProgress, transfer
-from util.local_state import get_selected_area
+from ait.commons.util.common import format_err
+from ait.commons.util.file_transfer import FileTransfer, TransferProgress, transfer
+from ait.commons.util.local_state import get_selected_area
 
 
 class CmdDownload:

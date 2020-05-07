@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch, MagicMock, Mock
 
-from util.command.download import CmdDownload
+from ait.commons.util.command.download import CmdDownload
 
 
 def mock_transfer(_, fs):
@@ -41,7 +41,7 @@ class TestDownload(TestCase):
         self.aws_mock.bucket_name = 'bucket-name'
         self.aws_mock.new_session.return_value = session
 
-    @patch('util.command.download.get_selected_area')
+    @patch('ait.commons.util.command.download.get_selected_area')
     def test_download_no_upload_area_selected(self, get_selected_area):
         # given
         get_selected_area.return_value = None
@@ -54,9 +54,9 @@ class TestDownload(TestCase):
         self.assertFalse(success)
         self.assertEqual(msg, 'No area selected')
 
-    @patch('util.command.download.get_selected_area')
-    @patch('util.command.download.os')
-    @patch('util.command.download.TransferProgress')
+    @patch('ait.commons.util.command.download.get_selected_area')
+    @patch('ait.commons.util.command.download.os')
+    @patch('ait.commons.util.command.download.TransferProgress')
     def test_download_all_files_from_selected_upload_area(self, transfer_progress, os, get_selected_area):
         # given
         get_selected_area.return_value = 'selected'
@@ -95,9 +95,9 @@ class TestDownload(TestCase):
         self.assertEqual(downloaded_files, ['filename', 'filename2'])
         self.assertEqual(self.download_file.call_count, 2, 'should download all files')
 
-    @patch('util.command.download.get_selected_area')
-    @patch('util.command.download.os')
-    @patch('util.command.download.TransferProgress')
+    @patch('ait.commons.util.command.download.get_selected_area')
+    @patch('ait.commons.util.command.download.os')
+    @patch('ait.commons.util.command.download.TransferProgress')
     def test_download_file_from_selected_upload_area(self, transfer_progress, os, get_selected_area):
         # given
         get_selected_area.return_value = 'selected/'
@@ -137,9 +137,9 @@ class TestDownload(TestCase):
         self.assertEqual(downloaded_files, ['selected/filename'])
         self.assertEqual(self.download_file.call_count, 1, 'should download file')
 
-    @patch('util.command.download.get_selected_area')
-    @patch('util.command.download.os')
-    @patch('util.command.download.TransferProgress')
+    @patch('ait.commons.util.command.download.get_selected_area')
+    @patch('ait.commons.util.command.download.os')
+    @patch('ait.commons.util.command.download.TransferProgress')
     def test_download_empty_file_from_selected_upload_area(self, transfer_progress, os, get_selected_area):
         # given
         get_selected_area.return_value = 'selected'

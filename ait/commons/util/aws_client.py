@@ -1,6 +1,6 @@
 import boto3
 import json
-from settings import AWS_SECRET_NAME, IAM_USER
+from ait.commons.util.settings import AWS_SECRET_NAME, IAM_USER
 
 
 class Aws:

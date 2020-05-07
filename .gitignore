@@ -2,7 +2,8 @@ __pycache__/
 .idea/
 build/
 dist/
-util.egg-info/
+hca_util.egg-info/
+covid_util.egg-info/
 testpypi-env/
 venv/
 

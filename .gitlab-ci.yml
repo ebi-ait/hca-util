@@ -6,17 +6,17 @@ stages:
 test_e2e_admin:
   stage: test
   script:
-    - nosetests -v tests/e2e/test_e2e_admin.py --nocapture
+    - nosetests -v ait/commons/util/tests/e2e/test_e2e_admin.py --nocapture
 
 test_e2e_user:
   stage: test
   script:
-    - nosetests -v tests/e2e/test_e2e_user.py --nocapture
+    - nosetests -v ait/commons/util/tests/e2e/test_e2e_user.py --nocapture
 
 integration_test:
   stage: test
   script:
-    - nosetests --with-coverage --cover-erase --cover-package=util.command --cover-html --cover-branches  --cover-xml -v tests.command
+    - nosetests --with-coverage --cover-erase --cover-package=ait.commons.util.command --cover-html --cover-branches  --cover-xml -v ait.commons.util.tests.command
 
 
 before_script:

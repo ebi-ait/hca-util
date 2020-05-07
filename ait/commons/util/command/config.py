@@ -1,8 +1,8 @@
-from util.aws_client import Aws
-from util.common import format_err
-from util.local_state import set_bucket
-from settings import DEFAULT_PROFILE, DEFAULT_REGION
-from util.user_profile import set_profile, profile_exists, get_profile
+from ait.commons.util.aws_client import Aws
+from ait.commons.util.common import format_err
+from ait.commons.util.local_state import set_bucket
+from ait.commons.util.settings import DEFAULT_PROFILE, DEFAULT_REGION
+from ait.commons.util.user_profile import set_profile, profile_exists, get_profile
 
 
 class CmdConfig:

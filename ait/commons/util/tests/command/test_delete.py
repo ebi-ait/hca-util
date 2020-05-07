@@ -2,13 +2,13 @@ import unittest
 from unittest.mock import MagicMock, Mock, patch
 from io import StringIO
 
-from util.command.delete import CmdDelete
+from ait.commons.util.command.delete import CmdDelete
 
 
 class MyTestCase(unittest.TestCase):
-    @patch("util.command.delete.CmdDelete.clear_area_perms_from_bucket_policy")
-    @patch("util.command.delete.CmdDelete.all_keys")
-    @patch("util.command.delete.get_selected_area")
+    @patch("ait.commons.util.command.delete.CmdDelete.clear_area_perms_from_bucket_policy")
+    @patch("ait.commons.util.command.delete.CmdDelete.all_keys")
+    @patch("ait.commons.util.command.delete.get_selected_area")
     def test_admin_delete_existing_files_and_dirs(self, mock_selected_area, mock_all_keys, mock_clear_area_perms):
         mock_area = "mock-area/"
         mock_files_to_delete = ["mock-file-1", "mock-file-2", "mock-dir-1"]
@@ -41,8 +41,8 @@ class MyTestCase(unittest.TestCase):
             for line in cmd_output_lines:
                 self.assertTrue("mock-file-3" not in line and "mock-file-6" not in line)
 
-    @patch("util.command.delete.CmdDelete.all_keys")
-    @patch("util.command.delete.get_selected_area")
+    @patch("ait.commons.util.command.delete.CmdDelete.all_keys")
+    @patch("ait.commons.util.command.delete.get_selected_area")
     def test_admin_delete_non_existent_file_and_dir(self, mock_selected_area, mock_all_keys):
         mock_area = "mock-area/"
         mock_files_to_delete = ["non-existent-file-1", "mock-dir-1/non-existent-file-2", "mock-dir-2/non-existent-subdir-1/"]
@@ -70,9 +70,9 @@ class MyTestCase(unittest.TestCase):
             self.assertTrue("non-existent-file-2" in cmd_output_lines[2] and "not found" in cmd_output_lines[2])
             self.assertTrue("non-existent-subdir-1" in cmd_output_lines[3] and "not found" in cmd_output_lines[3])
 
-    @patch("util.command.delete.CmdDelete.clear_area_perms_from_bucket_policy")
-    @patch("util.command.delete.CmdDelete.delete_upload_area")
-    @patch("util.command.delete.get_selected_area")
+    @patch("ait.commons.util.command.delete.CmdDelete.clear_area_perms_from_bucket_policy")
+    @patch("ait.commons.util.command.delete.CmdDelete.delete_upload_area")
+    @patch("ait.commons.util.command.delete.get_selected_area")
     def test_admin_delete_all_files(self, mock_selected_area, mock_delete_upload_area, mock_clear_area_perms):
         mock_area = "mock-area"
         mock_files_to_delete = ["mock-file-1", "mock-file-2", "mock-file-3"]
@@ -94,9 +94,9 @@ class MyTestCase(unittest.TestCase):
             self.assertTrue("mock-file-1" in cmd_output_lines[1])
             self.assertTrue("mock-file-2" in cmd_output_lines[2])
 
-    @patch("util.command.delete.CmdDelete.clear_area_perms_from_bucket_policy")
-    @patch("util.command.delete.CmdDelete.delete_upload_area")
-    @patch("util.command.delete.get_selected_area")
+    @patch("ait.commons.util.command.delete.CmdDelete.clear_area_perms_from_bucket_policy")
+    @patch("ait.commons.util.command.delete.CmdDelete.delete_upload_area")
+    @patch("ait.commons.util.command.delete.get_selected_area")
     def test_admin_delete_area(self, mock_selected_area, mock_delete_upload_area, mock_clear_area_perms):
         mock_area = "mock-area"
         mock_files_to_delete = ["mock-file-1", "mock-file-2", "mock-file-3"]
@@ -118,7 +118,7 @@ class MyTestCase(unittest.TestCase):
             self.assertTrue("mock-file-2" in cmd_output_lines[2])
             self.assertTrue("mock-area" in cmd_output_lines[3])
 
-    @patch("util.command.delete.get_selected_area")
+    @patch("ait.commons.util.command.delete.get_selected_area")
     def test_user_cannot_delete_area(self, mock_selected_area):
         mock_args = Mock()
         mock_args.d = True

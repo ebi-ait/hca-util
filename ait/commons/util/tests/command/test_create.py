@@ -1,9 +1,9 @@
 import unittest
 from unittest.mock import MagicMock, Mock, patch
 
-from util.__main__ import parse_args
-from util.cmd import Cmd
-from util.command.create import CmdCreate
+from ait.commons.util.__main__ import parse_args
+from ait.commons.util.cmd import Cmd
+from ait.commons.util.command.create import CmdCreate
 
 
 class TestCreate(unittest.TestCase):
@@ -110,7 +110,7 @@ class TestCreate(unittest.TestCase):
 
         self.assertEqual(error.exception.code, 2)
 
-    @patch('util.aws_client.Aws')
+    @patch('ait.commons.util.aws_client.Aws')
     def test_create_upload_area_with_invalid_credentials(self, aws_mock):
         # given
         aws_mock.is_valid_credentials = False

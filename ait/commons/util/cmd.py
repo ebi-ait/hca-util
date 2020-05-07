@@ -1,15 +1,15 @@
 import sys
 
-from util.aws_client import Aws
-from util.command.config import CmdConfig
-from util.command.create import CmdCreate
-from util.command.delete import CmdDelete
-from util.command.download import CmdDownload
-from util.command.list import CmdList
-from util.command.select import CmdSelect
-from util.command.upload import CmdUpload
-from util.local_state import get_bucket
-from util.user_profile import profile_exists, get_profile
+from ait.commons.util.aws_client import Aws
+from ait.commons.util.command.config import CmdConfig
+from ait.commons.util.command.create import CmdCreate
+from ait.commons.util.command.delete import CmdDelete
+from ait.commons.util.command.download import CmdDownload
+from ait.commons.util.command.list import CmdList
+from ait.commons.util.command.select import CmdSelect
+from ait.commons.util.command.upload import CmdUpload
+from ait.commons.util.local_state import get_bucket
+from ait.commons.util.user_profile import profile_exists, get_profile
 
 
 class Cmd:

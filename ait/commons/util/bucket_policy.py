@@ -1,4 +1,4 @@
-from settings import AWS_ACCOUNT, IAM_USER
+from ait.commons.util.settings import AWS_ACCOUNT, IAM_USER
 
 """
 Permissions include

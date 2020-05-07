@@ -1,7 +1,7 @@
 import os
 import pathlib
 from setuptools import setup
-from settings import NAME, VERSION, DESC, AUTHOR, AUTHOR_EMAIL
+from ait.commons.util.settings import NAME, VERSION, DESC, AUTHOR, AUTHOR_EMAIL
 
 # directory containing this file
 HERE = pathlib.Path(__file__).parent
@@ -34,12 +34,12 @@ setup(
         'Programming Language :: Python :: 3.7',
     ],
     platforms=['MacOS X', 'Posix'],
-    packages=['settings', 'util', 'util.command'],
+    packages=['ait.commons.util','ait.commons.util.settings', 'ait.commons.util.command'],
     include_package_data=True,
     install_requires=INSTALL_REQS,
     entry_points={
         'console_scripts': [
-            f'{NAME}=util.__main__:main',
+            f'{NAME}=ait.commons.util.__main__:main',
         ]
     },
 )

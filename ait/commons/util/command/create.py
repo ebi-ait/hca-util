@@ -2,9 +2,9 @@ import json
 
 from botocore.exceptions import ClientError
 
-from util.aws_client import Aws
-from util.bucket_policy import new_policy_statement
-from util.common import gen_uuid, format_err
+from ait.commons.util.aws_client import Aws
+from ait.commons.util.bucket_policy import new_policy_statement
+from ait.commons.util.common import gen_uuid, format_err
 
 
 class CmdCreate:

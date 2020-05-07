@@ -2,9 +2,9 @@ import json
 
 from botocore.exceptions import ClientError
 
-from util.command.area import CmdArea
-from util.common import format_err
-from util.local_state import get_selected_area
+from ait.commons.util.command.area import CmdArea
+from ait.commons.util.common import format_err
+from ait.commons.util.local_state import get_selected_area
 
 
 class CmdDelete:
@@ -75,6 +75,8 @@ class CmdDelete:
                     else:
                         print(prefix + '  File not found.')
                 return True, None
+            else:
+                return False, 'No path specified'
 
         except Exception as e:
             return False, format_err(e, 'delete')

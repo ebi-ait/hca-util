@@ -1,7 +1,7 @@
 import os
 import configparser
-from util.common import create_if_not_exists
-from settings import AWS_CONFIG_FILE, AWS_CREDENTIALS_FILE, DEFAULT_REGION
+from ait.commons.util.common import create_if_not_exists
+from ait.commons.util.settings import AWS_CONFIG_FILE, AWS_CREDENTIALS_FILE, DEFAULT_REGION
 
 
 class UserProfile:

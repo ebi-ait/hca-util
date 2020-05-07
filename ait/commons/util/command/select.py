@@ -1,5 +1,5 @@
-from util.common import format_err
-from util.local_state import get_selected_area, set_selected_area
+from ait.commons.util.common import format_err
+from ait.commons.util.local_state import get_selected_area, set_selected_area
 
 
 class CmdSelect:
@@ -19,13 +19,13 @@ class CmdSelect:
 
                 if self.aws.obj_exists(key):
                     set_selected_area(key)
-                    return True, f'Selected upload area is {key} ' + self.upload_area_meta(key)
+                    return True, f'Selected upload area is {key}'
                 else:
                     return False, "Upload area does not exist"
             else:
                 selected_area = get_selected_area()
                 if selected_area:
-                    return True, 'Currently selected upload area is ' + get_selected_area() + ' ' + self.upload_area_meta(selected_area)
+                    return True, 'Currently selected upload area is ' + get_selected_area()
                 else:
                     return False, 'No upload area currently selected'
 

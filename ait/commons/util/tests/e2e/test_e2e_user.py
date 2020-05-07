@@ -2,9 +2,9 @@ import os
 import sys
 import time
 from unittest import TestCase
-from settings import DIR_SUPPORT
+from ait.commons.util.settings import DIR_SUPPORT
 
-from tests.e2e.test_e2e_admin import search_uuid, run
+from ait.commons.util.tests.e2e.test_e2e_admin import search_uuid, run
 
 sys.path.append(os.getcwd())
 
@@ -16,7 +16,7 @@ ADMIN_PROFILE = 'test-util-admin'
 ADMIN_ACCESS = os.environ.get('ADMIN_ACCESS')
 ADMIN_SECRET = os.environ.get('ADMIN_SECRET')
 
-NAME = 'util'
+NAME = 'ait.commons.util'
 CLI = f'python3 -m {NAME}'
 
 

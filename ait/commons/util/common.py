@@ -4,7 +4,7 @@ import os
 import pickle
 import uuid
 
-from settings import DEBUG_MODE
+from ait.commons.util.settings import DEBUG_MODE
 
 MAX_LEN_PROJECT_NAME = 36
 

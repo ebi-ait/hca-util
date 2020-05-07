@@ -14,7 +14,7 @@ clean:
 
 test:
 	@echo "test"
-	nosetests
+	nosetests ait/commons/util
 
 publish:
 	@echo "publish"

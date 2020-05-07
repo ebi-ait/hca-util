@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import MagicMock, Mock
 
-from util.__main__ import parse_args
-from util.command.select import CmdSelect
+from ait.commons.util.__main__ import parse_args
+from ait.commons.util.command.select import CmdSelect
 
 
 class TestSelect(unittest.TestCase):

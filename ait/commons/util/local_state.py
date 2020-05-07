@@ -1,5 +1,5 @@
-from util.common import serialize, deserialize
-from settings import LOCAL_STATE_FILE
+from ait.commons.util.common import serialize, deserialize
+from ait.commons.util.settings import LOCAL_STATE_FILE
 
 
 class LocalState:

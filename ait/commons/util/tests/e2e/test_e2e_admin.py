@@ -1,7 +1,7 @@
 import os
 from unittest import TestCase
 
-from tests.e2e.test_utils import search_uuid, run
+from ait.commons.util.tests.e2e.test_utils import search_uuid, run
 
 
 ADMIN_ACCESS = os.environ.get('ADMIN_ACCESS')
@@ -9,7 +9,7 @@ ADMIN_SECRET = os.environ.get('ADMIN_SECRET')
 
 ADMIN_PROFILE = 'test-util-admin'
 
-NAME = 'util'
+NAME = 'ait.commons.util'
 CLI = f'python3 -m {NAME}'
 
 
