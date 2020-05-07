@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, Mock, patch
 
 from util.__main__ import parse_args
 from util.command.upload import CmdUpload
+from settings import DIR_SUPPORT
 
 
 def mock_transfer(_, fs):
@@ -216,7 +217,8 @@ class TestUpload(TestCase):
         self.assertTrue(success)
         transfer.assert_called_once()
         uploaded_files = [f.path for f in cmd.files]
-        self.assertEqual(uploaded_files, ['dir1/file1', 'dir1/file2', 'dir1/dir2/file3'])
+        expected_files = ['dir1/file1', 'dir1/file2', 'dir1/dir2/file3'] if DIR_SUPPORT else ['dir1/file1', 'dir1/file2']
+        self.assertEqual(uploaded_files, expected_files)
 
     @patch('util.command.upload.get_selected_area')
     @patch('util.command.upload.os')
@@ -255,7 +257,9 @@ class TestUpload(TestCase):
         self.assertFalse(success)
         transfer.assert_called_once()
         uploaded_files = [f.path for f in cmd.files]
-        self.assertEqual(uploaded_files, ['dir1/file2', 'dir1/dir2/file3'])
+        expected_files = ['dir1/file2', 'dir1/dir2/file3'] if DIR_SUPPORT else ['dir1/file2']
+
+        self.assertEqual(uploaded_files, expected_files)
 
     @patch('util.command.upload.get_selected_area')
     @patch('util.command.upload.os')
@@ -303,8 +307,11 @@ class TestUpload(TestCase):
         for f in cmd.files:
             uploaded_files_map[f.path] = f
 
-        self.assertEqual(list(uploaded_files_map.keys()), ['dir1/file1', 'dir1/file2', 'dir1/dir2/file3'])
-        self.assertEqual(self.upload_file.call_count, 2, 'Should not overwrite files')
+        expected_files = ['dir1/file1', 'dir1/file2', 'dir1/dir2/file3'] if DIR_SUPPORT else ['dir1/file1', 'dir1/file2']
+        expected_count = 2 if DIR_SUPPORT else 1
+
+        self.assertEqual(list(uploaded_files_map.keys()), expected_files)
+        self.assertEqual(self.upload_file.call_count, expected_count, 'Should not overwrite files')
 
     @patch('util.command.upload.get_selected_area')
     @patch('util.command.upload.os')
@@ -351,9 +358,10 @@ class TestUpload(TestCase):
         uploaded_files_map = {}
         for f in cmd.files:
             uploaded_files_map[f.path] = f
-
-        self.assertEqual(list(uploaded_files_map.keys()), ['dir1/file1', 'dir1/file2', 'dir1/dir2/file3'])
-        self.assertEqual(self.upload_file.call_count, 3, 'Should overwrite files')
+        expected_files = ['dir1/file1', 'dir1/file2', 'dir1/dir2/file3'] if DIR_SUPPORT else ['dir1/file1', 'dir1/file2']
+        expected_count = 3 if DIR_SUPPORT else 2
+        self.assertEqual(list(uploaded_files_map.keys()), expected_files)
+        self.assertEqual(self.upload_file.call_count, expected_count, 'Should overwrite files')
 
     @patch('util.command.upload.get_selected_area')
     @patch('util.command.upload.os')

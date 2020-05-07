@@ -21,7 +21,8 @@ class CmdConfig:
             if self.args.bucket:
                 set_bucket(self.args.bucket)
 
-            set_profile(profile, DEFAULT_REGION, self.args.ACCESS_KEY, self.args.SECRET_KEY)
+            if self.args.ACCESS_KEY and self.args.SECRET_KEY:  
+                set_profile(profile, DEFAULT_REGION, self.args.ACCESS_KEY, self.args.SECRET_KEY)
 
             # check new profile
             if profile_exists(profile):
@@ -29,11 +30,11 @@ class CmdConfig:
                 aws = Aws(user_profile)
 
                 if aws.is_valid_credentials():
-                    return True, 'Valid credentials'
+                    return True, 'Valid credentials' + ('' if aws.is_user else ' for admin use')
                 else:
                     return False, 'Invalid credentials'
             else:
-                return False, 'Error setting profile'
+                return False, f'Profile \'{profile}\' not found. Please run config command with your access keys'
 
         except Exception as e:
             return False, format_err(e, 'config')

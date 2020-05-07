@@ -2,6 +2,7 @@ import os
 import sys
 import time
 from unittest import TestCase
+from settings import DIR_SUPPORT
 
 from tests.e2e.test_e2e_admin import search_uuid, run
 
@@ -59,7 +60,11 @@ class TestUserE2E(TestCase):
         print('# Uploading dir\n')
         os.system(f'mkdir {self.dir}')
         os.system(f'echo "t" > {self.dir}/{self.filename2}')
-        self._assert_successful_run(f'{CLI} upload {self.dir} -r {profile}')
+        
+        if DIR_SUPPORT:
+            self._assert_successful_run(f'{CLI} upload {self.dir} -r {profile}')
+        else:
+            self._assert_successful_run(f'{CLI} upload {self.dir} {profile}')
 
         time.sleep(3)
 

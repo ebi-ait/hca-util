@@ -12,6 +12,8 @@ AUTHOR_EMAIL = 'hca-ingest-dev@ebi.ac.uk'
 # when true, displays exception details; otherwise user-friendly error message
 DEBUG_MODE = True
 
+DIR_SUPPORT = False
+
 MAX_DIR_DEPTH = 5
 
 # user home directory

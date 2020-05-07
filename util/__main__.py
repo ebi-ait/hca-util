@@ -4,7 +4,7 @@ import argparse
 import os
 import sys
 
-from settings import DEFAULT_PROFILE, DEBUG_MODE, NAME, VERSION
+from settings import DEFAULT_PROFILE, DEBUG_MODE, NAME, VERSION, DIR_SUPPORT
 from util.common import is_valid_project_name, is_valid_area_name
 from util.cmd import Cmd
 from util.bucket_policy import ALLOWED_PERMS, DEFAULT_PERMS
@@ -55,8 +55,8 @@ def parse_args(args):
     cmd_parser.required = True
 
     parser_config = cmd_parser.add_parser('config', help='configure AWS credentials')
-    parser_config.add_argument('ACCESS_KEY', help='AWS Access Key ID')
-    parser_config.add_argument('SECRET_KEY', help='AWS Secret Access Key')
+    parser_config.add_argument('ACCESS_KEY', help='AWS Access Key ID', nargs='?')
+    parser_config.add_argument('SECRET_KEY', help='AWS Secret Access Key', nargs='?')
     parser_config.add_argument('--bucket', help='use BUCKET instead of default bucket')
 
     parser_create = cmd_parser.add_parser('create', help='create an upload area (authorised users only)')
@@ -89,9 +89,10 @@ def parse_args(args):
 
     parser_upload = cmd_parser.add_parser('upload', help='upload files to the area')
     parser_upload.add_argument('PATH', help='valid file or directory', type=valid_path, nargs='+')
-    parser_upload.add_argument('-r', action='store_true', help='recursively upload sub-directories')
+    if DIR_SUPPORT:
+        parser_upload.add_argument('-r', action='store_true', help='recursively upload sub-directories')
+        parser_upload.add_argument('-d', metavar='DIR', help='upload to specified directory')
     parser_upload.add_argument('-o', action='store_true', help='overwrite file or directory with same name')
-    parser_upload.add_argument('-d', metavar='DIR', help='upload to specified directory')
 
 
     parser_download = cmd_parser.add_parser('download', help='download files from the area')

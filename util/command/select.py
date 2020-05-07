@@ -19,15 +19,28 @@ class CmdSelect:
 
                 if self.aws.obj_exists(key):
                     set_selected_area(key)
-                    return True, 'Selected upload area is ' + key
+                    return True, f'Selected upload area is {key} ' + self.upload_area_meta(key)
                 else:
                     return False, "Upload area does not exist"
             else:
                 selected_area = get_selected_area()
                 if selected_area:
-                    return True, 'Currently selected upload area is ' + get_selected_area()
+                    return True, 'Currently selected upload area is ' + get_selected_area() + ' ' + self.upload_area_meta(selected_area)
                 else:
                     return False, 'No upload area currently selected'
 
         except Exception as e:
             return False, format_err(e, 'select')
+    
+    def upload_area_meta(self, key):
+        meta = ''
+        s3_client = self.aws.common_session.client('s3')
+        resp = s3_client.head_object(Bucket=self.aws.bucket_name, Key=key)
+        if resp and resp['Metadata']:
+            p = resp['Metadata']['perms']
+            if p:
+                meta += p.ljust(3)
+            n = resp['Metadata']['name']
+            if n:
+                meta += f' {n}'
+        return meta

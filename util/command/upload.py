@@ -1,6 +1,6 @@
 import os
 
-from settings import MAX_DIR_DEPTH
+from settings import DIR_SUPPORT, MAX_DIR_DEPTH
 from util.common import format_err
 from util.file_transfer import FileTransfer, TransferProgress, transfer
 from util.local_state import get_selected_area
@@ -47,7 +47,7 @@ class CmdUpload:
             fs = []
 
             max_depth = 1  # default
-            if self.args.r:
+            if DIR_SUPPORT and self.args.r:
                 max_depth = MAX_DIR_DEPTH
 
             exclude = lambda f: f.startswith('.') or f.startswith('__')

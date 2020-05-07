@@ -54,13 +54,7 @@ class TestConfig(unittest.TestCase):
         args = ['config', admin_access, admin_secret]
         success, msg = CmdConfig(parse_args(args)).run()
         self.assertTrue(success)
-        self.assertEqual(msg, 'Valid credentials')
-
-    def test_config_missing_params(self):
-        args = ['config', 'any-key']
-        with self.assertRaises(SystemExit) as error:
-            success, msg = CmdConfig(parse_args(args)).run()
-            self.assertFalse(success)
+        self.assertEqual(msg, 'Valid credentials for admin use')
 
     @patch('util.command.config.set_bucket')
     def test_config_with_bucket(self, set_bucket):
