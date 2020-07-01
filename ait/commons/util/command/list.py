@@ -60,20 +60,24 @@ class CmdList:
 
     def list_bucket_areas(self):
         areas = []
-        s3_resource = self.aws.common_session.resource('s3')
-        bucket = s3_resource.Bucket(self.aws.bucket_name)
-        for obj in bucket.objects.all():
-            k = obj.key
+        s3_cli = self.aws.common_session.client('s3')
+        objs = s3_cli.list_objects_v2(Bucket=self.aws.bucket_name)
+        for obj in objs['Contents']:
+            k = obj['Key']
             if k.endswith('/'):
-                obj_meta = obj.Object().metadata
-                if obj_meta:
-                    areas.append(dict(
-                        key=k, perms=obj_meta.get('perms'), name=obj_meta.get('name')
-                    ))
-                else:
-                    areas.append(dict(
-                        key=k, perms=None, name=None
-                    ))
+                tagSet = s3_cli.get_object_tagging(Bucket=self.aws.bucket_name, Key=k)
+                p = None
+                n = None
+
+                if tagSet and tagSet['TagSet']:
+                    kv = dict((tag['Key'], tag['Value']) for tag in tagSet['TagSet'])
+                    p = kv.get('perms')
+                    n = kv.get('name')
+
+                areas.append(dict(
+                    key=k, perms=p, name=n
+                ))
+
         return areas
 
     def list_area_contents(self, selected_area):
