@@ -5,7 +5,7 @@ from ait.commons.util.local_state import get_selected_area
 class CmdList:
     """
     admin and user
-    aws resource or client used in command - s3 resource (bucket.objects, Object().metadata)
+    aws resource or client used in command - s3 resource (list_objects_v2, get_object_tagging)
     """
 
     def __init__(self, aws, args):
