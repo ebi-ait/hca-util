@@ -1,13 +1,6 @@
 # hca-util
 
-CLI tool for uploading data to a centralised data platform.
-
-There are currently two different deployments of the tool both published to PyPi:
-
-1. [hca-util](https://pypi.org/project/hca-util/) -- for uploading data to the HCA data platform
-2. [covid-util](https://pypi.org/project/covid-util/) -- for uploading data to the European COVID-19 data platform
-
-Depending on which installation you use, replace `XXX-util` with either `hca-util` or `covid-util`. Note that each tool deployment uses its own separate data storage and access credentials.
+CLI tool for uploading data to the Human Cell Atlas AWS S3 buckets.
 
 # Users
 
@@ -18,20 +11,38 @@ Users need to have
 3. Credentials to access data in the S3 bucket (access and secret keys)
 
 ## Install
-Get `XXX-util` from PyPi.
+The [hca-util](https://pypi.org/project/hca-util/) tool is available to install from PyPi.
 
 ```shell script
-$ pip install XXX-util
+$ pip install hca-util
 ```
+
+Note there is a version of this tool published as [covid-util](https://pypi.org/project/covid-util/) in PyPi for uploading data to the European COVID-19 data platform. This version uses its own separate data storage and access credentials. 
                            
 ## Usage
 
-Display help
+Display help and list of commands.
 
 ```shell script
-$ XXX-util -h
-usage: XXX-util [-h] [--profile PROFILE]
-                   {config,create,select,dir,clear,list,upload,download,delete}
+$ hca-util -h
+usage: hca-util [-h] [--version] [--profile PROFILE] {config,create,select,list,upload,download,delete} ...
+
+hca-util
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version, -v         show program's version number and exit
+  --profile PROFILE     use PROFILE instead of default 'hca-util' profile
+
+command:
+  {config,create,select,list,upload,download,delete}
+    config              configure AWS credentials
+    create              create an upload area (authorised users only)
+    select              select or show the active upload area
+    list                list contents of the area
+    upload              upload files to the area
+    download            download files from the area
+    delete              delete files from the area
 ```
 
 In the above, optional arguments are between `[]` and choices between `{}`.
@@ -39,71 +50,72 @@ In the above, optional arguments are between `[]` and choices between `{}`.
 The basic usage is as follows:
 
 ```shell script
-$ XXX-util cmd ARG1 ARG2 -o1 -o2
+$ hca-util cmd ARG1 ARG2 -o1 -o2
 ```
 
 Use the tool by specifying a command (`cmd` - see list below) to run, any mandatory (positional) arguments (e.g. `ARG1` and `ARG2` - see positional args for each command), and any optional arguments (e.g. `-o1` and `o2` - see options for each command).
 
-## List of commands
+## Commands
 
-help for a specific command:
+Help with specific command:
 
 ```shell script
-$ XXX-util <command> -h
+$ hca-util <cmd> -h
 ```
 
-Some commands or options/flags are restricted to authorised users (for e.g. admin) only.
+Some commands or options/flags are restricted to authorised users (admin) only.
 
 ## `config` command
 
 Configure AWS credentials
 
 ```shell script
-$ XXX-util config ACCESS_KEY SECRET_KEY
+$ hca-util config ACCESS_KEY SECRET_KEY
 
 positional arguments:
   ACCESS_KEY         AWS Access Key ID
   SECRET_KEY         AWS Secret Access Key
 ```
 
-By default, this tool looks for and uses the profile name _XXX-util_, if it exists, or it can be set by the `config` command.
+The tool uses the profile name _hca-util_ in local AWS config files.
 
-Running a command with the `--profile` argument uses the specified profile instead of the default _XXX-util_ profile.
+Once configured, the set up can be checked by running the command again, this time without credentials (`hca-util config`), to verify if the previously entered credentials are valid or not.
 
 ## `create` command
 
 Create an upload area **(authorised users only)**
 
 ```shell script
-$ XXX-util create NAME [-p {u,ud,ux,udx}]
+$ hca-util create NAME [-p {u,ud,ux,udx}]
 
 
 positional arguments:
   NAME               name for the new area
 
 optional arguments:
-  -n name            optional project name for new area
   -p {u,ud,ux,udx}   allowed actions (permissions) on new area. u for
                      upload, x for delete and d for download. Default is ux
 ```
 
 ## `select` command
 
-Select or show the active upload area
+Show or select the active upload area
 
 ```shell script
-$ XXX-util select AREA
+$ hca-util select AREA
 
 positional arguments:
-  AREA                area uuid. If not present then selected area is shown
+  AREA                area uuid. 
 ```
+
+If AREA is not specified, the selected area is shown.
 
 ## `list` command
 
 List contents of selected area
 
 ```shell script
-$ XXX-util list [-b]
+$ hca-util list [-b]
 
 optional arguments:
   -b                 list all areas in bucket **(authorised users only)**
@@ -114,20 +126,22 @@ optional arguments:
 Upload files to the selected area
 
 ```shell script
-$ XXX-util upload (-a | -f file [file ...]) [-o]
+$ hca-util upload PATH [PATH ...] [-o]
+
+positional arguments:
+  PATH               valid file or directory
 
 optional arguments:
-  -a                  upload all files from current user directory
-  -f file [file ...]  upload specified file(s)
   -o                  overwrite files with same names
 ```
+
 
 ## `download` command
 
 Download files from the selected area
 
 ```shell script
-$ XXX-util download (-a | -f file [file ...])
+$ hca-util download (-a | -f file [file ...])
 
 optional arguments:
   -a                  download all files from selected area
@@ -139,12 +153,14 @@ optional arguments:
 Delete files from the selected area
 
 ```shell script
-$ XXX-util delete (-a | -f file [file ...] | -d)
+$ hca-util delete [-a | -d] [--profile PROFILE] [PATH [PATH ...]]
+
+positional arguments:
+  PATH               path to file or directory to delete
 
 optional arguments:
-  -a                  delete all files from selected area
-  -f file [file ...]  delete specified file(s) only
-  -d                  delete area and contents **(authorised users only)**
+  -a                 delete all files from the area
+  -d                 delete upload area and contents (authorised users only)
 ```
 
 # Developers
@@ -156,7 +172,7 @@ pip install -r requirements.txt
 Run 
 
 ```shell script
-python3 -m util
+python3 -m ait.commons.util
 ```
 
 Run tests
