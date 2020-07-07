@@ -92,13 +92,13 @@ def parse_args(args):
     if DIR_SUPPORT:
         parser_upload.add_argument('-r', action='store_true', help='recursively upload sub-directories')
         parser_upload.add_argument('-d', metavar='DIR', help='upload to specified directory')
-    parser_upload.add_argument('-o', action='store_true', help='overwrite file or directory with same name')
+    parser_upload.add_argument('-o', action='store_true', help='overwrite files with same names')
 
 
     parser_download = cmd_parser.add_parser('download', help='download files from the area')
     group_download = parser_download.add_mutually_exclusive_group(required=True)
 
-    group_download.add_argument('-a', action='store_true', help='download all files')
+    group_download.add_argument('-a', action='store_true', help='download all files from selected area')
     group_download.add_argument('-f', metavar='file', nargs='+', help='download specified file(s) only')
 
     parser_delete = cmd_parser.add_parser('delete', help='delete files from the area')
