@@ -31,10 +31,8 @@ class CmdCreate:
         area_id = gen_uuid()
 
         try:
-            metadata = {'name': area_name, 'perms': perms}
-
             s3_client = self.aws.common_session.client('s3')
-            s3_client.put_object(Bucket=self.aws.bucket_name, Key=(area_id + '/'), Metadata=metadata)
+            s3_client.put_object(Bucket=self.aws.bucket_name, Key=(area_id + '/'), Tagging=f'name={area_name}&perms={perms}')
 
             # get bucket policy
             s3_resource = self.aws.common_session.resource('s3')

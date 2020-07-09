@@ -4,7 +4,7 @@ import time
 from unittest import TestCase
 from ait.commons.util.settings import DIR_SUPPORT
 
-from ait.commons.util.tests.e2e.test_e2e_admin import search_uuid, run
+from ait.commons.util.tests.e2e.test_utils import search_uuid, run
 
 sys.path.append(os.getcwd())
 

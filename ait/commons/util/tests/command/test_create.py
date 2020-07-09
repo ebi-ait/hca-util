@@ -75,8 +75,8 @@ class TestCreate(unittest.TestCase):
         # then
         self.assertTrue(success)
 
-        metadata = {'name': 'testUploadArea', 'perms': 'ux'}
-        self.client.put_object.assert_called_once_with(Bucket='bucket-name', Key='uuid/', Metadata=metadata)
+        tags = 'name=testUploadArea&perms=ux'
+        self.client.put_object.assert_called_once_with(Bucket='bucket-name', Key='uuid/', Tagging=tags)
 
     @patch('uuid.uuid4')
     def test_admin_create_upload_area_with_permissions(self, uuid):
@@ -93,8 +93,8 @@ class TestCreate(unittest.TestCase):
         # then
         self.assertTrue(success)
 
-        metadata = {'name': upload_area_name, 'perms': permission}
-        self.client.put_object.assert_called_once_with(Bucket='bucket-name', Key='uuid/', Metadata=metadata)
+        tags = f'name={upload_area_name}&perms={permission}'
+        self.client.put_object.assert_called_once_with(Bucket='bucket-name', Key='uuid/', Tagging=tags)
 
     def test_admin_create_upload_area_no_name(self):
         # given
