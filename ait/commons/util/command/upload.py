@@ -5,13 +5,6 @@ from ait.commons.util.common import format_err
 from ait.commons.util.file_transfer import FileTransfer, TransferProgress, transfer
 from ait.commons.util.local_state import get_selected_area
 
-"""
-Uploading to Upload Service upload area
-1. get upload creds from upload service api
-2. upload via awscli or this util. set content-type accordingly
-3. post fileUpload notification to upload service api
-"""
-
 
 class CmdUpload:
     """
