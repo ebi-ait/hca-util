@@ -4,10 +4,9 @@ import os
 import pickle
 import uuid
 
-from ait.commons.util.settings import DEBUG_MODE
+from ait.commons.util.settings import DEBUG_MODE, MAX_LEN_PROJECT_NAME
 
-MAX_LEN_PROJECT_NAME = 36
-
+INGEST_UPLOAD_AREA_PREFIX = 's3://org-hca-data-archive-upload-'
 
 def gen_uuid():
     return str(uuid.uuid4())
@@ -35,6 +34,25 @@ def is_valid_area_name(area_name):
     elif len(area_name) == 37 and area_name.endswith('/'):  # uuid with /
         uuid_part = area_name[0:36]
         return is_valid_uuid(uuid_part)
+    return False
+
+
+def is_valid_ingest_upload_area(upload_area):
+    # expected format: {INGEST_UPLOAD_AREA_PREFIX}-<env>/<uuid>/
+    if upload_area.startswith(INGEST_UPLOAD_AREA_PREFIX):
+        without_pref = upload_area[len(INGEST_UPLOAD_AREA_PREFIX):]
+        parts = without_pref.split('/')
+        if len(parts) > 2:
+            env_part = parts[0]
+            uuid_part = parts[1]
+            envs = [
+                'dev',
+               #'integration',
+                'staging',
+                'prod'
+            ]
+            if env_part in envs and is_valid_uuid(uuid_part):
+                return True
     return False
 
 
