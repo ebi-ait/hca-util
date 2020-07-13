@@ -32,6 +32,7 @@ class CmdCreate:
 
         try:
             s3_client = self.aws.common_session.client('s3')
+            # new upload areas (folders) to be created with tagging instead of metadata
             s3_client.put_object(Bucket=self.aws.bucket_name, Key=(area_id + '/'), Tagging=f'name={area_name}&perms={perms}')
 
             # get bucket policy
