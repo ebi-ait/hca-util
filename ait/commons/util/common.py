@@ -37,25 +37,6 @@ def is_valid_area_name(area_name):
     return False
 
 
-def is_valid_ingest_upload_area(upload_area):
-    # expected format: {INGEST_UPLOAD_AREA_PREFIX}-<env>/<uuid>/
-    if upload_area.startswith(INGEST_UPLOAD_AREA_PREFIX):
-        without_pref = upload_area[len(INGEST_UPLOAD_AREA_PREFIX):]
-        parts = without_pref.split('/')
-        if len(parts) > 2:
-            env_part = parts[0]
-            uuid_part = parts[1]
-            envs = [
-                'dev',
-               #'integration',
-                'staging',
-                'prod'
-            ]
-            if env_part in envs and is_valid_uuid(uuid_part):
-                return True
-    return False
-
-
 def serialize(name, obj):
     """Returns True if serialized."""
     try:

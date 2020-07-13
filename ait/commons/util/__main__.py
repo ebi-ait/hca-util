@@ -5,7 +5,7 @@ import os
 import sys
 
 from ait.commons.util.settings import DEFAULT_PROFILE, DEBUG_MODE, NAME, VERSION, DIR_SUPPORT
-from ait.commons.util.common import is_valid_project_name, is_valid_area_name, is_valid_ingest_upload_area, INGEST_UPLOAD_AREA_PREFIX
+from ait.commons.util.common import is_valid_project_name, is_valid_area_name, is_valid_uuid, INGEST_UPLOAD_AREA_PREFIX
 from ait.commons.util.cmd import Cmd
 from ait.commons.util.bucket_policy import ALLOWED_PERMS, DEFAULT_PERMS
 
@@ -47,10 +47,25 @@ def valid_remote_path(path):
 
 
 def valid_ingest_upload_area(upload_area):
-    if not is_valid_ingest_upload_area(upload_area):
-        msg = f'invalid - expected format: {INGEST_UPLOAD_AREA_PREFIX}-<env>/<uuid>/'
-        raise argparse.ArgumentTypeError(msg)
-    return upload_area
+    # expected format: {INGEST_UPLOAD_AREA_PREFIX}-<env>/<uuid>/
+    if upload_area.startswith(INGEST_UPLOAD_AREA_PREFIX):
+        without_pref = upload_area[len(INGEST_UPLOAD_AREA_PREFIX):]
+        parts = without_pref.split('/')
+        if len(parts) > 2:
+            env_part = parts[0]
+            uuid_part = parts[1]
+            envs = [
+                'dev',
+               #'integration',
+                'staging',
+                'prod'
+            ]
+            if env_part in envs and is_valid_uuid(uuid_part):
+                bucket = INGEST_UPLOAD_AREA_PREFIX.replace('s3://', '') + env_part
+                return bucket, env_part, uuid_part
+
+    msg = f'invalid - expected format {INGEST_UPLOAD_AREA_PREFIX}_ENV_/_UUID_/'
+    raise argparse.ArgumentTypeError(msg)
 
 
 def parse_args(args):
