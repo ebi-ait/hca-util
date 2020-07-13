@@ -1,4 +1,4 @@
-from ait.commons.util.common import format_err
+from ait.commons.util.common import format_err, is_valid_area_name
 from ait.commons.util.local_state import get_selected_area
 
 
@@ -40,8 +40,8 @@ class CmdList:
 
             try:
                 selected_area += '' if selected_area.endswith('/') else '/'
-                p, n = self.get_tags(selected_area)
-                self.print_area(selected_area, dict(perms=p, name=n))
+                n, p = self.get_name_and_perms(selected_area)
+                self.print_area(selected_area, dict(name=n, perms=p))
 
                 file_count = 0
                 for k in self.list_area_contents(selected_area):
@@ -65,26 +65,32 @@ class CmdList:
             print(f'{n}' if n else '', end=' ')
         print()
     
-    
-    def get_tags(self, k):
+    def get_name_and_perms(self, k):
+        n, p = None, None
         tagSet = self.s3_cli.get_object_tagging(Bucket=self.aws.bucket_name, Key=k)
-        p = None
-        n = None
 
         if tagSet and tagSet['TagSet']:
             kv = dict((tag['Key'], tag['Value']) for tag in tagSet['TagSet'])
-            p = kv.get('perms')
-            n = kv.get('name')
-        return p, n
+            n = kv.get('name', None)
+            p = kv.get('perms', None)
+        else: # for backward compatibility get name and perms from metadata
+            if not self.aws.is_user: # only admin can retrieve metadata (head_object)
+                resp = self.s3_cli.head_object(Bucket=self.aws.bucket_name, Key=k)
+                if resp and resp['Metadata']:
+                    meta = resp['Metadata']
+                    n = meta.get('name', None)
+                    p = meta.get('perms', None)
+        return n, p
 
     def list_bucket_areas(self):
         areas = []
-        objs = self.s3_cli.list_objects_v2(Bucket=self.aws.bucket_name)
-        for obj in objs['Contents']:
-            k = obj['Key']
-            if k.endswith('/'):
-                p, n = self.get_tags(k)
-                areas.append(dict(key=k, perms=p, name=n))
+        result = self.s3_cli.list_objects_v2(Bucket=self.aws.bucket_name, Delimiter='/')
+        dirs = result.get('CommonPrefixes', [])
+        for d in dirs:
+            k = d.get('Prefix')
+            if is_valid_area_name(k):
+                n, p = self.get_name_and_perms(k)
+                areas.append(dict(key=k, name=n, perms=p))
         return areas
 
     def list_area_contents(self, selected_area):
