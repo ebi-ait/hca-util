@@ -67,19 +67,22 @@ class CmdList:
     
     def get_name_and_perms(self, k):
         n, p = None, None
-        tagSet = self.s3_cli.get_object_tagging(Bucket=self.aws.bucket_name, Key=k)
+        try: 
+            tagSet = self.s3_cli.get_object_tagging(Bucket=self.aws.bucket_name, Key=k)
 
-        if tagSet and tagSet['TagSet']:
-            kv = dict((tag['Key'], tag['Value']) for tag in tagSet['TagSet'])
-            n = kv.get('name', None)
-            p = kv.get('perms', None)
-        else: # for backward compatibility get name and perms from metadata
-            if not self.aws.is_user: # only admin can retrieve metadata (head_object)
-                resp = self.s3_cli.head_object(Bucket=self.aws.bucket_name, Key=k)
-                if resp and resp['Metadata']:
-                    meta = resp['Metadata']
-                    n = meta.get('name', None)
-                    p = meta.get('perms', None)
+            if tagSet and tagSet['TagSet']:
+                kv = dict((tag['Key'], tag['Value']) for tag in tagSet['TagSet'])
+                n = kv.get('name', None)
+                p = kv.get('perms', None)
+            else: # for backward compatibility get name and perms from metadata
+                if not self.aws.is_user: # only admin can retrieve metadata (head_object)
+                    resp = self.s3_cli.head_object(Bucket=self.aws.bucket_name, Key=k)
+                    if resp and resp['Metadata']:
+                        meta = resp['Metadata']
+                        n = meta.get('name', None)
+                        p = meta.get('perms', None)
+        except:
+            pass 
         return n, p
 
     def list_bucket_areas(self):
