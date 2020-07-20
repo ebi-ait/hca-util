@@ -25,11 +25,11 @@ setup(
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     license='Apache License',
+    python_requires='>=3.6',
     classifiers=[
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: POSIX',
-        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
