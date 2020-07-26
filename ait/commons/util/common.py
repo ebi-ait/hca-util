@@ -4,10 +4,9 @@ import os
 import pickle
 import uuid
 
-from ait.commons.util.settings import DEBUG_MODE
+from ait.commons.util.settings import DEBUG_MODE, MAX_LEN_PROJECT_NAME
 
-MAX_LEN_PROJECT_NAME = 36
-
+INGEST_UPLOAD_AREA_PREFIX = 's3://org-hca-data-archive-upload-'
 
 def gen_uuid():
     return str(uuid.uuid4())

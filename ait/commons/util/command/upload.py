@@ -1,22 +1,16 @@
 import os
+import filetype
 
 from ait.commons.util.settings import DIR_SUPPORT, MAX_DIR_DEPTH
 from ait.commons.util.common import format_err
 from ait.commons.util.file_transfer import FileTransfer, TransferProgress, transfer
 from ait.commons.util.local_state import get_selected_area
 
-"""
-Uploading to Upload Service upload area
-1. get upload creds from upload service api
-2. upload via awscli or this util. set content-type accordingly
-3. post fileUpload notification to upload service api
-"""
-
 
 class CmdUpload:
     """
     admin and user
-    aws resource or client used in command - s3 resource (Bucket().upload_file), s3 client list_objects_v2
+    aws resource or client used in command - s3 resource (Bucket().upload_file)
     """
 
     def __init__(self, aws, args):
@@ -91,10 +85,17 @@ class CmdUpload:
                         fs[idx].complete = True
                     else:
                         res = sess.resource('s3')
+                        ftype = filetype.guess(fs[idx].path)
+                        if ftype is None:
+                            contentType = 'dcp-type=data'
+                        else:
+                            contentType = f'{ftype.mime}; dcp-type=data'
+                        
                         # upload_file automatically handles multipart uploads via the S3 Transfer Manager
                         # put_object maps to the low-level S3 API request, it does not handle multipart uploads
                         res.Bucket(self.aws.bucket_name).upload_file(Filename=fs[idx].path, Key=key,
-                                                                     Callback=TransferProgress(fs[idx]))
+                                                                     Callback=TransferProgress(fs[idx]),
+                                                                     ExtraArgs={'ContentType': contentType})
 
                         # if file size is 0, callback will likely never be called
                         # and complete will not change to True

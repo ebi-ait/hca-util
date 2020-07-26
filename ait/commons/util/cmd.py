@@ -8,6 +8,7 @@ from ait.commons.util.command.download import CmdDownload
 from ait.commons.util.command.list import CmdList
 from ait.commons.util.command.select import CmdSelect
 from ait.commons.util.command.upload import CmdUpload
+from ait.commons.util.command.sync import CmdSync
 from ait.commons.util.local_state import get_bucket
 from ait.commons.util.user_profile import profile_exists, get_profile
 
@@ -80,6 +81,10 @@ class Cmd:
 
         elif args.command == 'delete':
             success, msg = CmdDelete(self.aws, args).run()
+            self.exit(success, msg)
+
+        elif args.command == 'sync':
+            success, msg = CmdSync(self.aws, args).run()
             self.exit(success, msg)
 
     def exit(self, success, message):

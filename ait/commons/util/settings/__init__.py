@@ -1,4 +1,5 @@
 COVID_UTIL = False
+MAX_LEN_PROJECT_NAME = 36
 
 if COVID_UTIL:
     # import covid_util specific settings

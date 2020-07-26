@@ -5,7 +5,7 @@ from ait.commons.util.local_state import get_selected_area, set_selected_area
 class CmdSelect:
     """
     admin and user
-    aws resource or client used in command - s3 client (list_objects_v2)
+    aws resource or client used in command - 
     """
 
     def __init__(self, aws, args):
@@ -31,18 +31,3 @@ class CmdSelect:
 
         except Exception as e:
             return False, format_err(e, 'select')
-    
-    def upload_area_tags(self, key):
-        tags = ''
-        s3_client = self.aws.common_session.client('s3')
-        resp = s3_client.get_object_tagging(Bucket=self.aws.bucket_name, Key=key)
-
-        if resp and resp['TagSet']:
-            kv = dict((tag['Key'], tag['Value']) for tag in resp['TagSet'])
-            p = kv['perms']
-            if p:
-                tags += p.ljust(3)
-            n = kv['name']
-            if n:
-                tags += f' {n}'
-        return tags
