@@ -153,7 +153,7 @@ optional arguments:
 Delete files from the selected area
 
 ```shell script
-$ hca-util delete [-a | -d] [--profile PROFILE] [PATH [PATH ...]]
+$ hca-util delete [-a | -d] [PATH [PATH ...]]
 
 positional arguments:
   PATH               path to file or directory to delete
@@ -162,6 +162,20 @@ optional arguments:
   -a                 delete all files from the area
   -d                 delete upload area and contents (authorised users only)
 ```
+
+## `sync` command
+
+Transfer files from the selected area to Ingest upload area
+
+```shell script
+$ hca-util sync INGEST_UPLOAD_AREA
+
+positional arguments:
+  INGEST_UPLOAD_AREA  Ingest upload area
+```
+
+INGEST_UPLOAD_AREA format: `s3://org-hca-data-archive-upload-_ENV_/_UUID_/`
+
 
 # Developers
 Download dependencies

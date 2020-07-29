@@ -1,5 +1,13 @@
 # hca-util release notes
 
+## 29 July 2020 v0.2.10
+- Improvement
+  - sync command optimisation
+
+## 28 July 2020 v0.2.9
+- Bug fix
+  - missing dependency
+
 ## 23 July 2020 v0.2.8
 - Bug fixes
   - issue [#233](https://github.com/ebi-ait/hca-ebi-dev-team/issues/233) 
