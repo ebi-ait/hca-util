@@ -4,6 +4,7 @@ from multiprocessing import cpu_count
 from multiprocessing.pool import ThreadPool
 
 from botocore.exceptions import ClientError
+from boto3.s3.transfer import TransferConfig
 
 from ait.commons.util.aws_client import Aws
 from ait.commons.util.bucket_policy import new_policy_statement
@@ -70,7 +71,8 @@ class CmdSync:
 
                     s3.meta.client.copy(copy_source, dest_bucket, dest_key, 
                                     Callback=pbar.update, 
-                                    ExtraArgs={'ContentType': contentType})
+                                    ExtraArgs={'ContentType': contentType},
+                                    Config=get_transfer_config(f.size))
 
                     if not notify_upload(dest_env, dest_upload_area_uuid, fname):
                         failed_fs.append((f, 'Transferred. Notify failed.'))
@@ -109,3 +111,26 @@ class CmdSync:
 def num_files(ls):
     l = len(ls)
     return f'{l} file{"s" if l > 1 else ""}'
+
+
+# this is based on the dcplib s3_multipart module
+KB = 1024
+MB = KB * KB
+MIN_CHUNK_SIZE = 64 * MB
+MULTIPART_THRESHOLD = MIN_CHUNK_SIZE + 1
+MAX_MULTIPART_COUNT = 10000 # s3 imposed
+
+
+def get_transfer_config(filesize):
+    return TransferConfig(multipart_threshold=MULTIPART_THRESHOLD, 
+                          multipart_chunksize=get_chunk_size(filesize))
+
+
+def get_chunk_size(filesize):
+    if filesize <= MAX_MULTIPART_COUNT * MIN_CHUNK_SIZE:
+        return MIN_CHUNK_SIZE
+    else:
+        div = filesize // MAX_MULTIPART_COUNT
+        if div * MAX_MULTIPART_COUNT < filesize:
+            div += 1
+        return ((div + MB - 1) // MB) * MB
