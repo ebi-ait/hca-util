@@ -62,6 +62,8 @@ class CmdSync:
                     obj_ = s3.meta.client.head_object(Bucket=self.aws.bucket_name, Key=f.key)
                     if obj_ and obj_['ContentType']:
                         contentType = obj_['ContentType']
+                        if "dcp-type=data" not in contentType:
+                            contentType += '; dcp-type=data'
 
                     copy_source = {
                         'Bucket': self.aws.bucket_name,

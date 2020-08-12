@@ -86,9 +86,7 @@ class CmdUpload:
                     else:
                         res = sess.resource('s3')
                         ftype = filetype.guess(fs[idx].path)
-                        if ftype is None:
-                            contentType = 'dcp-type=data'
-                        else:
+                        if ftype is not None:
                             contentType = f'{ftype.mime}; dcp-type=data'
                         
                         # upload_file automatically handles multipart uploads via the S3 Transfer Manager
