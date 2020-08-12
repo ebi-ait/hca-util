@@ -1,5 +1,6 @@
 import json
 import requests
+import urllib.parse
 
 
 UPLOAD_SERVICE_API = 'https://upload__ENV__archive.data.humancellatlas.org'
@@ -34,7 +35,8 @@ def create_creds(env, upload_area_uuid):
 
 def notify_upload(env, upload_area_uuid, filename):
     try:
-        r = requests.post(upload_api_url(env, upload_area_uuid) + '/' + filename)
+        notify_url = upload_api_url(env, upload_area_uuid) + '/' + urllib.parse.quote(filename)
+        r = requests.post(notify_url)
         if r.status_code == 202:
             return True # File upload notification added to queue
     except requests.exceptions.RequestException as e:
