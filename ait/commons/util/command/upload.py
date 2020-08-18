@@ -86,8 +86,11 @@ class CmdUpload:
                     else:
                         res = sess.resource('s3')
                         ftype = filetype.guess(fs[idx].path)
+                        # default contentType
+                        contentType = 'application/octet-stream'
                         if ftype is not None:
-                            contentType = f'{ftype.mime}; dcp-type=data'
+                            contentType = ftype.mime
+                        contentType += '; dcp-type=data'
                         
                         # upload_file automatically handles multipart uploads via the S3 Transfer Manager
                         # put_object maps to the low-level S3 API request, it does not handle multipart uploads
