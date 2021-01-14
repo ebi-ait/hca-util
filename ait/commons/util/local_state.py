@@ -8,10 +8,7 @@ class LocalState:
         self.bucket = None # default
         self.selected_area = None
         self.known_areas = []
-        # potential other local state vars
-        self.tmp_access_key = None
-        self.tmp_secret_key = None
-        self.token = None
+        self.version_checked = None
 
     def select_area(self, area_name):
         self.selected_area = area_name
@@ -49,31 +46,33 @@ def set_local_state(obj):
     serialize(LOCAL_STATE_FILE, obj)
 
 
-def get_selected_area():
-    obj = deserialize(LOCAL_STATE_FILE)
-    if obj and isinstance(obj, LocalState):
-        return obj.selected_area
-    return None
-
-
 def set_selected_area(area_name):
-    obj = deserialize(LOCAL_STATE_FILE)
-    if obj is None or not isinstance(obj, LocalState):
-        obj = LocalState()
-    obj.select_area(area_name)
-    serialize(LOCAL_STATE_FILE, obj)
+    set_attr('selected_area', area_name)
+
+
+def set_bucket(bucket):
+    set_attr('bucket', bucket)
+
+
+def get_selected_area():
+    return get_attr('selected_area')
 
 
 def get_bucket():
+    return get_attr('bucket')
+
+
+def get_attr(name):
     obj = deserialize(LOCAL_STATE_FILE)
-    if obj and isinstance(obj, LocalState) and hasattr(obj, 'bucket'):
-        return obj.bucket
+    if obj and isinstance(obj, LocalState):
+        if hasattr(obj, name):
+            return getattr(obj, name)
     return None
 
-    
-def set_bucket(bucket):
+
+def set_attr(name, value):
     obj = deserialize(LOCAL_STATE_FILE)
     if obj is None or not isinstance(obj, LocalState):
         obj = LocalState()
-    obj.bucket(bucket)
+    setattr(obj, name, value)
     serialize(LOCAL_STATE_FILE, obj)
