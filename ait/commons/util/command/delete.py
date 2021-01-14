@@ -116,19 +116,36 @@ class CmdDelete:
 
     @staticmethod
     def delete_dir_perms_from_bucket_policy(s3_res, bucket_name, area_name):
+        bucket_policy = s3_res.BucketPolicy(bucket_name)
         try:
-            bucket_policy = s3_res.BucketPolicy(bucket_name)
-            policy_str = bucket_policy.policy
+            policy_str = bucket_policy.policy # throws NoSuchBucketPolicy
         except ClientError:
             policy_str = ''
 
         if policy_str:
             policy_json = json.loads(policy_str)
-            changed = False
+            
             for stmt in policy_json['Statement']:
-                if area_name in stmt['Resource']:
-                    policy_json['Statement'].remove(stmt)
-                    changed = True
-            if changed:
-                updated_policy = json.dumps(policy_json)
-                bucket_policy.put(Policy=updated_policy)
+                stmt_Resource = stmt['Resource']
+
+                if isinstance(stmt_Resource, str):
+
+                    if area_name in stmt['Resource']:
+                        # remove statement affecting single resource
+                        policy_json['Statement'].remove(stmt)
+                        try:
+                            bucket_policy.put(Policy=json.dumps(policy_json))  # throws MalformedPolicy (policy document exceeds the maximum allowed size of 20480 bytes)
+                        except ClientError:
+                            pass
+
+                elif isinstance(stmt_Resource, list):
+
+                    for res in stmt_Resource:
+                        if area_name in res:
+                            # remove resource from statement
+                            policy_json['Statement']['Resource'].remove(res)
+                            try:
+                                bucket_policy.put(Policy=json.dumps(policy_json))
+                            except ClientError:
+                                pass
+
