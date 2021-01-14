@@ -1,4 +1,7 @@
+import os
 import sys
+from datetime import date
+import requests
 
 from ait.commons.util.aws_client import Aws
 from ait.commons.util.command.config import CmdConfig
@@ -9,8 +12,9 @@ from ait.commons.util.command.list import CmdList
 from ait.commons.util.command.select import CmdSelect
 from ait.commons.util.command.upload import CmdUpload
 from ait.commons.util.command.sync import CmdSync
-from ait.commons.util.local_state import get_bucket
+from ait.commons.util.local_state import get_bucket, set_attr, get_attr
 from ait.commons.util.user_profile import profile_exists, get_profile
+from ait.commons.util.settings import NAME, VERSION
 
 
 class Cmd:
@@ -25,7 +29,10 @@ class Cmd:
         get bucket name (from secret mgr)
     """
 
+
     def __init__(self, args):
+
+        self.check_version()
 
         if args.command == 'config':
             success, msg = CmdConfig(args).run()
@@ -57,6 +64,25 @@ class Cmd:
             else:
                 print(f'Profile \'{args.profile}\' not found. Please run config command with your access keys')
                 sys.exit(1)
+                
+
+    def check_version(self):
+
+        today = date.today()
+        last_checked = get_attr('version_checked')
+
+        #print(f'today: {today}, last_checked: {last_checked}')
+
+        if not last_checked or last_checked < today:
+
+            resp = requests.get(f'https://pypi.org/pypi/{NAME}/json')
+            latest_version = resp.json()['info']['version']
+
+            if VERSION < latest_version:
+                print(f'INFO: A new version of {NAME} is available. Run `pip install {NAME} --upgrade` to upgrade.')
+            
+            set_attr('version_checked', today)
+    
 
     def execute(self, args):
         if args.command == 'create':
