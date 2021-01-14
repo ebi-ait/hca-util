@@ -5,9 +5,9 @@ from multiprocessing.pool import ThreadPool
 
 from botocore.exceptions import ClientError
 from boto3.s3.transfer import TransferConfig
+from botocore.config import Config
 
 from ait.commons.util.aws_client import Aws
-from ait.commons.util.bucket_policy import new_policy_statement
 from ait.commons.util.common import gen_uuid, format_err, INGEST_UPLOAD_AREA_PREFIX
 from ait.commons.util.local_state import get_selected_area
 from ait.commons.util.upload_service import notify_upload
@@ -38,8 +38,10 @@ class CmdSync:
             # Low-level clients are thread safe. When using a low-level client, it is recommended to instantiate 
             # your client then pass that client object to each of your threads.
 
-            s3 = self.aws.common_session.resource('s3')
-            bucket = s3.Bucket(self.aws.bucket_name)
+            s3_res = self.aws.common_session.resource('s3', config=Config(s3={'use_accelerate_endpoint': True}))
+            s3_cli = s3_res.meta.client
+            
+            bucket = s3_res.Bucket(self.aws.bucket_name)
 
             fs = []
             total_size = 0
@@ -56,10 +58,10 @@ class CmdSync:
             
             def transfer(f):
                 try:
-
+                    
                     fname = f.key[37:]
                     contentType = ''
-                    obj_ = s3.meta.client.head_object(Bucket=self.aws.bucket_name, Key=f.key)
+                    obj_ = s3_cli.head_object(Bucket=self.aws.bucket_name, Key=f.key)
                     if obj_ and obj_['ContentType']:
                         contentType = obj_['ContentType']
                         if "dcp-type=data" not in contentType:
@@ -71,7 +73,7 @@ class CmdSync:
                     }
                     dest_key = dest_upload_area_uuid + '/' + fname
 
-                    s3.meta.client.copy(copy_source, dest_bucket, dest_key, 
+                    s3_cli.copy(copy_source, dest_bucket, dest_key, 
                                     Callback=pbar.update, 
                                     ExtraArgs={'ContentType': contentType},
                                     Config=get_transfer_config(f.size))
@@ -92,7 +94,7 @@ class CmdSync:
 
             print('Transferring...')
             pbar = tqdm(total=total_size, unit='B', unit_scale=True, desc=num_files(fs))
-            pool = ThreadPool(cpu_count())
+            pool = ThreadPool() # cpu_count() DEFAULT_THREAD_COUNT=25
             pool.map_async(transfer, fs)
             pool.close()
             pool.join()
