@@ -3,7 +3,7 @@ import json
 from botocore.exceptions import ClientError
 
 from ait.commons.util.aws_client import Aws
-from ait.commons.util.bucket_policy import new_policy_statement
+from ait.commons.util.bucket_policy import DEFAULT_PERMS, allowDownloadStmt, denyDeleteStmt
 from ait.commons.util.common import gen_uuid, format_err
 
 
@@ -32,30 +32,57 @@ class CmdCreate:
 
         try:
             s3_client = self.aws.common_session.client('s3')
-            # new upload areas (folders) to be created with tagging instead of metadata
+            # new upload areas to be created with tagging instead of metadata
             s3_client.put_object(Bucket=self.aws.bucket_name, Key=(area_id + '/'), Tagging=f'name={area_name}&perms={perms}')
 
-            # get bucket policy
-            s3_resource = self.aws.common_session.resource('s3')
-            try:
-                bucket_policy = s3_resource.BucketPolicy(self.aws.bucket_name)
-                policy_str = bucket_policy.policy
-            except ClientError:
-                policy_str = ''
+            if perms == DEFAULT_PERMS:
+                pass # default perms as set in user policy (ux) applies - no need for further actions (deny or allow)
+            else:
+                # get bucket policy
+                bucket_policy = self.aws.common_session.resource('s3').BucketPolicy(self.aws.bucket_name)
+                try:
+                    policy_str = bucket_policy.policy
+                except ClientError:
+                    policy_str = ''
 
-            if policy_str:
-                policy_json = json.loads(policy_str)
-            else:  # no bucket policy
-                policy_json = json.loads('{ "Version": "2012-10-17", "Statement": [] }')
+                if policy_str:
+                    policy_json = json.loads(policy_str)
+                else:  # no bucket policy
+                    policy_json = json.loads('{ "Version": "2012-10-17", "Statement": [] }')
 
-            # add new statement for dir to existing bucket policy
-            new_statement = new_policy_statement(self.aws.bucket_name, area_id, perms)
-            policy_json['Statement'].append(new_statement)
+                allow_stmt = None
+                deny_stmt = None
 
-            updated_policy = json.dumps(policy_json)
+                for stmt in policy_json['Statement']:
+                    if stmt['Sid'] == 'AllowDownload':
+                        allow_stmt = stmt
+                    elif stmt['Sid'] == 'DenyDelete':
+                        deny_stmt = stmt
+                
+                if 'd' in perms: # e.g 'ud' or 'udx'
+                    # allow download
+                    self.update_perms(policy_json, allow_stmt, allowDownloadStmt(), area_id)
 
-            bucket_policy.put(Policy=updated_policy)
+                if 'x' not in perms: # e.g. 'u' or 'ud'
+                    # deny delete
+                    self.update_perms(policy_json, deny_stmt, denyDeleteStmt(), area_id)
+
+                try:
+                    bucket_policy.put(Policy=json.dumps(policy_json))
+                except ClientError:
+                    pass
+
             return True, 'Created upload area with UUID ' + area_id + ' and name ' + area_name
 
         except Exception as e:
             return False, format_err(e, 'create')
+
+
+    def update_perms(self, policy, stmt, template, area):
+        if not stmt:
+            stmt = template
+            policy['Statement'].append(stmt)
+        if isinstance(stmt['Resource'], str):
+            stmt['Resource'] = [stmt['Resource']] + [f'arn:aws:s3:::{self.aws.bucket_name}/{area}/*']
+        elif isinstance(stmt['Resource'], list):
+            stmt['Resource'].append(f'arn:aws:s3:::{self.aws.bucket_name}/{area}/*')
