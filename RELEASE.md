@@ -1,5 +1,16 @@
 # hca-util release notes
 
+## 15 January 2021 v0.2.13
+- Bug fix
+  - issue [#372](https://github.com/ebi-ait/hca-ebi-dev-team/issues/372)
+  - include changes on how permissions are assigned for new upload areas
+- Other
+  - notify when new version available
+
+## 18 August 2020 v0.2.12
+- Other
+  - added default content-type when it can't be determined
+
 ## 12 August 2020 v0.2.11
 - Bug fix
   - issue [#269](https://github.com/ebi-ait/hca-ebi-dev-team/issues/269)
