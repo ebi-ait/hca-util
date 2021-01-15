@@ -6,6 +6,13 @@ from ait.commons.util.command.area import CmdArea
 from ait.commons.util.common import format_err
 from ait.commons.util.local_state import get_selected_area
 
+'''
+ToDo
+1. upload abc.txt, abc.txt2
+   delete abc.txt will delete abc.txt2 as well before it's deleting all object with prefix not the exact object key
+2. use user-friendly message when delete is denied from upload area with ud (no x/delete) permission
+
+'''
 
 class CmdDelete:
     """
@@ -70,8 +77,14 @@ class CmdDelete:
 
                     if keys:
                         for k in keys:
-                            self.delete_s3_object(k)
-                            print(k + '  Done.')
+                            try:
+                                self.delete_s3_object(k)
+                                print(k + '  Done.')
+                            except Exception as ex:
+                                if 'AccessDenied' in str(ex):
+                                    print('No permision to delete.')
+                                else:
+                                    print('Delete failed.')
                     else:
                         print(prefix + '  File not found.')
                 return True, None
