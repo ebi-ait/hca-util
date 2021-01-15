@@ -123,29 +123,32 @@ class CmdDelete:
             policy_str = ''
 
         if policy_str:
-            policy_json = json.loads(policy_str)
-            
-            for stmt in policy_json['Statement']:
-                stmt_Resource = stmt['Resource']
+            policy = json.loads(policy_str)
+            policy_updated = False
 
-                if isinstance(stmt_Resource, str):
+            # remove any statement affecting single resource
+            # (this also maintains backward compatibility with the previous way of adding
+            # a statement per upload area)
+            for stmt in policy['Statement']:
 
-                    if area_name in stmt['Resource']:
-                        # remove statement affecting single resource
-                        policy_json['Statement'].remove(stmt)
-                        try:
-                            bucket_policy.put(Policy=json.dumps(policy_json))  # throws MalformedPolicy (policy document exceeds the maximum allowed size of 20480 bytes)
-                        except ClientError:
-                            pass
+                if isinstance(stmt['Resource'], str) and area_name in stmt['Resource']:
+                    policy_updated = True
+                    policy['Statement'].remove(stmt) # cannot modify if removing item while iterating over list
 
-                elif isinstance(stmt_Resource, list):
-
-                    for res in stmt_Resource:
+            # now check statement with resource list
+            for stmt in policy['Statement']:            
+                if isinstance(stmt['Resource'], list):
+                    # remove resource from resource list of statement but not statement
+                    for res in stmt['Resource']:
                         if area_name in res:
-                            # remove resource from statement
-                            policy_json['Statement']['Resource'].remove(res)
-                            try:
-                                bucket_policy.put(Policy=json.dumps(policy_json))
-                            except ClientError:
-                                pass
+                            policy_updated = True
+                            stmt['Resource'].remove(res)
 
+            if policy_updated:
+                try:
+                    if policy['Statement']:
+                        bucket_policy.put(Policy=json.dumps(policy))  # throws MalformedPolicy (policy document exceeds the maximum allowed size of 20480 bytes)
+                    else:
+                        bucket_policy.delete()
+                except ClientError:
+                    pass
