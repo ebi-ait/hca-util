@@ -1,5 +1,9 @@
 # hca-util release notes
 
+## 15 January 2021 v0.2.14
+- Improvement
+  - handle delete command access denied exception
+
 ## 15 January 2021 v0.2.13
 - Bug fix
   - issue [#372](https://github.com/ebi-ait/hca-ebi-dev-team/issues/372)
