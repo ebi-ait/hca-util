@@ -8,9 +8,8 @@ from ait.commons.util.local_state import get_selected_area
 
 '''
 ToDo
-1. upload abc.txt, abc.txt2
-   delete abc.txt will delete abc.txt2 as well before it's deleting all object with prefix not the exact object key
-2. use user-friendly message when delete is denied from upload area with ud (no x/delete) permission
+1. fix delete object
+if an object key is specified e.g. abc.txt, current behaviour is deleting all objects with prefix 'abc.txt' for e.g. 'abc.txt2'
 
 '''
 
