@@ -1,6 +1,41 @@
 from ait.commons.util.settings import AWS_ACCOUNT, IAM_USER
 
 """
+User groups:
+1. admin currently has full s3 access
+2. other user has restricted access including (specified in user policy)
+
+a) list upload area contents
+    {
+      "Sid": "AllowListBucketExceptRootDirectory",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::<bucket>",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "*/*"
+          ]
+        }
+      }
+    }
+
+b) default upload and delete (ux) permission on upload areas
+
+    {
+      "Sid": "DefaultUploadAreaAccess",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:GetObjectTagging"
+      ],
+      "Resource": "arn:aws:s3:::<bucket>/*/*"
+    }
+
+    (and get obj tagging permission)
+
+
 Upload area permissions
 Abbrev  Desc.       S3 action           S3 operation/API request
                     (object ops perms)
@@ -10,43 +45,30 @@ x       delete      s3:DeleteObject     # DELETE Object
 
 Possible combinations are 'u', 'ud', 'ux', 'udx'
 
-Default permissions on new upload area is 'ux'
-
-User groups:
-admin           (at the moment) full s3 access
-(normal) user   default: ListBucket except top/root level dir, plus per upload area perms (one of above combination), plus s3:GetObjectTagging
 """
 
 ALLOWED_PERMS = ['u', 'ud', 'ux', 'udx']
 DEFAULT_PERMS = 'ux'
 
-s3_permissions = {'u': 's3:PutObject',
-                  'd': 's3:GetObject',
-                  'x': 's3:DeleteObject'}
+# constraints - in bucket policy
+# ux       denyDelete                  -> u
+# ux       allowDownload               -> udx
+# ux       allowDownload + denyDelete  -> ud
 
-
-def user_policy_statement_template():
+def allowDownloadStmt():
     return {
-        'Action': [],
-        'Effect': 'Allow',
-        'Resource': 'arn:aws:s3:::BUCKET_NAME/AREA_NAME/*',
-        'Principal': {
-            'AWS': [
-                f'arn:aws:iam::{AWS_ACCOUNT}:user/{IAM_USER}'
-            ]
-        }
-    }.copy()
+    "Sid": "AllowDownload",
+    "Effect": "Allow",
+    "Action": "s3:GetObject",
+    "Resource": [],
+    "Principal": { "AWS": [f"arn:aws:iam::{AWS_ACCOUNT}:user/{IAM_USER}"] }
+}
 
-
-def new_policy_statement(bucket, area, perms=None):
-    statement = user_policy_statement_template()
-    # add permissions/actions
-    if perms is None or perms not in ALLOWED_PERMS:
-        perms = DEFAULT_PERMS
-    for p in perms:
-        statement['Action'].append(s3_permissions.get(p))
-    # additional action needed for user to see tagging (area name and perms)
-    statement['Action'].append("s3:GetObjectTagging")
-    res = statement['Resource']
-    statement['Resource'] = res.replace('BUCKET_NAME', bucket).replace('AREA_NAME', area)
-    return statement
+def denyDeleteStmt():
+    return {
+    "Sid": "DenyDelete",
+    "Effect": "Deny",
+    "Action": "s3:DeleteObject",
+    "Resource": [],
+    "Principal": { "AWS": [f"arn:aws:iam::{AWS_ACCOUNT}:user/{IAM_USER}"] }
+}
