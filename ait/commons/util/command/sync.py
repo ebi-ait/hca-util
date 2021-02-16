@@ -60,6 +60,12 @@ class CmdSync:
                 try:
                     
                     fname = f.key[37:]
+                    content_type = ''
+                    obj_ = s3_cli.head_object(Bucket=self.aws.bucket_name, Key=f.key)
+                    if obj_ and obj_['ContentType']:
+                        content_type = obj_['ContentType']
+                        if "dcp-type=data" not in content_type:
+                            content_type += '; dcp-type=data'
 
                     copy_source = {
                         'Bucket': self.aws.bucket_name,
@@ -67,8 +73,7 @@ class CmdSync:
                     }
                     dest_key = dest_upload_area_uuid + '/' + fname
 
-                    content_type = "application/octet-stream; dcp-type=data"
-                    s3_cli.copy(copy_source, dest_bucket, dest_key, 
+                    s3_cli.copy(copy_source, dest_bucket, dest_key,
                                     Callback=pbar.update, 
                                     ExtraArgs={
                                         'ContentType': content_type,
