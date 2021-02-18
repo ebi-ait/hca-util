@@ -1,5 +1,9 @@
 # hca-util release notes
 
+## 18 February 2021 v0.2.15
+- Bug fix
+  - Fix assignment of dcp-type=data content-type when syncing files to the submission upload area
+
 ## 15 January 2021 v0.2.14
 - Improvement
   - handle delete command access denied exception
