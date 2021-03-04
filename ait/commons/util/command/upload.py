@@ -5,7 +5,8 @@ from ait.commons.util.settings import DIR_SUPPORT, MAX_DIR_DEPTH
 from ait.commons.util.common import format_err
 from ait.commons.util.file_transfer import FileTransfer, TransferProgress, transfer
 from ait.commons.util.local_state import get_selected_area
-
+import concurrent.futures
+from concurrent.futures import ThreadPoolExecutor
 
 class CmdUpload:
     """
@@ -27,7 +28,7 @@ class CmdUpload:
 
         try:
 
-            # filter out any duplicate path after expansion 
+            # filter out any duplicate path after expansion
             # . -> curent drectory
             # ~ -> user home directory
 
@@ -38,7 +39,7 @@ class CmdUpload:
                     ps.append(p)
 
             # create list of files to upload
-            fs = []
+            file_transfers = []
 
             max_depth = 1  # default
             if DIR_SUPPORT and self.args.r:
@@ -56,7 +57,7 @@ class CmdUpload:
                             if os.path.isfile(full_path):
                                 f_size = os.path.getsize(full_path)
                                 rel_path = full_path.replace(upload_path + ('' if upload_path.endswith('/') else '/'), '')
-                                fs.append(FileTransfer(path=full_path, key=rel_path, size=f_size))
+                                file_transfers.append(FileTransfer(path=full_path, key=rel_path, size=f_size))
 
                             elif os.path.isdir(full_path):
                                 get_files(upload_path, full_path, level)
@@ -65,62 +66,74 @@ class CmdUpload:
                 if os.path.isfile(p):  # explicitly specified files, whether hidden or starts with '__' not skipped
                     f_size = os.path.getsize(p)
                     f_name = os.path.basename(p)
-                    fs.append(FileTransfer(path=p, key=f_name, size=f_size))
+                    file_transfers.append(FileTransfer(path=p, key=f_name, size=f_size))
 
                 elif os.path.isdir(p):  # recursively handle dir upload
                     get_files(p, p, 0)
 
-            def upload(idx):
-                try:
-                    key = selected_area + fs[idx].key
+            def upload_files(file_transfers, prefix):
+                with ThreadPoolExecutor() as executor:
+                    # submit each job and map future to file
+                    futures = {
+                        executor.submit(upload_file, file_transfer, prefix): file_transfer
+                        for file_transfer in file_transfers
+                    }
+                    # collect each finished job
+                    for future in concurrent.futures.as_completed(futures):
+                        try:
+                            res = future.result()  # read the result of the future object
+                        except Exception as ex:
+                            pass
+                        finally:
+                            pass
+                            file_transfer = futures[future]  # match result back to file
+                            # print(f, success)
 
-                    # creating a new session for each file upload/thread, as it's unclear whether they're
-                    # thread-safe or not
+            def upload_file(file_transfer, prefix):
 
-                    sess = self.aws.new_session()
+                key = f"{prefix}{file_transfer.key}"
+                print(key)
+                if not self.args.o and self.aws.obj_exists(key):
+                    file_transfer.status = 'File exists. Use -o to overwrite.'
+                    file_transfer.successful = True
+                    file_transfer.complete = True
 
-                    if not self.args.o and self.aws.obj_exists(key):
-                        fs[idx].status = 'File exists. Use -o to overwrite.'
-                        fs[idx].successful = True
-                        fs[idx].complete = True
-                    else:
-                        res = sess.resource('s3')
-                        ftype = filetype.guess(fs[idx].path)
+                else:
+                    try:
+                        session = self.aws.new_session()
+                        s3 = session.resource('s3')
+
+                        ftype = filetype.guess(file_transfer.path)
                         # default contentType
                         contentType = 'application/octet-stream'
                         if ftype is not None:
                             contentType = ftype.mime
                         contentType += '; dcp-type=data'
-                        
-                        # upload_file automatically handles multipart uploads via the S3 Transfer Manager
-                        # put_object maps to the low-level S3 API request, it does not handle multipart uploads
-                        res.Bucket(self.aws.bucket_name).upload_file(Filename=fs[idx].path, Key=key,
-                                                                     Callback=TransferProgress(fs[idx]),
-                                                                     ExtraArgs={'ContentType': contentType})
+
+                        s3.Bucket(self.aws.bucket_name).upload_file(Filename=file_transfer.path,
+                                                                    Key=key,
+                                                                    Callback=TransferProgress(file_transfer),
+                                                                    ExtraArgs={'ContentType': contentType}
+                                                                    )
 
                         # if file size is 0, callback will likely never be called
                         # and complete will not change to True
                         # hack
-                        if fs[idx].size == 0:
-                            fs[idx].status = 'Empty file.'
-                            fs[idx].complete = True
-                            fs[idx].successful = True
+                        if file_transfer.size == 0:
+                            file_transfer.status = 'Empty file.'
+                            file_transfer.complete = True
+                            file_transfer.successful = True
 
-                except Exception as thread_ex:
-                    fs[idx].status = 'Upload failed.'
-                    fs[idx].complete = True
-                    fs[idx].successful = False
+                    except Exception as thread_ex:
+                        file_transfer.status = 'Upload failed.'
+                        file_transfer.complete = True
+                        file_transfer.successful = False
 
             print('Uploading...')
-            transfer(upload, fs)
-
-            self.files = [f for f in fs if f.successful]
-
-            if all([f.successful for f in fs]):
-                return True, 'Successful upload.'
-
-            else:
-                return False, 'Failed upload.'
+            upload_files(file_transfers, selected_area)
+            return True, 'Successful upload.'
 
         except Exception as e:
             return False, format_err(e, 'upload')
+
+
