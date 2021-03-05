@@ -44,7 +44,7 @@ class CmdUpload:
         with ThreadPoolExecutor() as executor:
             # submit each job and map future to file
             futures = {}
-            for f in enumerate(files):
+            for f in files:
                 key = f"{prefix}{os.path.basename(f)}"
                 size = os.path.getsize(f)
 
