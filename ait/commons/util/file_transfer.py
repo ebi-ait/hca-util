@@ -1,6 +1,7 @@
 # from multiprocessing.dummy import Pool
 import threading
 from time import sleep
+from tqdm import tqdm
 
 
 class TransferProgress(object):
@@ -10,16 +11,10 @@ class TransferProgress(object):
         self._lock = threading.Lock()
 
     def __call__(self, bytes_amount):
-
-        with self._lock:
-            self._file_transfer.seen_so_far += bytes_amount
-            percentage = (self._file_transfer.seen_so_far / self._file_transfer.size) * 100
-
-            if percentage == 100.0:
-                self._file_transfer.complete = True
-                self._file_transfer.successful = True
-
-            self._file_transfer.status = f'({percentage:.2f}%)'
+        with tqdm(total=self._file_transfer.size, desc=self._file_transfer.key) as pbar:
+            with self._lock:
+                self._file_transfer.seen_so_far += bytes_amount
+            pbar.update(self._file_transfer.seen_so_far)
 
 
 class FileTransfer:
