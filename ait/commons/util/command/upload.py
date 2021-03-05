@@ -3,7 +3,6 @@ import filetype
 
 from ait.commons.util.settings import DIR_SUPPORT, MAX_DIR_DEPTH
 from ait.commons.util.common import format_err
-from ait.commons.util.file_transfer import FileTransfer, TransferProgress
 from ait.commons.util.local_state import get_selected_area
 import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
