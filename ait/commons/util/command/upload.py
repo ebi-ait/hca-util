@@ -6,8 +6,7 @@ from ait.commons.util.common import format_err
 from ait.commons.util.local_state import get_selected_area
 import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
-import threading
-from tqdm import tqdm
+from ait.commons.util.progress_bar import ProgressBar
 
 
 class CmdUpload:
@@ -125,17 +124,4 @@ class CmdUpload:
         except Exception as e:
             return False, format_err(e, 'upload')
 
-
-class ProgressBar:
-    def __init__(self, target, total):
-        self._target = target
-        self._total = total
-        self._seen_so_far = 0
-        self._lock = threading.Lock()
-
-    def __call__(self, bytes_amount):
-        with tqdm(total=self._total, desc=self._target) as pbar:
-            with self._lock:
-                self._seen_so_far += bytes_amount
-            pbar.update(self._seen_so_far)
 
