@@ -1,5 +1,5 @@
 import threading
-import tqdm
+from tqdm import tqdm
 
 
 class ProgressBar:

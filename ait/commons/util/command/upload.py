@@ -20,50 +20,50 @@ class CmdUpload:
         self.args = args
         self.files = []
 
-    def upload_file(self, file_path, key):
+    def upload_file(self, data_file, key):
 
-        file_size = os.path.getsize(file_path)
+        file_size = os.path.getsize(data_file)
 
         if not self.args.o and self.aws.obj_exists(key):
-            print(f"{file_path} already exists. Use -o to overwrite.")
+            print(f"{data_file} already exists. Use -o to overwrite.")
 
         elif file_size == 0:
-            print(f"{file_path} is an empty file")
+            print(f"{data_file} is an empty file")
 
         else:
             session = self.aws.new_session()
             s3 = session.resource('s3')
 
-            ftype = filetype.guess(file_path)
+            file_type = filetype.guess(data_file)
             # default contentType
             content_type = 'application/octet-stream'
-            if ftype is not None:
-                content_type = ftype.mime
+            if file_type is not None:
+                content_type = file_type.mime
             content_type += '; dcp-type=data'
 
-            s3.Bucket(self.aws.bucket_name).upload_file(Filename=file_path,
+            s3.Bucket(self.aws.bucket_name).upload_file(Filename=data_file,
                                                         Key=key,
-                                                        Callback=ProgressBar(target=file_path, total=file_size),
+                                                        Callback=ProgressBar(target=data_file, total=file_size),
                                                         ExtraArgs={'ContentType': content_type}
                                                         )
 
-    def upload_files(self, files, prefix):
+    def upload_files(self, data_files, prefix):
 
         with ThreadPoolExecutor() as executor:
             futures = {
-                executor.submit(self.upload_file, file_path,
-                                f"{prefix}{os.path.basename(file_path)}"): file_path
-                for file_path in files
+                executor.submit(self.upload_file, data_file,
+                                f"{prefix}{os.path.basename(data_file)}"): data_file
+                for data_file in data_files
             }
 
             # collect each finished job
             success = True
             for future in concurrent.futures.as_completed(futures):
                 try:
-                    file_path = futures[future]
+                    data_file = futures[future]
                     future.result()  # read the result of the future object
                 except Exception as ex:
-                    print(f"Exception raised for {file_path}: ", ex)
+                    print(f"Exception raised for {data_file}: ", ex)
                     success = False
 
             return success
