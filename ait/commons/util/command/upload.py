@@ -60,10 +60,10 @@ class CmdUpload:
             success = True
             for future in concurrent.futures.as_completed(futures):
                 try:
-                    f = futures[future]
+                    file_path = futures[future]
                     future.result()  # read the result of the future object
                 except Exception as ex:
-                    print(f"Exception raised for {f}: ", ex)
+                    print(f"Exception raised for {file_path}: ", ex)
                     success = False
 
             return success
