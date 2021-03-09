@@ -77,10 +77,6 @@ class CmdUpload:
 
         try:
 
-            # filter out any duplicate path after expansion
-            # . -> curent drectory
-            # ~ -> user home directory
-
             ps = []
             for p in self.args.PATH:
                 p = os.path.abspath(p)  # Normalize a pathname by collapsing redundant separators and up-level references so that A//B, A/B/, A/./B and A/foo/../B all become A/B.
