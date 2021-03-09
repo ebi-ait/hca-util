@@ -46,7 +46,6 @@ class CmdUpload:
                                                         Callback=ProgressBar(target=file_path, total=file_size),
                                                         ExtraArgs={'ContentType': content_type}
                                                         )
-            return True
 
     def upload_files(self, files, prefix):
 
