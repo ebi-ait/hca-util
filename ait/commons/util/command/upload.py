@@ -20,41 +20,42 @@ class CmdUpload:
         self.args = args
         self.files = []
 
-    def upload_file(self, f, key):
-        session = self.aws.new_session()
-        s3 = session.resource('s3')
+    def upload_file(self, file_path, key):
 
-        ftype = filetype.guess(f)
-        # default contentType
-        content_type = 'application/octet-stream'
-        if ftype is not None:
-            content_type = ftype.mime
-        content_type += '; dcp-type=data'
+        file_size = os.path.getsize(file_path)
 
-        s3.Bucket(self.aws.bucket_name).upload_file(Filename=f,
-                                                    Key=key,
-                                                    Callback=ProgressBar(target=f, total=os.path.getsize(f)),
-                                                    ExtraArgs={'ContentType': content_type}
-                                                    )
-        return True
+        if not self.args.o and self.aws.obj_exists(key):
+            print(f"{file_path} already exists. Use -o to overwrite.")
+
+        elif file_size == 0:
+            print(f"{file_path} is an empty file")
+
+        else:
+            session = self.aws.new_session()
+            s3 = session.resource('s3')
+
+            ftype = filetype.guess(file_path)
+            # default contentType
+            content_type = 'application/octet-stream'
+            if ftype is not None:
+                content_type = ftype.mime
+            content_type += '; dcp-type=data'
+
+            s3.Bucket(self.aws.bucket_name).upload_file(Filename=file_path,
+                                                        Key=key,
+                                                        Callback=ProgressBar(target=file_path, total=file_size),
+                                                        ExtraArgs={'ContentType': content_type}
+                                                        )
+            return True
 
     def upload_files(self, files, prefix):
 
         with ThreadPoolExecutor() as executor:
-            # submit each job and map future to file
-            futures = {}
-            for f in files:
-                key = f"{prefix}{os.path.basename(f)}"
-                size = os.path.getsize(f)
-
-                if not self.args.o and self.aws.obj_exists(key):
-                    print(f"{f} already exists. Use -o to overwrite.")
-
-                elif size == 0:
-                    print(f"{f} is an empty file")
-
-                else:
-                    futures[executor.submit(self.upload_file, f, key)] = f
+            futures = {
+                executor.submit(self.upload_file, file_path,
+                                f"{prefix}{os.path.basename(file_path)}"): file_path
+                for file_path in files
+            }
 
             # collect each finished job
             success = True
