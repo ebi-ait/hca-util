@@ -1,5 +1,9 @@
 # hca-util release notes
 
+## 12 March 2021 v0.2.16
+- Bug fix
+    - fix for uploading larger datasets
+  
 ## 18 February 2021 v0.2.15
 - Bug fix
   - Fix assignment of dcp-type=data content-type when syncing files to the submission upload area
