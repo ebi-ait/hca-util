@@ -10,7 +10,7 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / 'README.md').read_text()
 
 # install requirements
-INSTALL_REQS = [line.rstrip() for line in open(os.path.join(os.path.dirname(__file__), 'requirements.txt'))]
+INSTALL_REQS = [line.rstrip() for line in open(os.path.join(os.path.dirname(__file__), 'requirements.in'))]
 
 # This call to setup() does all the work
 setup(
@@ -34,7 +34,7 @@ setup(
         'Programming Language :: Python :: 3.7',
     ],
     platforms=['MacOS X', 'Posix'],
-    packages=['ait.commons.util','ait.commons.util.settings', 'ait.commons.util.command'],
+    packages=['ait.commons.util', 'ait.commons.util.settings', 'ait.commons.util.command'],
     include_package_data=True,
     install_requires=INSTALL_REQS,
     entry_points={
