@@ -28,7 +28,7 @@ class CmdSelect:
                         else:
                             return False, "Upload area does not exist or you don't have access to this area"
                 else:
-                    return False, "Upload area does not exist or you don't have access to this area"
+                    return False, "Upload area does not exist"
             else:
                 selected_area = get_selected_area()
                 if selected_area:
