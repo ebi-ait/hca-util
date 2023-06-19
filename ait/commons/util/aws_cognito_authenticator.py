@@ -9,7 +9,6 @@ from ait.commons.util.user_profile import set_profile
 class AwsCognitoAuthenticator:
     """
     both admin and user
-    aws resource or client used in command - sts (to check valid credentials).
     """
 
     def __init__(self, args):
@@ -139,7 +138,7 @@ class AwsCognitoAuthenticator:
                                                      aws_session_token=session_token)
                     return secret_mgr_client
                 else:
-                    print('unauthenticated user')
+                    print('Un-authenticated user')
 
                     return None
 
