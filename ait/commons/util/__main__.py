@@ -4,10 +4,10 @@ import argparse
 import os
 import sys
 
-from ait.commons.util.settings import DEFAULT_PROFILE, DEBUG_MODE, NAME, VERSION, DIR_SUPPORT
-from ait.commons.util.common import is_valid_project_name, is_valid_area_name, is_valid_uuid, INGEST_UPLOAD_AREA_PREFIX
-from ait.commons.util.cmd import Cmd
 from ait.commons.util.bucket_policy import ALLOWED_PERMS, DEFAULT_PERMS
+from ait.commons.util.cmd import Cmd
+from ait.commons.util.common import is_valid_project_name, is_valid_uuid, INGEST_UPLOAD_AREA_PREFIX
+from ait.commons.util.settings import DEFAULT_PROFILE, DEBUG_MODE, NAME, VERSION, DIR_SUPPORT
 
 
 def valid_project_name(string):
@@ -18,9 +18,6 @@ def valid_project_name(string):
 
 
 def valid_area(string):
-    if not is_valid_area_name(string):
-        msg = 'invalid - needs to be <uuid> or <uuid>/'
-        raise argparse.ArgumentTypeError(msg)
     return string
 
 
@@ -31,7 +28,7 @@ def valid_path(path):
         raise argparse.ArgumentTypeError(f"'{path}' is not a valid path")
 
 
-def valid_remote_path(path): 
+def valid_remote_path(path):
     # file, dir/file, dir, dir/, dir/dir1, etc
     err_msg = f"'{path}' is not a valid path. e.g. paths - file, dir/file, dir, dir/, dir/dir1, etc"
 
@@ -39,8 +36,9 @@ def valid_remote_path(path):
         raise argparse.ArgumentTypeError(err_msg)
     else:
 
-        if os.path.isabs(f'/{path}'):  # leading / is needed for isabs to return true, BUT it is invalid if provided path starts with /
-            #isabs also normalises path e.g remove double //, etc
+        if os.path.isabs(
+                f'/{path}'):  # leading / is needed for isabs to return true, BUT it is invalid if provided path starts with /
+            # isabs also normalises path e.g remove double //, etc
             return path
         else:
             raise argparse.ArgumentTypeError(err_msg)
@@ -56,7 +54,7 @@ def valid_ingest_upload_area(upload_area):
             uuid_part = parts[1]
             envs = [
                 'dev',
-               #'integration',
+                # 'integration',
                 'staging',
                 'prod'
             ]
@@ -77,8 +75,8 @@ def parse_args(args):
     cmd_parser.required = True
 
     parser_config = cmd_parser.add_parser('config', help='configure AWS credentials')
-    parser_config.add_argument('ACCESS_KEY', help='AWS Access Key ID', nargs='?')
-    parser_config.add_argument('SECRET_KEY', help='AWS Secret Access Key', nargs='?')
+    parser_config.add_argument('USERNAME', help='AWS Cognito username', nargs='?')
+    parser_config.add_argument('PASSWORD', help='AWS Cognito password', nargs='?')
     parser_config.add_argument('--bucket', help='use BUCKET instead of default bucket')
 
     parser_create = cmd_parser.add_parser('create', help='create an upload area (authorised users only)')
@@ -91,7 +89,7 @@ def parse_args(args):
                                                                                         f'{DEFAULT_PERMS}')
 
     parser_select = cmd_parser.add_parser('select', help='select or show the active upload area')
-    parser_select.add_argument('AREA', help='area uuid', type=valid_area, nargs='?')
+    parser_select.add_argument('AREA', help='area name', type=valid_area, nargs='?')
 
     # cmd_parser.add_parser('dir', help='display active (selected) directory')
 
@@ -116,7 +114,6 @@ def parse_args(args):
         parser_upload.add_argument('-d', metavar='DIR', help='upload to specified directory')
     parser_upload.add_argument('-o', action='store_true', help='overwrite files with same names')
 
-
     parser_download = cmd_parser.add_parser('download', help='download files from the area')
     group_download = parser_download.add_mutually_exclusive_group(required=True)
 
@@ -129,12 +126,14 @@ def parse_args(args):
     group_delete.add_argument('-a', action='store_true', help='delete all files from the area')
     group_delete.add_argument('-d', action='store_true', help='delete upload area and contents (authorised users only)')
 
-    parser_sync = cmd_parser.add_parser('sync', help='copy data from selected upload area to ingest upload area (authorised users only)')
+    parser_sync = cmd_parser.add_parser('sync',
+                                        help='copy data from selected upload area to ingest upload area (authorised users only)')
     parser_sync.add_argument('INGEST_UPLOAD_AREA', help='Ingest upload area', type=valid_ingest_upload_area)
 
     ps = [parser]
     if DEBUG_MODE:
-        ps = [parser, parser_config, parser_create, parser_select, parser_list, parser_upload, parser_download, parser_delete, parser_sync]
+        ps = [parser, parser_config, parser_create, parser_select, parser_list, parser_upload, parser_download,
+              parser_delete, parser_sync]
 
     for p in ps:
         p.add_argument(
@@ -170,5 +169,6 @@ def main():
         # So for now risking the kill though might want to revisit this decision.
         os._exit(0)
 
+
 if __name__ == '__main__':
-	main()
+    main()

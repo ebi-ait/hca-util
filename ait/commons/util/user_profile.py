@@ -1,5 +1,5 @@
-import os
 import configparser
+
 from ait.commons.util.common import create_if_not_exists
 from ait.commons.util.settings import AWS_CONFIG_FILE, AWS_CREDENTIALS_FILE, DEFAULT_REGION
 
@@ -8,6 +8,9 @@ class UserProfile:
     def __init__(self):
         self.access_key = None
         self.secret_key = None
+        self.session_token = None
+        self.username = None
+        self.password = None
         self.region = None
 
     def __repr__(self):
@@ -20,9 +23,6 @@ class UserProfile:
 def profile_exists(profile):
     # let's not bother checking CONFIG_FILE to see if region is set
     # we can always use default region
-    if not os.path.exists(AWS_CREDENTIALS_FILE):
-        return False
-
     credentials = configparser.ConfigParser(comment_prefixes='/', allow_no_value=True)
     credentials.read(AWS_CREDENTIALS_FILE)
 
@@ -41,6 +41,9 @@ def get_profile(profile):
     if credentials.has_section(profile):
         user_profile.access_key = credentials[profile].get('aws_access_key_id')
         user_profile.secret_key = credentials[profile].get('aws_secret_access_key')
+        user_profile.session_token = credentials[profile].get('aws_session_token')
+        user_profile.username = credentials[profile].get('aws_cognito_username')
+        user_profile.password = credentials[profile].get('aws_cognito_password')
 
     config = configparser.ConfigParser()
     config.read(AWS_CONFIG_FILE)
@@ -54,7 +57,7 @@ def get_profile(profile):
     return user_profile
 
 
-def set_profile(profile, region, access_key, secret_key):
+def set_profile(profile, region, access_key, secret_key, session_token, username, password):
     """.aws/config
     [profile {profile}]
     region = {region}
@@ -86,8 +89,8 @@ def set_profile(profile, region, access_key, secret_key):
 
     if not credentials.has_section(f'{profile}'):
         credentials.add_section(f'{profile}')
-    credentials.set(f'{profile}', 'aws_access_key_id', access_key)
-    credentials.set(f'{profile}', 'aws_secret_access_key', secret_key)
+    credentials.set(f'{profile}', 'aws_cognito_username', username)
+    credentials.set(f'{profile}', 'aws_cognito_password', password)
 
     with open(AWS_CREDENTIALS_FILE, 'w') as out:
         credentials.write(out)

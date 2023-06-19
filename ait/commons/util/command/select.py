@@ -18,10 +18,17 @@ class CmdSelect:
                 key = self.args.AREA if self.args.AREA.endswith('/') else f'{self.args.AREA}/'
 
                 if self.aws.obj_exists(key):
-                    set_selected_area(key)
-                    return True, f'Selected upload area is {key}'
+                    if not self.aws.is_user:
+                        set_selected_area(key)
+                        return True, f'Selected upload area is {key}'
+                    else:
+                        if key.rstrip(key[-1]) in self.aws.user_dir_list:
+                            set_selected_area(key)
+                            return True, f'Selected upload area is {key}'
+                        else:
+                            return False, "Upload area does not exist or you don't have access to this area"
                 else:
-                    return False, "Upload area does not exist"
+                    return False, "Upload area does not exist or you don't have access to this area"
             else:
                 selected_area = get_selected_area()
                 if selected_area:
