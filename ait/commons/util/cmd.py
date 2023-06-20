@@ -31,7 +31,7 @@ class Cmd:
 
     def __init__(self, args):
 
-        self.check_version()
+        # self.check_version()
 
         if args.command == 'config':
             success, msg = CmdConfig(args).run()

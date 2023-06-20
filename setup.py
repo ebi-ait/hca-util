@@ -21,7 +21,7 @@ setup(
     description=DESC,
     long_description=README,
     long_description_content_type='text/markdown',
-    url='https://github.com/ebi-ait/hca-util',
+    url='https://github.com/ebi-ait/morphic-util',
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     license='Apache License',

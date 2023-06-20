@@ -1,7 +1,7 @@
 from pathlib import Path
 
 NAME = 'morphic-util'
-VERSION = '0.0.1'
+VERSION = '0.0.3'
 DESC = 'CLI tool for uploading data'
 AUTHOR = 'hca-ingest-dev'
 AUTHOR_EMAIL = 'hca-ingest-dev@ebi.ac.uk'
