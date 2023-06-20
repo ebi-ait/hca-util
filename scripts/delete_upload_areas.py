@@ -4,7 +4,7 @@ from tests.e2e.test_utils import run, search_all_uuids
 
 FILENAME = sys.argv[1]  # file which contains uuids to delete
 
-CLI = 'covid-util'
+CLI = 'morphic-util'
 
 code, output, error = run(FILENAME)
 uuids = search_all_uuids(output)

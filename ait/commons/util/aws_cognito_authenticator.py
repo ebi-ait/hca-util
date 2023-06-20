@@ -15,6 +15,7 @@ class AwsCognitoAuthenticator:
         self.args = args
         self.is_user = False  # not admin
         self.user_dir_list = None
+        self.center_name = None  # custom attribute DPC
 
     def validate_cognito_identity(self, profile, username, password):
 
@@ -91,7 +92,6 @@ class AwsCognitoAuthenticator:
                 id_token = response["AuthenticationResult"]["IdToken"]
 
                 response = client.get_user(AccessToken=access_token)
-                print(response)
 
                 username = response['Username']
                 print('Current user is ' + username)
@@ -104,14 +104,27 @@ class AwsCognitoAuthenticator:
                     self.is_user = True
 
                 for attr in user_attribute_list:
+                    if attr['Name'] == 'custom:DPC':
+                        self.center_name = attr['Value'].lower()
+
                     if attr['Name'] == 'custom:directory_access':
                         self.user_dir_list = attr['Value'].split(',')
 
-                if self.user_dir_list is None:
-                    if self.is_user:
-                        print('User does not have access to any upload areas or to perform any operations with this '
-                              'system')
+                        if self.user_dir_list is not None:
+                            self.user_dir_list = ['morphic-' + self.center_name + '/' + dataset_dir for dataset_dir in
+                                                  self.user_dir_list]
+
+                if self.is_user:
+                    if self.center_name is None:
+                        print('User does not have an assigned center name and therefore cannot perform any operations '
+                              'with this system')
                         sys.exit(1)
+
+                    if self.user_dir_list is None:
+                        if self.is_user:
+                            print('User does not have access to any upload areas or to perform any operations with this'
+                                  'system')
+                            sys.exit(1)
 
                 identity = boto3.client('cognito-identity', region_name="eu-west-2")
 
@@ -150,3 +163,6 @@ class AwsCognitoAuthenticator:
 
     def get_user_dir_list(self):
         return self.user_dir_list
+
+    def get_center_name(self):
+        return self.center_name

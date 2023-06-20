@@ -16,6 +16,7 @@ class Aws:
     def __init__(self, user_profile):
         self.is_user = False  # not admin
         self.user_dir_list = None
+        self.center_name = None
         self.secret_key = None
         self.access_key = None
         self.user_profile = user_profile
@@ -58,6 +59,7 @@ class Aws:
         else:
             self.is_user = aws_cognito_authenticator.is_valid_user()
             self.user_dir_list = aws_cognito_authenticator.get_user_dir_list()
+            self.center_name = aws_cognito_authenticator.get_center_name()
 
             print('Is a admin or user? true if user:' + str(self.is_user))
             print('Re-establishing session with Amazon Web Services')

@@ -4,6 +4,7 @@ build/
 dist/
 hca_util.egg-info/
 covid_util.egg-info/
+morphic_util.egg-info/
 testpypi-env/
 venv/
 

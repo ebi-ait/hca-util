@@ -4,7 +4,7 @@ from botocore.exceptions import ClientError
 
 from ait.commons.util.aws_client import Aws
 from ait.commons.util.bucket_policy import DEFAULT_PERMS, allowDownloadStmt, denyDeleteStmt
-from ait.commons.util.common import gen_uuid, format_err
+from ait.commons.util.common import format_err
 
 
 class CmdCreate:
@@ -26,17 +26,19 @@ class CmdCreate:
 
         area_name = self.args.NAME
         perms = self.args.p  # optional str, default 'ux'
+        center_name = self.args.DPC
 
         # generate random uuid prefix for area name
-        area_id = gen_uuid()
+        area_id = area_name
 
         try:
             s3_client = self.aws.common_session.client('s3')
             # new upload areas to be created with tagging instead of metadata
-            s3_client.put_object(Bucket=self.aws.bucket_name, Key=(area_id + '/'), Tagging=f'name={area_name}&perms={perms}')
+            s3_client.put_object(Bucket=self.aws.bucket_name, Key=('morphic-' + center_name + '/' + area_id + '/'),
+                                 Tagging=f'name={area_name}&perms={perms}')
 
             if perms == DEFAULT_PERMS:
-                pass # default perms as set in user policy (ux) applies - no need for further actions (deny or allow)
+                pass  # default perms as set in user policy (ux) applies - no need for further actions (deny or allow)
             else:
                 # get bucket policy
                 bucket_policy = self.aws.common_session.resource('s3').BucketPolicy(self.aws.bucket_name)
@@ -58,12 +60,12 @@ class CmdCreate:
                         allow_stmt = stmt
                     elif stmt['Sid'] == 'DenyDelete':
                         deny_stmt = stmt
-                
-                if 'd' in perms: # e.g 'ud' or 'udx'
+
+                if 'd' in perms:  # e.g 'ud' or 'udx'
                     # allow download
                     self.update_perms(policy_json, allow_stmt, allowDownloadStmt(), area_id)
 
-                if 'x' not in perms: # e.g. 'u' or 'ud'
+                if 'x' not in perms:  # e.g. 'u' or 'ud'
                     # deny delete
                     self.update_perms(policy_json, deny_stmt, denyDeleteStmt(), area_id)
 
@@ -72,11 +74,10 @@ class CmdCreate:
                 except ClientError:
                     pass
 
-            return True, 'Created upload area with UUID ' + area_id + ' and name ' + area_name
+            return True, 'Created upload area with name ' + area_name
 
         except Exception as e:
             return False, format_err(e, 'create')
-
 
     def update_perms(self, policy, stmt, template, area):
         if not stmt:

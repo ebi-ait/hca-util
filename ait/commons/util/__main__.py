@@ -81,6 +81,7 @@ def parse_args(args):
 
     parser_create = cmd_parser.add_parser('create', help='create an upload area (authorised users only)')
     parser_create.add_argument('NAME', help='name for the new area', type=valid_project_name)
+    parser_create.add_argument('DPC', help='center name of the submitter', type=valid_project_name)
     parser_create.add_argument('-p', choices=ALLOWED_PERMS, default=DEFAULT_PERMS, help=f'allowed actions ('
                                                                                         f'permissions) on new '
                                                                                         f'area. u for upload, '
