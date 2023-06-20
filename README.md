@@ -33,7 +33,6 @@ morphic-util
 optional arguments:
   -h, --help            show this help message and exit
   --version, -v         show program's version number and exit
-  --profile PROFILE     use PROFILE instead of default 'hca-util' profile
 
 command:
   {config,create,select,list,upload,download,delete}
@@ -82,16 +81,12 @@ positional arguments:
 
 The tool uses the profile name _hca-util_ in local AWS config files.
 
-Once configured, the set up can be checked by running the command again, this time without
-credentials (`morphic-util config`), to verify if the previously entered credentials are valid or not.
-
 ## `create` command
 
 Create an upload area/ project folder **(authorised users only)**
 
 ```shell script
 $ morphic-util create NAME DPC [-p {u,ud,ux,udx}]
-
 
 positional arguments:
   NAME               name for the new area/ project folder
