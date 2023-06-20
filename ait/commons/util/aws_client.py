@@ -1,20 +1,72 @@
-import boto3
 import json
-from ait.commons.util.settings import AWS_SECRET_NAME, IAM_USER
+
+import boto3
+
+from ait.commons.util.aws_cognito_authenticator import AwsCognitoAuthenticator
+from ait.commons.util.settings import IAM_USER, AWS_SECRET_NAME_AK_BUCKET, AWS_SECRET_NAME_SK_BUCKET, \
+    AWS_SECRET_NAME_MORPHIC_BUCKET
+
+
+def static_bucket_name():
+    return 'morphictestbucket-dpc1'
 
 
 class Aws:
 
     def __init__(self, user_profile):
+        self.is_user = False  # not admin
+        self.user_dir_list = None
+        self.center_name = None
+        self.secret_key = None
+        self.access_key = None
         self.user_profile = user_profile
         self.common_session = self.new_session()
-        self.is_user = False # not admin
-        self.bucket_name = None
+        self.bucket_name = 'morphictestbucket-dpc1'
+
+    def get_access_key(self, secret_mgr_client):
+        resp = secret_mgr_client.get_secret_value(SecretId=AWS_SECRET_NAME_AK_BUCKET)
+        secret_str = resp['SecretString']
+        self.access_key = json.loads(secret_str)['AK']
+        return self.access_key
+
+    def get_secret_key(self, secret_mgr_client):
+        resp = secret_mgr_client.get_secret_value(SecretId=AWS_SECRET_NAME_SK_BUCKET)
+        secret_str = resp['SecretString']
+        self.secret_key = json.loads(secret_str)['SK']
+        return self.secret_key
+
+    def get_bucket_name(self, secret_mgr_client):
+        """
+        Get bucket name from aws secrets
+        :return:
+        """
+        # access policy can't be attached to a secret
+        # GetSecretValue action should be allowed for user
+        resp = secret_mgr_client.get_secret_value(SecretId=AWS_SECRET_NAME_MORPHIC_BUCKET)
+        secret_str = resp['SecretString']
+        self.bucket_name = json.loads(secret_str)['s3-bucket']
+        return self.bucket_name
 
     def new_session(self):
-        return boto3.Session(region_name=self.user_profile.region,
-                             aws_access_key_id=self.user_profile.access_key,
-                             aws_secret_access_key=self.user_profile.secret_key)
+        aws_cognito_authenticator = AwsCognitoAuthenticator(self)
+        secret_manager_client = aws_cognito_authenticator.get_secret_manager_client(self.user_profile.username,
+                                                                                    self.user_profile.password)
+
+        if secret_manager_client is None:
+            print('Failure while re-establishing Amazon Web Services session, report this error to the admins of the '
+                  'system')
+            raise Exception
+        else:
+            self.is_user = aws_cognito_authenticator.is_valid_user()
+            self.user_dir_list = aws_cognito_authenticator.get_user_dir_list()
+            self.center_name = aws_cognito_authenticator.get_center_name()
+
+            print('Is a admin or user? true if user:' + str(self.is_user))
+            print('Re-establishing session with Amazon Web Services')
+
+            return boto3.Session(region_name=self.user_profile.region,
+                                 aws_access_key_id=self.get_access_key(secret_manager_client),
+                                 aws_secret_access_key=self.get_secret_key(secret_manager_client))
 
     def is_valid_credentials(self):
         """
@@ -26,28 +78,16 @@ class Aws:
         try:
             resp = sts.get_caller_identity()
             arn = resp.get('Arn')
-            if arn.endswith(f'user/{IAM_USER}'):
-                self.is_user = True
-            return True
+            if arn.endswith(IAM_USER):
+                return True
         except Exception as e:
             if e is not KeyboardInterrupt:
                 return False
             else:
                 raise e
 
-    def get_bucket_name(self):
-        """
-        Get bucket name from aws secrets
-        :return:
-        """
-        # access policy can't be attached to a secret
-        # GetSecretValue action should be allowed for user
-        secret_mgr = self.common_session.client('secretsmanager')
-
-        resp = secret_mgr.get_secret_value(SecretId=AWS_SECRET_NAME)
-        secret_str = resp['SecretString']
-        self.bucket_name = json.loads(secret_str)['s3-bucket']
-        return self.bucket_name
+    def is_valid_user(self):
+        return self.is_user
 
     def obj_exists(self, key):
         """

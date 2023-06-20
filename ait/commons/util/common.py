@@ -24,19 +24,6 @@ def is_valid_project_name(name):
     return 0 < len(name) <= MAX_LEN_PROJECT_NAME
 
 
-def is_valid_area_name(area_name):
-    """Area name format: uuid with or without /
-    """
-    if len(area_name) < 36:
-        return False
-    elif len(area_name) == 36:  # uuid without /
-        return is_valid_uuid(area_name)
-    elif len(area_name) == 37 and area_name.endswith('/'):  # uuid with /
-        uuid_part = area_name[0:36]
-        return is_valid_uuid(uuid_part)
-    return False
-
-
 def serialize(name, obj):
     """Returns True if serialized."""
     try:

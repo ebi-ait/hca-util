@@ -1,4 +1,4 @@
-from ait.commons.util.common import format_err, is_valid_area_name
+from ait.commons.util.common import format_err
 from ait.commons.util.local_state import get_selected_area
 
 
@@ -11,7 +11,7 @@ class CmdList:
     def __init__(self, aws, args):
         self.aws = aws
         self.args = args
-        
+
         self.s3_cli = self.aws.common_session.client('s3')
 
     def run(self):
@@ -19,7 +19,7 @@ class CmdList:
         if self.args.b:  # list all areas in bucket
             if self.aws.is_user:
                 return False, 'You don\'t have permission to use this command'
-            
+
             try:
                 folder_count = 0
                 for area in self.list_bucket_areas():
@@ -37,6 +37,15 @@ class CmdList:
 
             if not selected_area:
                 return False, 'No area selected'
+            else:
+                if self.aws.is_user:
+                    dir_prefix = 'morphic-' + self.aws.center_name + '/'
+
+                    if dir_prefix not in selected_area:
+                        selected_area = dir_prefix + selected_area
+
+                    if selected_area.rstrip(selected_area[-1]) not in self.aws.user_dir_list:
+                        return False, "Upload area does not exist or you don't have access to this area"
 
             try:
                 selected_area += '' if selected_area.endswith('/') else '/'
@@ -64,25 +73,25 @@ class CmdList:
             n = area.get('name')
             print(f'{n}' if n else '', end=' ')
         print()
-    
+
     def get_name_and_perms(self, k):
         n, p = None, None
-        try: 
+        try:
             tagSet = self.s3_cli.get_object_tagging(Bucket=self.aws.bucket_name, Key=k)
 
             if tagSet and tagSet['TagSet']:
                 kv = dict((tag['Key'], tag['Value']) for tag in tagSet['TagSet'])
                 n = kv.get('name', None)
                 p = kv.get('perms', None)
-            else: # for backward compatibility get name and perms from metadata
-                if not self.aws.is_user: # only admin can retrieve metadata (head_object)
+            else:  # for backward compatibility get name and perms from metadata
+                if not self.aws.is_user:  # only admin can retrieve metadata (head_object)
                     resp = self.s3_cli.head_object(Bucket=self.aws.bucket_name, Key=k)
                     if resp and resp['Metadata']:
                         meta = resp['Metadata']
                         n = meta.get('name', None)
                         p = meta.get('perms', None)
         except:
-            pass 
+            pass
         return n, p
 
     def list_bucket_areas(self):
@@ -91,9 +100,8 @@ class CmdList:
         dirs = result.get('CommonPrefixes', [])
         for d in dirs:
             k = d.get('Prefix')
-            if is_valid_area_name(k):
-                n, p = self.get_name_and_perms(k)
-                areas.append(dict(key=k, name=n, perms=p))
+            n, p = self.get_name_and_perms(k)
+            areas.append(dict(key=k, name=n, perms=p))
         return areas
 
     def list_area_contents(self, selected_area):

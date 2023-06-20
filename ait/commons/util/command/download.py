@@ -20,6 +20,9 @@ class CmdDownload:
 
     def run(self):
 
+        if self.aws.is_user:
+            return False, 'You don\'t have permission to use this command'
+
         selected_area = get_selected_area()
 
         if not selected_area:

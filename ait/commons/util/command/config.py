@@ -1,8 +1,7 @@
-from ait.commons.util.aws_client import Aws
+from ait.commons.util.aws_cognito_authenticator import AwsCognitoAuthenticator
 from ait.commons.util.common import format_err
 from ait.commons.util.local_state import set_bucket
-from ait.commons.util.settings import DEFAULT_PROFILE, DEFAULT_REGION
-from ait.commons.util.user_profile import set_profile, profile_exists, get_profile
+from ait.commons.util.settings import DEFAULT_PROFILE
 
 
 class CmdConfig:
@@ -18,23 +17,20 @@ class CmdConfig:
 
         try:
             profile = self.args.profile if self.args.profile else DEFAULT_PROFILE
+
             if self.args.bucket:
                 set_bucket(self.args.bucket)
 
-            if self.args.ACCESS_KEY and self.args.SECRET_KEY:  
-                set_profile(profile, DEFAULT_REGION, self.args.ACCESS_KEY, self.args.SECRET_KEY)
+            if self.args.USERNAME and self.args.PASSWORD:
+                aws_cognito_authenticator = AwsCognitoAuthenticator(self)
 
-            # check new profile
-            if profile_exists(profile):
-                user_profile = get_profile(profile)
-                aws = Aws(user_profile)
+                valid_user = aws_cognito_authenticator.validate_cognito_identity(profile, self.args.USERNAME,
+                                                                                 self.args.PASSWORD)
 
-                if aws.is_valid_credentials():
-                    return True, 'Valid credentials' + ('' if aws.is_user else ' for admin use')
+                # check if valid user
+                if valid_user:
+                    return True, 'Valid credentials'
                 else:
                     return False, 'Invalid credentials'
-            else:
-                return False, f'Profile \'{profile}\' not found. Please run config command with your access keys'
-
         except Exception as e:
             return False, format_err(e, 'config')
