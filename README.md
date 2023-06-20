@@ -1,6 +1,6 @@
 # morphic-util
 
-CLI tool for uploading data to the Human Cell Atlas AWS S3 buckets.
+CLI tool for uploading data to the Morphic AWS S3 buckets.
 
 # Users
 
