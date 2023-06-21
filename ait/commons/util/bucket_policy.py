@@ -61,7 +61,7 @@ def allowDownloadStmt():
     "Effect": "Allow",
     "Action": "s3:GetObject",
     "Resource": [],
-    "Principal": { "AWS": [f"arn:aws:iam::{AWS_ACCOUNT}:user/{IAM_USER}"] }
+    "Principal": { "AWS": [f"arn:aws:iam::{AWS_ACCOUNT}:user/{IAM_USER}"]}
 }
 
 def denyDeleteStmt():
@@ -70,5 +70,5 @@ def denyDeleteStmt():
     "Effect": "Deny",
     "Action": "s3:DeleteObject",
     "Resource": [],
-    "Principal": { "AWS": [f"arn:aws:iam::{AWS_ACCOUNT}:user/{IAM_USER}"] }
+    "Principal": { "AWS": [f"arn:aws:iam::{AWS_ACCOUNT}:user/{IAM_USER}"]}
 }

@@ -3,7 +3,7 @@ import json
 import boto3
 
 from ait.commons.util.aws_cognito_authenticator import AwsCognitoAuthenticator
-from ait.commons.util.settings import IAM_USER, AWS_SECRET_NAME_AK_BUCKET, AWS_SECRET_NAME_SK_BUCKET, \
+from ait.commons.util.settings import COGNITO_MORPHIC_UTIL_USER, AWS_SECRET_NAME_AK_BUCKET, AWS_SECRET_NAME_SK_BUCKET, \
     AWS_SECRET_NAME_MORPHIC_BUCKET
 
 
@@ -78,7 +78,7 @@ class Aws:
         try:
             resp = sts.get_caller_identity()
             arn = resp.get('Arn')
-            if arn.endswith(IAM_USER):
+            if arn.endswith(COGNITO_MORPHIC_UTIL_USER):
                 return True
         except Exception as e:
             if e is not KeyboardInterrupt:
