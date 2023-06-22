@@ -24,17 +24,16 @@ class CmdCreate:
         if self.aws.is_user:
             return False, 'You don\'t have permission to use this command'
 
-        area_name = self.args.NAME
+        area_name = self.args.NAME # S3 bucket folder name
         perms = self.args.p  # optional str, default 'ux'
-        center_name = self.args.DPC
-
-        # generate random uuid prefix for area name
-        area_id = area_name
+        center_name = self.args.DPC  # morphic DPC
 
         try:
             s3_client = self.aws.common_session.client('s3')
             # new upload areas to be created with tagging instead of metadata
-            s3_client.put_object(Bucket=self.aws.bucket_name, Key=('morphic-' + center_name + '/' + area_id + '/'),
+            # upload area format - morphic-DPC/area_name/
+            s3_client.put_object(Bucket=self.aws.bucket_name,
+                                 Key=('morphic-' + center_name.lower() + '/' + area_name + '/'),
                                  Tagging=f'name={area_name}&perms={perms}')
 
             if perms == DEFAULT_PERMS:
@@ -63,18 +62,18 @@ class CmdCreate:
 
                 if 'd' in perms:  # e.g 'ud' or 'udx'
                     # allow download
-                    self.update_perms(policy_json, allow_stmt, allowDownloadStmt(), area_id)
+                    self.update_perms(policy_json, allow_stmt, allowDownloadStmt(), area_name)
 
                 if 'x' not in perms:  # e.g. 'u' or 'ud'
                     # deny delete
-                    self.update_perms(policy_json, deny_stmt, denyDeleteStmt(), area_id)
+                    self.update_perms(policy_json, deny_stmt, denyDeleteStmt(), area_name)
 
                 try:
                     bucket_policy.put(Policy=json.dumps(policy_json))
                 except ClientError:
                     pass
 
-            return True, 'Created upload area with name ' + area_name
+            return True, 'Created upload area with name ' + area_name + ' for ' + center_name + ' DPC'
 
         except Exception as e:
             return False, format_err(e, 'create')

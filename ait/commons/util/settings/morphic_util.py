@@ -1,7 +1,7 @@
 from pathlib import Path
 
 NAME = 'morphic-util'
-VERSION = '0.0.4'
+VERSION = '0.0.6'
 DESC = 'CLI tool for uploading data to Morphic AWS S3 bucket'
 AUTHOR = 'hca-ingest-dev'
 AUTHOR_EMAIL = 'hca-ingest-dev@ebi.ac.uk'
@@ -20,11 +20,11 @@ USER_HOME = str(Path.home())
 AWS_CONFIG_FILE = USER_HOME + '/.aws/config'
 AWS_CREDENTIALS_FILE = USER_HOME + '/.aws/credentials'
 
-AWS_SECRET_NAME = 'hca/util/secret'
+AWS_SECRET_NAME = 'morphic/util/secret'
 
 # default profile uses credentials from [DEFAULT_PROFILE] section of AWS_CREDENTIALS_FILE
 # and config from [profile DEFAULT_PROFILE] section of AWS_CONFIG_FILE
-DEFAULT_PROFILE = 'hca-util'
+DEFAULT_PROFILE = 'morphic-util'
 DEFAULT_REGION = 'eu-west-2'
 
 # local state for user
@@ -32,8 +32,9 @@ LOCAL_STATE_FILE = USER_HOME + '/.hca-util'
 
 # 2 IAM user types: admin and (normal) user
 # in the context of hca, admin=wrangler and user=contributor
+COGNITO_MORPHIC_UTIL_USER = 'dipayan1985'
+COGNITO_MORPHIC_UTIL_ADMIN = 'dipayan1985Admin'
 IAM_USER = 'dipayan1985'
-IAM_ADMIN = 'dipayan1985Admin'
 
 AWS_ACCOUNT = '362836482250'
 

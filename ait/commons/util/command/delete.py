@@ -81,7 +81,7 @@ class CmdDelete:
                                 print(k + '  Done.')
                             except Exception as ex:
                                 if 'AccessDenied' in str(ex):
-                                    print('No permision to delete.')
+                                    print('No permission to delete.')
                                 else:
                                     print('Delete failed.')
                     else:

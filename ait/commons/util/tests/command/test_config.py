@@ -2,7 +2,7 @@ import os
 import unittest
 from unittest.mock import patch
 
-from ait.commons.util.settings import IAM_USER, IAM_ADMIN
+from ait.commons.util.settings import COGNITO_MORPHIC_UTIL_USER, COGNITO_MORPHIC_UTIL_ADMIN
 from ait.commons.util.__main__ import parse_args
 from ait.commons.util.command.config import CmdConfig
 
@@ -15,25 +15,25 @@ admin_secret = os.environ.get('ADMIN_SECRET')
 
 class TestConfig(unittest.TestCase):
     def test_config_valid_user_creds(self):
-        args = ['config', user_access, user_secret, '--profile', IAM_USER]
+        args = ['config', user_access, user_secret, '--profile', COGNITO_MORPHIC_UTIL_USER]
         success, msg = CmdConfig(parse_args(args)).run()
         self.assertEqual(msg, 'Valid credentials')
         self.assertTrue(success)
 
     def test_config_invalid_user_creds(self):
-        args = ['config', 'invalid-key', 'invalid-secret', '--profile', IAM_USER]
+        args = ['config', 'invalid-key', 'invalid-secret', '--profile', COGNITO_MORPHIC_UTIL_USER]
         success, msg = CmdConfig(parse_args(args)).run()
         self.assertEqual(msg, 'Invalid credentials')
         self.assertFalse(success)
 
     def test_config_valid_admin_creds(self):
-        args = ['config', admin_access, admin_secret, '--profile', IAM_ADMIN]
+        args = ['config', admin_access, admin_secret, '--profile', COGNITO_MORPHIC_UTIL_ADMIN]
         success, msg = CmdConfig(parse_args(args)).run()
         self.assertTrue(success)
         self.assertEqual(msg, 'Valid credentials')
 
     def test_config_invalid_admin_creds(self):
-        args = ['config', 'invalid-key', 'invalid-secret', '--profile', IAM_ADMIN]
+        args = ['config', 'invalid-key', 'invalid-secret', '--profile', COGNITO_MORPHIC_UTIL_ADMIN]
         success, msg = CmdConfig(parse_args(args)).run()
         self.assertEqual(msg, 'Invalid credentials')
         self.assertFalse(success)

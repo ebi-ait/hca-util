@@ -108,7 +108,7 @@ class AwsCognitoAuthenticator:
                         self.center_name = attr['Value'].lower()
 
                     if attr['Name'] == 'custom:directory_access':
-                        self.user_dir_list = attr['Value'].split(',')
+                        self.user_dir_list = attr['Value'].replace(" ", "").split(',')
 
                         if self.user_dir_list is not None:
                             self.user_dir_list = ['morphic-' + self.center_name + '/' + dataset_dir for dataset_dir in
