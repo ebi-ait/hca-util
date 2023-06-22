@@ -1,7 +1,7 @@
 from pathlib import Path
 
 NAME = 'morphic-util'
-VERSION = '0.0.5'
+VERSION = '0.0.6'
 DESC = 'CLI tool for uploading data to Morphic AWS S3 bucket'
 AUTHOR = 'hca-ingest-dev'
 AUTHOR_EMAIL = 'hca-ingest-dev@ebi.ac.uk'
