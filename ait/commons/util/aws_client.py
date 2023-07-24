@@ -3,12 +3,12 @@ import json
 import boto3
 
 from ait.commons.util.aws_cognito_authenticator import AwsCognitoAuthenticator
-from ait.commons.util.settings import COGNITO_MORPHIC_UTIL_USER, AWS_SECRET_NAME_AK_BUCKET, AWS_SECRET_NAME_SK_BUCKET, \
-    AWS_SECRET_NAME_MORPHIC_BUCKET
+from ait.commons.util.settings import AWS_SECRET_NAME_AK_BUCKET, AWS_SECRET_NAME_SK_BUCKET, \
+    AWS_SECRET_NAME_MORPHIC_BUCKET, COGNITO_MORPHIC_UTIL_ADMIN, S3_REGION
 
 
 def static_bucket_name():
-    return 'morphictestbucket-dpc1'
+    return 'morphic-bio'
 
 
 class Aws:
@@ -21,18 +21,18 @@ class Aws:
         self.access_key = None
         self.user_profile = user_profile
         self.common_session = self.new_session()
-        self.bucket_name = 'morphictestbucket-dpc1'
+        self.bucket_name = 'morphic-bio'
 
     def get_access_key(self, secret_mgr_client):
         resp = secret_mgr_client.get_secret_value(SecretId=AWS_SECRET_NAME_AK_BUCKET)
         secret_str = resp['SecretString']
-        self.access_key = json.loads(secret_str)['AK']
+        self.access_key = json.loads(secret_str)['AK-bucket']
         return self.access_key
 
     def get_secret_key(self, secret_mgr_client):
         resp = secret_mgr_client.get_secret_value(SecretId=AWS_SECRET_NAME_SK_BUCKET)
         secret_str = resp['SecretString']
-        self.secret_key = json.loads(secret_str)['SK']
+        self.secret_key = json.loads(secret_str)['SK-bucket']
         return self.secret_key
 
     def get_bucket_name(self, secret_mgr_client):
@@ -53,18 +53,14 @@ class Aws:
                                                                                     self.user_profile.password)
 
         if secret_manager_client is None:
-            print('Failure while re-establishing Amazon Web Services session, report this error to the admins of the '
-                  'system')
+            print('Failure while re-establishing Amazon Web Services session, report this error to the DRACC admin')
             raise Exception
         else:
             self.is_user = aws_cognito_authenticator.is_valid_user()
             self.user_dir_list = aws_cognito_authenticator.get_user_dir_list()
             self.center_name = aws_cognito_authenticator.get_center_name()
 
-            print('Is a admin or user? true if user:' + str(self.is_user))
-            print('Re-establishing session with Amazon Web Services')
-
-            return boto3.Session(region_name=self.user_profile.region,
+            return boto3.Session(region_name=S3_REGION,
                                  aws_access_key_id=self.get_access_key(secret_manager_client),
                                  aws_secret_access_key=self.get_secret_key(secret_manager_client))
 
@@ -78,7 +74,7 @@ class Aws:
         try:
             resp = sts.get_caller_identity()
             arn = resp.get('Arn')
-            if arn.endswith(COGNITO_MORPHIC_UTIL_USER):
+            if arn.endswith(COGNITO_MORPHIC_UTIL_ADMIN):
                 return True
         except Exception as e:
             if e is not KeyboardInterrupt:

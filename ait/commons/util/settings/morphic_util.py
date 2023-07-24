@@ -26,17 +26,18 @@ AWS_SECRET_NAME = 'morphic/util/secret'
 # and config from [profile DEFAULT_PROFILE] section of AWS_CONFIG_FILE
 DEFAULT_PROFILE = 'morphic-util'
 DEFAULT_REGION = 'eu-west-2'
+S3_REGION = 'us-east-1'
 
 # local state for user
 LOCAL_STATE_FILE = USER_HOME + '/.hca-util'
 
-# 2 IAM user types: admin and (normal) user
-# in the context of hca, admin=wrangler and user=contributor
-COGNITO_MORPHIC_UTIL_USER = 'dipayan1985'
-COGNITO_MORPHIC_UTIL_ADMIN = 'dipayan1985Admin'
-IAM_USER = 'dipayan1985'
-
-AWS_ACCOUNT = '362836482250'
+# Cognito and IAM
+COGNITO_MORPHIC_UTIL_ADMIN = 'morphic-admin'
+COGNITO_CLIENT_ID = '6poq2i04qt3pj5rkpg51patcrk'
+COGNITO_IDENTITY_POOL_ID = 'eu-west-2:87ba188b-51fc-42e0-9172-a1a01cda8ed0'
+COGNITO_USER_POOL_ID = 'eu-west-2_2BpGQDRSU'
+IAM_USER = 'morphic-admin'
+AWS_ACCOUNT = '596988661787'
 
 AWS_SECRET_NAME_AK_BUCKET = 'AK-bucket'
 AWS_SECRET_NAME_SK_BUCKET = 'SK-bucket'

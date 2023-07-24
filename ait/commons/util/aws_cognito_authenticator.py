@@ -2,7 +2,8 @@ import sys
 
 import boto3
 
-from ait.commons.util.settings import DEFAULT_PROFILE, DEFAULT_REGION
+from ait.commons.util.settings import DEFAULT_PROFILE, DEFAULT_REGION, COGNITO_CLIENT_ID, COGNITO_IDENTITY_POOL_ID, \
+    COGNITO_USER_POOL_ID
 from ait.commons.util.user_profile import set_profile
 
 
@@ -23,11 +24,11 @@ class AwsCognitoAuthenticator:
             profile = profile if profile else DEFAULT_PROFILE
 
             if username and password:
-                client = boto3.client("cognito-idp", region_name="eu-west-2", aws_access_key_id="NONE",
+                client = boto3.client("cognito-idp", region_name=DEFAULT_REGION, aws_access_key_id="NONE",
                                       aws_secret_access_key="NONE")
 
                 response = client.initiate_auth(
-                    ClientId="5ajn7j8kkbvoau0foonaah8tgp",
+                    ClientId=COGNITO_CLIENT_ID,
                     AuthFlow="USER_PASSWORD_AUTH",
                     AuthParameters={"USERNAME": username, "PASSWORD": password},
                 )
@@ -38,25 +39,24 @@ class AwsCognitoAuthenticator:
 
                 response = client.get_user(AccessToken=access_token)
                 username = response['Username']
-                print('Current user is ' + username)
 
                 if username.endswith('Admin') or username.endswith('admin'):
                     self.is_user = False
                 else:
                     self.is_user = True
 
-                identity = boto3.client('cognito-identity', region_name="eu-west-2")
+                identity = boto3.client('cognito-identity', region_name=DEFAULT_REGION)
                 identity_id = identity.get_id(
-                    IdentityPoolId='eu-west-2:c8ade43b-30c0-4315-a9cb-575c0377369e',
+                    IdentityPoolId=COGNITO_IDENTITY_POOL_ID,
                     Logins={
-                        'cognito-idp.eu-west-2.amazonaws.com/eu-west-2_uTVRCDMKG': id_token
+                        'cognito-idp.eu-west-2.amazonaws.com/' + COGNITO_USER_POOL_ID: id_token
                     }
                 )['IdentityId']
 
                 aws_cred = identity.get_credentials_for_identity(
                     IdentityId=identity_id,
                     Logins={
-                        'cognito-idp.eu-west-2.amazonaws.com/eu-west-2_uTVRCDMKG': id_token
+                        'cognito-idp.eu-west-2.amazonaws.com/' + COGNITO_USER_POOL_ID: id_token
                     }
                 )['Credentials']
 
@@ -78,11 +78,11 @@ class AwsCognitoAuthenticator:
 
         try:
             if username and password:
-                client = boto3.client("cognito-idp", region_name="eu-west-2", aws_access_key_id="NONE",
+                client = boto3.client("cognito-idp", region_name=DEFAULT_REGION, aws_access_key_id="NONE",
                                       aws_secret_access_key="NONE")
 
                 response = client.initiate_auth(
-                    ClientId="5ajn7j8kkbvoau0foonaah8tgp",
+                    ClientId=COGNITO_CLIENT_ID,
                     AuthFlow="USER_PASSWORD_AUTH",
                     AuthParameters={"USERNAME": username, "PASSWORD": password},
                 )
@@ -94,8 +94,6 @@ class AwsCognitoAuthenticator:
                 response = client.get_user(AccessToken=access_token)
 
                 username = response['Username']
-                print('Current user is ' + username)
-
                 user_attribute_list = response['UserAttributes']
 
                 if username.endswith('Admin') or username.endswith('admin'):
@@ -126,19 +124,19 @@ class AwsCognitoAuthenticator:
                                   'system')
                             sys.exit(1)
 
-                identity = boto3.client('cognito-identity', region_name="eu-west-2")
+                identity = boto3.client('cognito-identity', region_name=DEFAULT_REGION)
 
                 identity_id = identity.get_id(
-                    IdentityPoolId='eu-west-2:c8ade43b-30c0-4315-a9cb-575c0377369e',
+                    IdentityPoolId=COGNITO_IDENTITY_POOL_ID,
                     Logins={
-                        'cognito-idp.eu-west-2.amazonaws.com/eu-west-2_uTVRCDMKG': id_token
+                        'cognito-idp.eu-west-2.amazonaws.com/' + COGNITO_USER_POOL_ID: id_token
                     }
                 )['IdentityId']
 
                 aws_cred = identity.get_credentials_for_identity(
                     IdentityId=identity_id,
                     Logins={
-                        'cognito-idp.eu-west-2.amazonaws.com/eu-west-2_uTVRCDMKG': id_token
+                        'cognito-idp.eu-west-2.amazonaws.com/' + COGNITO_USER_POOL_ID: id_token
                     }
                 )['Credentials']
 
