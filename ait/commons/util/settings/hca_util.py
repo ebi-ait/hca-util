@@ -29,17 +29,7 @@ AWS_SECRET_NAME = 'hca/util/secret'
 # and config from [profile DEFAULT_PROFILE] section of AWS_CONFIG_FILE
 DEFAULT_PROFILE = 'hca-util'
 DEFAULT_REGION = 'eu-west-2'
+S3_REGION = 'us-east-1'
 
 # local state for user
 LOCAL_STATE_FILE = USER_HOME + '/.hca-util'
-
-# 2 IAM user types: admin and (normal) user
-# in the context of hca, admin=wrangler and user=contributor
-IAM_USER = 'dipayan1985'
-IAM_ADMIN = 'dipayan1985Admin'
-
-AWS_ACCOUNT = '362836482250'
-
-AWS_SECRET_NAME_AK_BUCKET = 'AK-bucket'
-AWS_SECRET_NAME_SK_BUCKET = 'SK-bucket'
-AWS_SECRET_NAME_MORPHIC_BUCKET = 's3-bucket'
