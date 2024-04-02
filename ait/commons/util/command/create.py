@@ -24,7 +24,7 @@ class CmdCreate:
         if self.aws.is_user:
             return False, 'You don\'t have permission to use this command'
 
-        area_name = self.args.NAME # S3 bucket folder name
+        area_name = self.args.NAME  # S3 bucket folder name
         perms = self.args.p  # optional str, default 'ux'
         center_name = self.args.DPC  # morphic DPC
 
@@ -33,7 +33,7 @@ class CmdCreate:
             # new upload areas to be created with tagging instead of metadata
             # upload area format - morphic-DPC/area_name/
             s3_client.put_object(Bucket=self.aws.bucket_name,
-                                 Key=('morphic-' + center_name.lower() + '/' + area_name + '/'),
+                                 Key=(area_name + '/'),
                                  Tagging=f'name={area_name}&perms={perms}')
 
             if perms == DEFAULT_PERMS:

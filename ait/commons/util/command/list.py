@@ -37,16 +37,7 @@ class CmdList:
 
             if not selected_area:
                 return False, 'No area selected'
-            else:
-                if self.aws.is_user:
-                    dir_prefix = 'morphic-' + self.aws.center_name + '/'
-
-                    if dir_prefix not in selected_area:
-                        selected_area = dir_prefix + selected_area
-
-                    if selected_area.rstrip(selected_area[-1]) not in self.aws.user_dir_list:
-                        return False, "Upload area does not exist or you don't have access to this area"
-
+            
             try:
                 selected_area += '' if selected_area.endswith('/') else '/'
                 n, p = self.get_name_and_perms(selected_area)

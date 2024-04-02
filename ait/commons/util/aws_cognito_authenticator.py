@@ -101,29 +101,6 @@ class AwsCognitoAuthenticator:
                 else:
                     self.is_user = True
 
-                for attr in user_attribute_list:
-                    if attr['Name'] == 'custom:DPC':
-                        self.center_name = attr['Value'].lower()
-
-                    if attr['Name'] == 'custom:directory_access':
-                        self.user_dir_list = attr['Value'].replace(" ", "").split(',')
-
-                        if self.user_dir_list is not None:
-                            self.user_dir_list = ['morphic-' + self.center_name + '/' + dataset_dir for dataset_dir in
-                                                  self.user_dir_list]
-
-                if self.is_user:
-                    if self.center_name is None:
-                        print('User does not have an assigned center name and therefore cannot perform any operations '
-                              'with this system')
-                        sys.exit(1)
-
-                    if self.user_dir_list is None:
-                        if self.is_user:
-                            print('User does not have access to any upload areas or to perform any operations with this'
-                                  'system')
-                            sys.exit(1)
-
                 identity = boto3.client('cognito-identity', region_name=DEFAULT_REGION)
 
                 identity_id = identity.get_id(
