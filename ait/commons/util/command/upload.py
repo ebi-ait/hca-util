@@ -39,7 +39,6 @@ class CmdUpload:
             content_type = 'application/octet-stream'
             if file_type is not None:
                 content_type = file_type.mime
-            content_type += '; dcp-type=data'
 
             s3.Bucket(self.aws.bucket_name).upload_file(Filename=data_file,
                                                         Key=key,
