@@ -79,7 +79,7 @@ positional arguments:
 
 The tool uses the profile name _hca-util_ in local AWS config files.
 
-Once configured, the set up can be checked by running the command again, this time without credentials (`hca-util config`), to verify if the previously entered credentials are valid or not.
+Once configured, the setup can be checked by running the command again, this time without credentials (`hca-util config`), to verify if the previously entered credentials are valid or not.
 
 ## `create` command
 
@@ -108,7 +108,7 @@ positional arguments:
   AREA                area uuid. 
 ```
 
-If AREA is not specified, the selected area is shown.
+If the AREA is not specified, the selected area is shown.
 
 ## `list` command
 

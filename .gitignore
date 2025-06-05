@@ -2,10 +2,10 @@ __pycache__/
 .idea/
 build/
 dist/
-hca_util.egg-info/
-covid_util.egg-info/
+*.egg-info/
+*.egg-info/
 testpypi-env/
-venv/
+.venv/
 
 # vscode ide
 .vscode

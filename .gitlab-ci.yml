@@ -1,4 +1,4 @@
-image: python:3.11
+image: python:3.6
 
 stages:
   - test
@@ -16,8 +16,27 @@ test_e2e_user:
 integration_test:
   stage: test
   script:
-    - nosetests --with-coverage --cover-erase --cover-package=ait.commons.util.command --cover-html --cover-branches  --cover-xml -v ait.commons.util.tests.command
+    - mkdir -p build/reports
+    - >
+      nosetests 
+      -v
+      --with-coverage --cover-erase 
+      --cover-package=ait.commons.util.command --cover-branches 
+      --cover-xml --cover-xml-file=build/reports/coverage.xml
+      --cover-html --cover-html-dir=build/reports
+      --with-xunit --xunit-file=build/reports/nosetests.xml
+      ait.commons.util.tests.command
+  artifacts:
+    when: always
+    reports:
+      junit: build/reports/nosetests.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: build/reports/coverage.xml
+    paths:
+      - build/reports/
 
 
 before_script:
+  - pip install --upgrade pip
   - pip install -r requirements-dev.txt
